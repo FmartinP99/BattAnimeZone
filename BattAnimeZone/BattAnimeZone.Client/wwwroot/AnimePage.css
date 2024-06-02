@@ -1,0 +1,98 @@
+﻿body{
+
+}
+
+
+.rz-data-grid:hover {
+    
+    cursor: pointer;
+}
+
+#relation-button{
+    margin-bottom:20px;
+}
+
+.defaultTitleDiv {
+
+  
+    font-size: 30px;
+
+}
+
+.imageDiv {
+    overflow-y: hidden;
+    height: 500px;
+    width: 300px;
+    background-color: transparent;
+    border: none;
+    background-position: center;
+    background-size: cover;
+    transition: all 0.3s ease-in-out !important;
+    border-radius: 2px;
+}
+
+
+.prodentSpan {
+    font-weight: 540;
+    font-size: 16px;
+    font-style: italic;
+    &:hover
+{
+    text-decoration: underline;
+    cursor:pointer;
+    
+}
+}
+
+.titleSpan{
+    font-weight: 700;
+    font-size:15px;
+    display:inline;
+}
+
+.titleLanguage{
+    font-weight:500;
+    font-size: 13px;
+
+}
+
+.rowDiv {
+    min-width: 100px;
+    padding-top: 7px;
+    padding-left: 10px;
+    padding-right: 10px;
+    font-size: 13px;
+}
+
+.attributesDiv {
+    width: 300px;
+    max-height: 500px;
+    margin-left: 20px;
+    overflow-y: auto;
+    border: 4px double gray;
+    margin-right: 20px;
+ 
+}
+
+.synopsisHeaderDiv {
+    font-weight: 700;
+    font-size: 20px;
+    display: inline;
+    border: 4px double gray;
+    max-height: 500px;
+    overflow-y: auto;
+    margin-right: 20px;
+    padding-top: 10px;
+    padding-left: 10px;
+    padding-right: 10px;
+}
+.synopsisDiv {
+    font-family: 'Arial';
+    font-weight: 400;
+    font-size: 17px;
+    padding-right: 20px;
+    max-width: 500px;
+    overflow-x: hidden;
+    white-space: pre-wrap;
+
+}

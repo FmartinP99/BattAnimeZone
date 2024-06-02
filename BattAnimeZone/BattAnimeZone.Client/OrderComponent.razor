@@ -1,0 +1,95 @@
+﻿@using BattAnimeZone.Shared.Models.AnimeDTOs
+@typeparam T where T : class, IAnimeDTO
+
+<RadzenLabel Text="Order by:" class="orderComponentText" Component="DropDownTextValueProperties" Style="margin-right: 8px; vertical-align: middle;" />
+<RadzenDropDown Change="onChanged" class="rzdropdown" @bind-Value=@filter_str Data=@filter_bys Style="width: 100%; max-width: 400px;" Name="DropDownTextValueProperties" />
+
+
+
+@code{
+
+    string filter_str = "Score Descending";
+    IEnumerable<string> filter_bys = new List<string>() {"Alphabetical ENG", "Alphabetical Descending ENG",  "Alphabetical JP", "Alphabetical Descending JP",
+    "Year", "Year Descending",
+    "Score", "Score Descending", "Popularity", "Popularity Descending", "Type", "Type Descending" };
+
+    [Parameter]
+    public List<T> animes { get; set; }
+    [Parameter]
+    public EventCallback<List<T>> AnimesChanged { get; set; }
+
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        base.OnInitialized();
+    }
+
+
+    protected async void onChanged()
+    {
+      
+        switch (filter_str)
+        {
+            case "Alphabetical ENG":
+                animes = animes.OrderBy(anime => string.IsNullOrEmpty(anime.Title_english) && string.IsNullOrEmpty(anime.Title_japanese) ? 2 :
+                string.IsNullOrEmpty(anime.Title_english) ? 1 : 0)
+                .ThenBy(anime => anime.Title_english)
+                .ToList();
+                break;
+            case "Alphabetical Descending ENG":
+                animes = animes.OrderBy(anime => string.IsNullOrEmpty(anime.Title_english) && string.IsNullOrEmpty(anime.Title_japanese) ? 2 :
+               string.IsNullOrEmpty(anime.Title_english) ? 1 : 0)
+               .ThenByDescending(anime => anime.Title_english)
+               .ToList();
+                break;
+            case "Alphabetical JP":
+                animes = animes.OrderBy(anime => string.IsNullOrEmpty(anime.Title_english) && string.IsNullOrEmpty(anime.Title_japanese) ? 2 :
+                string.IsNullOrEmpty(anime.Title_japanese) ? 1 : 0)
+               .ThenBy(anime => anime.Title_japanese)
+               .ToList();
+                break;
+            case "Alphabetical Descending JP":
+                animes = animes.OrderBy(anime => string.IsNullOrEmpty(anime.Title_english) && string.IsNullOrEmpty(anime.Title_japanese) ? 2 :
+                string.IsNullOrEmpty(anime.Title_japanese) ? 1 : 0)
+               .ThenByDescending(anime => anime.Title_japanese)
+               .ToList();
+                break;
+            case "Year":
+                animes = animes.OrderBy(anime => anime.Year == 0.0)
+                .ThenBy(anime => anime.Year).ToList();
+                break;
+            case "Year Descending":
+                animes = animes.OrderBy(anime => anime.Year == 0.0)
+                .ThenByDescending(anime => anime.Year).ToList();
+                break;
+            case "Score":
+                animes = animes.OrderBy(anime => anime.Score == 0.0)
+                .ThenBy(anime => anime.Score).ToList();
+                break;
+            case "Score Descending":
+                animes = animes.OrderBy(anime => anime.Score == 0.0)
+                .ThenByDescending(anime => anime.Score).ToList();
+                break;
+            case "Popularity":
+                animes = animes.OrderBy(anime => anime.Popularity == 0.0)
+                .ThenBy(anime => anime.Popularity).ToList();
+                break;
+            case "Popularity Descending":
+                animes = animes.OrderBy(anime => anime.Popularity == 0.0)
+                .ThenByDescending(anime => anime.Popularity).ToList();
+                break;
+            case "Type":
+                animes = animes.OrderBy(anime => string.IsNullOrEmpty(anime.Media_type))
+                .ThenBy(anime => anime.Media_type).ToList();
+                break;
+            case "Type Descending":
+                animes = animes.OrderBy(anime => string.IsNullOrEmpty(anime.Media_type))
+                .ThenByDescending(anime => anime.Media_type).ToList();
+                break;
+            default:
+                break;
+        }
+        await AnimesChanged.InvokeAsync(animes);
+    }
+}

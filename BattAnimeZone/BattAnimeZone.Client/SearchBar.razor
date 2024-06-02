@@ -1,0 +1,38 @@
+﻿@inject NavigationManager navManager
+<link rel="stylesheet" href="/SearchBar.css" />
+
+
+
+
+<div Style="width:100%">
+	<RadzenColumn Size="12">
+		<RadzenText Text="Search" TextStyle="TextStyle.H3" TagName="TagName.H1" Style="height: 48px" TextAlign="Radzen.TextAlign.Center" />
+	</RadzenColumn>
+</div>
+
+<div>
+<RadzenRow class="searchRow" Style="Margin-bottom:50px; Width:100%;">
+		<RadzenTextBox @bind-value=@name_to_search Style="flex:auto" @oninput=@(args => name_to_search = args.Value.ToString()) @onkeypress=@CaptureKey></RadzenTextBox>
+		<RadzenButton Click="NavigateTo" Style="width: 100px; Margin-left:10px; Margin-right:20px; background-image: linear-gradient(to right, #5832dd,#5025ce,#5832dd,#5025ce,#5832dd);" Text="Search"></RadzenButton>
+</RadzenRow>
+</div>
+
+@code {
+	[Parameter]
+	public string name_to_search { get; set; } = "";
+	[Parameter]
+	public EventCallback Search{ get; set; }
+
+	public async void NavigateTo()
+	{
+		navManager.NavigateTo($"/search/{name_to_search}", forceLoad: true);
+	}
+
+	public async Task CaptureKey(KeyboardEventArgs args)
+	{
+		if (args.Key == "Enter")
+		{
+			NavigateTo();
+		}
+	}
+}

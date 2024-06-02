@@ -1,0 +1,129 @@
+﻿.scrolling-wrapper {
+    overflow-x: auto;
+}
+
+body {
+    background-color: black;
+    color: #fff;
+    font-family: 'system-ui';
+}
+
+h1 {
+    font-weight: 700;
+    font-size: 3.4em;
+}
+
+.subtitle {
+    font-size: 1.25em;
+    opacity: 0.65;
+}
+
+.card-block {
+    overflow-y:hidden;
+    height: 400px;
+    background-color: #fff;
+    border: none;
+    background-position: center;
+    background-size: cover;
+    transition: all 0.3s ease-in-out !important;
+    border-radius: 24px;
+    &:hover
+
+{
+    transform: translateY(-5px);
+    box-shadow: none;
+    opacity: 0.9;
+}
+
+}
+
+.card-1 {
+    background-color: transparent;
+    overflow: hidden;
+   
+}
+
+.scoreDiv {
+    position: absolute;
+    top: 6%;
+    left: 13%;
+    transform: translate(-50%, -50%);
+    background-color: rgba(0,0,0,0.7);
+    color: #fff;
+    padding: 10px 20px;
+    font-size: 20px;
+    text-align: center;
+}
+
+.typeDiv {
+    position: absolute;
+    top: 6%;
+    left: 90%;
+    transform: translate(-50%, -50%);
+    background-color: rgba(0,0,0,0.7);
+    color: #fff;
+    padding: 10px 20px;
+    font-size: 20px;
+    text-align: center;
+}
+
+.titleDiv {
+    position: absolute;
+    top: 95%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: rgba(0,0,0,0.7);
+    color: #fff;
+    padding: 10px 20px;
+    font-size: 15px;
+    text-align: center;
+    width:100%;
+}
+
+.statusDiv {
+    position: absolute;
+    top: 45%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: rgba(0,0,0,0.7);
+    color: #fff;
+    padding: 10px 20px;
+    font-size: 15px;
+    text-align: center;
+    width: 100%;
+}
+
+.headerDiv {
+    width: 100%;
+}
+
+.headerInnerDiv{
+    margin-left:auto;
+}
+
+
+.rzdropdown {
+    background-image: linear-gradient(to right, #5832dd,#5025ce,#5832dd,#5025ce,#5832dd);
+    color: white;
+}
+
+.rz-dropdown-panel {
+    background-color: rgba(0,0,0,0.6);
+    color: white !important;
+}
+
+.rz-dropdown-items-wrapper {
+    background-color: transparent !important;
+    color: white !important;
+}
+
+
+.rz-dropdown-items > li {
+    background-color: transparent !important;
+    color: white !important;
+    &:hover
+
+{
+    background-image: linear-gradient(to right, #5832dd,#5025ce,#5832dd,#5025ce,#5832dd);
+}
+}

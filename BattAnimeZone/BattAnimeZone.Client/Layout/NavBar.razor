@@ -1,0 +1,36 @@
+@inject IJSRuntime JSRuntime
+@inject NavigationManager navManager
+<link rel="stylesheet" href="/NavBar.css" />
+
+<RadzenRow Style="border:solid 1px black; border-radius:8px; height: 50px; width:100%; padding:7px; margin-bottom:20px;">
+<RadzenRow class="navbar-row" Style="border-radius: 5px;  ;height: 100%; padding: 6px; width: 100%; background-image: linear-gradient(to right, #5832dd,#5025ce,#5832dd,#5025ce,#5832dd)">
+        <RadzenColumn class="navbar-column" Style="min-width: 200px; max-width: 20vh; " @onclick="NavigateToIndex">BattAnimeZone!!</RadzenColumn>
+        <RadzenColumn class="navbar-column" Style="min-width: 10vh; max-width: 10vh;" @onclick="NavigateToAnimes">ANIMES</RadzenColumn>
+        <RadzenColumn class="navbar-column" Style="min-width: 10vh; max-width: 10vh;" @onclick="NavigateToGenres">GENRES</RadzenColumn>
+        <RadzenColumn class="navbar-column" Style="min-width: 10vh; max-width: 10vh;" @onclick="NavigateToStudios">STUDIOS</RadzenColumn>
+    </RadzenRow>
+</RadzenRow>
+
+@code {
+
+    public async void NavigateToIndex()
+    {
+        navManager.NavigateTo($"/", forceLoad: true);
+    }
+
+    public async void NavigateToAnimes()
+    {
+        navManager.NavigateTo($"/animelist", forceLoad: true);
+    }
+
+    public async void NavigateToGenres()
+    {
+        navManager.NavigateTo($"/genrelist", forceLoad: true);
+    }
+
+    public async void NavigateToStudios()
+    {
+        navManager.NavigateTo($"/studiolist", forceLoad: true);
+    }
+
+}

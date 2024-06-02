@@ -1,0 +1,47 @@
+﻿body {
+}
+
+
+
+.titleSpan {
+    font-weight: 700;
+    font-size: 20px;
+    display: inline;
+}
+
+.rowDiv {
+    height: 33%;
+    min-width: 100px;
+    padding-top: 20px;
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+
+.aboutDiv {
+    font-family: 'Arial';
+    font-weight: 400;
+    font-size: 17px;
+    padding-right: 20px;
+}
+
+.lga-card {
+    width: 350px !important;
+    max-width: 350px !important;
+    height: 200px !important;
+  
+    max-width: 50%;
+    background: transparent !important;
+    color: white !important;
+    ;
+    &:hover
+
+{
+    transform: translateY(-5px);
+    box-shadow: none;
+    opacity: 0.9;
+    cursor: pointer;
+}
+
+
+

@@ -1,0 +1,72 @@
+﻿
+.rz-row:hover {
+    border: solid 1px white;
+    cursor: pointer;
+}
+
+.rz-listbox {
+    background-color: transparent !important;
+}
+
+.rz-inputtext {
+    background-color: transparent !important;
+}
+.rz-row {
+    width: 1150px;
+}
+
+.dropdownDiv{
+    align-content:end;
+}
+
+.rzdropdown {
+    background-image: linear-gradient(to right, #5832dd,#5025ce,#5832dd,#5025ce,#5832dd);
+    color: white;
+}
+.orderComponentText {
+    margin-left: 50px;
+}
+
+.rz-dropdown-label{
+    color:white !important;
+}
+
+.rz-multiselect-panel {
+    background-color: rgb(0,0,0,0.6);
+}
+.rz-multiselect-items-wrapper {
+    background-color: transparent !important;
+}
+.rz-multiselect-list{
+    background-color: transparent !important;
+}
+
+.rz-multiselect-list>li{
+    background-color: transparent !important;
+    &:hover
+{
+    background-color: rgb(0,0,0,1);
+    color:white;
+}
+}
+
+
+.rz-dropdown-panel {
+    background-color: rgba(0,0,0,0.6);
+    color: white !important;
+}
+
+.rz-dropdown-items-wrapper {
+    background-color: transparent !important;
+    color: white !important;
+}
+
+
+.rz-dropdown-items > li {
+    background-color: transparent !important;
+    color: white !important;
+    &:hover
+
+{
+    background-image: linear-gradient(to right, #5832dd,#5025ce,#5832dd,#5025ce,#5832dd);
+}

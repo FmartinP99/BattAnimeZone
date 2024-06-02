@@ -1,0 +1,17 @@
+﻿body {
+}
+
+
+.display-div{
+    width:100%;
+}
+
+.rz-row {
+    width:1150px;
+}
+
+.rz-row:hover {
+    border: solid 1px white;
+    cursor: pointer;
+    
+}

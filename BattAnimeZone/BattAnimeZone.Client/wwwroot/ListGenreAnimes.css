@@ -1,0 +1,54 @@
+﻿body {
+}
+
+.lga-card {
+    width: 450px !important;
+    max-width:50%;
+    background: transparent !important;
+    color: white !important;
+    ;
+    &:hover
+    {
+    transform: translateY(-5px);
+    box-shadow: none;
+    opacity: 0.9;
+    cursor: pointer;
+    }
+}
+
+.rzdropdown {
+    background-image: linear-gradient(to right, #5832dd,#5025ce,#5832dd,#5025ce,#5832dd);
+    color: white;
+}
+
+.rz-dropdown-panel {
+    background-color: rgba(0,0,0,0.6);
+    color: white !important;
+}
+
+.rz-dropdown-items-wrapper{
+    background-color: transparent !important;
+    color: white !important;
+}
+
+
+.rz-dropdown-items > li{
+    background-color: transparent !important;
+    color: white !important;
+
+    &:hover
+{
+    background-image: linear-gradient(to right, #5832dd,#5025ce,#5832dd,#5025ce,#5832dd);
+}
+}
+
+
+.genreNameDiv {
+    font-style: italic;
+    margin: 0;
+    font-size: 40px;
+}
+
+
+
+

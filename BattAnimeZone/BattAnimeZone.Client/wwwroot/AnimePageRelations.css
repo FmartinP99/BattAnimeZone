@@ -1,0 +1,37 @@
+﻿body {
+}
+
+
+
+.lga-card {
+    width: 450px !important;
+    max-width:50%;
+    background: transparent !important;
+    color: white !important;
+    ;
+    &:hover
+
+    {
+        transform: translateY(-5px);
+        box-shadow: none;
+        opacity: 0.9;
+        cursor: pointer;
+    }
+}
+
+.bottom-row {
+    min-height: 100%;
+    height: 100%;
+    position: relative;
+}
+.bottom-col {
+    min-height: 100%;
+
+}
+
+bottom-p {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+}
+

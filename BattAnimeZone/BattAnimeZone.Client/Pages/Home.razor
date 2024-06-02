@@ -1,0 +1,113 @@
+﻿@using BattAnimeZone.Shared.Models.Genre
+@using BattAnimeZone.Shared.Models.Anime
+@using BattAnimeZone.Shared.Models.AnimeDTOs
+@inject NavigationManager navManager
+@inject HttpClient httpClient
+@rendermode InteractiveWebAssembly
+@page "/"
+<link rel="stylesheet" href="/Home.css" />
+<PageTitle>Home</PageTitle>
+<SearchBar></SearchBar>
+
+
+
+<div class="container-fluid">
+	<h1 class="mt-5">Seasonal Animes</h1>
+
+	<div class="headerDiv d-flex align-items-center">
+		<p class="subtitle">@info_str</p>
+		<div class="d-flex align-items-center headerInnerDiv">
+			<RadzenLabel Text="SEASON:" class="orderComponentText rz-text-align-end" Component="DropDownTextValueProperties" Style="margin-right: 8px; vertical-align: middle;" />
+			<RadzenDropDown Change="onChanged" class="rzdropdown" @bind-Value=@filter_str Data=@filter_bys Style="width: 100%; max-width: 400px;" Name="DropDownTextValueProperties" />
+		</div>
+	</div>
+
+	<div class="scrolling-wrapper row flex-row flex-nowrap mt-4 pb-4 pt-2">
+		@if(this.currentlySelectedAnimes != null){
+		@foreach (AnimeHomePageDTO anime in this.currentlySelectedAnimes)
+		{
+			<div class="col-2">
+				<div class="card card-block card-1" @onclick="@(() => NavigateTo(anime.Mal_id))">
+						<img src="@anime.Image_large_webp_url" class="img-fluid" alt="Anime image is missing!">
+						<div class="scoreDiv">@anime.Score</div>
+						<div class="typeDiv">@anime.Media_type</div>
+						<div class="titleDiv">@GetTitle(anime)</div>
+						@if(anime.Status != "Finished Airing")
+						{
+						<div class="statusDiv">@anime.Status</div>
+						}
+				</div>
+		</div>
+			
+		}
+		}
+	</div>
+</div>
+
+@code{
+
+	IEnumerable<AnimeHomePageDTO> winterAnimes;
+	IEnumerable<AnimeHomePageDTO> springAnimes;
+	IEnumerable<AnimeHomePageDTO> summerAnimes;
+	IEnumerable<AnimeHomePageDTO> fallAnimes;
+	IEnumerable<AnimeHomePageDTO> currentlySelectedAnimes;
+
+	string filter_str = "WINTER";
+	string info_str = "2024 Winter Animes";
+	IEnumerable<string> filter_bys = new List<string>() {"WINTER", "SPRING", "SUMMER", "FALL" };
+
+	protected override async Task OnInitializedAsync()
+	{
+
+		
+		IEnumerable<AnimeHomePageDTO> animes = await httpClient.GetFromJsonAsync<IEnumerable<AnimeHomePageDTO>>("https://localhost:7130/api/AnimeService/GetAnimesByYear/2024");
+		winterAnimes = animes.Where(anime => anime.Season == "winter");
+		springAnimes = animes.Where(anime => anime.Season == "spring");
+		summerAnimes = animes.Where(anime => anime.Season == "summer");
+		fallAnimes = animes.Where(anime => anime.Season == "fall");
+		currentlySelectedAnimes = winterAnimes;
+		
+
+		await base.OnInitializedAsync();
+	}
+
+
+	protected string GetTitle(AnimeHomePageDTO anime)
+	{
+		return anime.Title ?? anime.Title_english ?? anime.Title_japanese ?? "No Title Found!";
+	} 
+
+
+	protected async void onChanged()
+	{
+		switch (filter_str)
+		{
+			case "WINTER":
+				currentlySelectedAnimes = winterAnimes;
+				info_str = "2024 Winter Animes";
+				break;
+			case "SPRING":
+				currentlySelectedAnimes = springAnimes;
+				info_str = "2024 Spring Animes";
+				break;
+			case "SUMMER":
+				currentlySelectedAnimes = summerAnimes;
+				info_str = "2024 Summer Animes";
+				break;
+			case "FALL":
+				currentlySelectedAnimes = fallAnimes;
+				info_str = "2024 Fall Animes";
+				break;
+			default:
+				break;
+		}
+	}
+
+
+	protected async void NavigateTo(int mal_id)
+	{
+
+		navManager.NavigateTo($"/anime/{mal_id}");
+	}
+
+}

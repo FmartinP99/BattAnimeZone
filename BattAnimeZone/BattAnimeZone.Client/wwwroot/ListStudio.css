@@ -1,0 +1,22 @@
+﻿body {
+}
+
+.lga-card {
+    width: 390px !important;
+    max-width: 50%;
+    background: transparent !important;
+    color: white !important;
+    ;
+    &:hover
+
+{
+    transform: translateY(-5px);
+    box-shadow: none;
+    opacity: 0.9;
+    cursor: pointer;
+}
+
+
+
+
+
