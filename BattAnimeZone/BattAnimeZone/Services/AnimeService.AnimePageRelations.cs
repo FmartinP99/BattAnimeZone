@@ -12,9 +12,9 @@ namespace BattAnimeZone.Services
             return new AnimeRelationsKeyDTO();
         }
 
-        public async Task<List<AnimeRelationDTO>> GetRelations(AnimeRelationsKeyDTO anime)
+        public async Task<List<AnimeRelationDTO>> GetRelations(int mal_id)
         {
-
+            Anime anime = await this.GetAnimeByID(mal_id);
             List<Anime> relational_animes = new List<Anime>();
             foreach (var relation in anime.Relations)
             {

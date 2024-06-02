@@ -1,0 +1,86 @@
+@using BattAnimeZone.Shared.Models.Genre
+@using BattAnimeZone.Client.Components
+@inject NavigationManager navManager
+<link rel="stylesheet" href="/ListGenre.css" />
+@inject HttpClient httpClient
+@rendermode InteractiveWebAssembly
+@page "/genrelist"
+
+<SearchBar></SearchBar>
+
+@if (!loaded)
+{
+    <LoadingComponent></LoadingComponent>
+}else{
+    @for (int rowindex = 0; rowindex < (int)Math.Ceiling((double)animeGenres.Count / 4); rowindex++)
+    {
+        //must copy the variable due to how c# lambda functions work -> has access to a variable and not to the value of the variable.
+        var localRow = rowindex;
+        int item_index = localRow * 4;
+        <RadzenRow class="genreListRow">
+            @for (int colindex = 0; colindex < 4; colindex++)
+            {
+                    var localCol = colindex;
+                @if (item_index + localCol < animeGenres.Count)
+                {
+            
+                    <RadzenColumn class="genreListColumn" @onclick="() => NavigateTo(animeGenres[item_index + localCol].Mal_id)">
+                        <div>
+                        <p class="centered-text">@animeGenres[item_index + localCol].Name  </p>
+                    
+                        <p Style="font-size:25px;" class="centered-text">( @animeCountPerGenre[animeGenres[item_index + localCol].Mal_id] )
+                        </p>
+                        </div>
+                    </RadzenColumn>
+              
+                }
+            }
+       
+        </RadzenRow>
+    }
+}
+
+@code {
+    bool loaded = false;
+    List<AnimeGenre> animeGenres;
+    Dictionary<int, int> animeCountPerGenre = new Dictionary<int, int>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        base.OnInitialized();
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            loaded = true;
+
+            Dictionary<int, AnimeGenre> ang = await httpClient.GetFromJsonAsync<Dictionary<int, AnimeGenre>>("https://localhost:7130/api/AnimeService/GetGenres");
+            animeGenres = ang.Values.ToList();
+
+            var temnpAnimesPerGenreIDs = await httpClient.GetFromJsonAsync<Dictionary<int, HashSet<int>>>("https://localhost:7130/api/AnimeService/GetAnimesPerGenreIds");
+
+            animeCountPerGenre = temnpAnimesPerGenreIDs.ToDictionary(
+                kvp => kvp.Key,
+                kvp => kvp.Value.Count
+            );
+
+            animeGenres = animeGenres
+                .OrderByDescending(genre => animeCountPerGenre.ContainsKey(genre.Mal_id) ? animeCountPerGenre[genre.Mal_id] : 0)
+                .Where(genre => animeCountPerGenre.ContainsKey(genre.Mal_id) && animeCountPerGenre[genre.Mal_id] != 0)
+                .ToList();
+
+
+            StateHasChanged();
+        }
+    }
+
+        protected async void NavigateTo(int genreid)
+    {
+
+        navManager.NavigateTo($"/genrelist/{genreid}");
+    }
+
+
+}

@@ -1,0 +1,163 @@
+@using BattAnimeZone.Shared.Models.Genre
+@using BattAnimeZone.Shared.Models.AnimeDTOs
+@using BattAnimeZone.Client.Components
+@using Newtonsoft.Json
+@inject NavigationManager navManager
+@inject HttpClient httpClient
+@rendermode InteractiveWebAssembly
+<link rel="stylesheet" href="/ListGenreAnimes.css" />
+@page "/genrelist/{genreid:int}"
+
+
+<SearchBar></SearchBar>
+
+@if (!loaded)
+{
+    <LoadingComponent></LoadingComponent>
+}else{
+    @if (found)
+    {
+
+        <div class="genreNameDiv">Genre: @genrename</div>
+
+        <RadzenRow Style="width:100%; display:flex;">
+            <RadzenColumn Style="min-width:62%;">
+                <RadzenPager Style="overflow-x: clip; "  PagingSummaryFormat="@pagingSummaryFormat" ShowPagingSummary="true" HorizontalAlign="HorizontalAlign.Left" PageNumbersCount=12 PageSize=@pageSize Count="count" PageChanged="@PageChanged" />
+            </RadzenColumn>
+            <RadzenColumn class="rz-text-align-end">
+                <OrderComponent T="LiGenreAnimeDTO" animes="animes" AnimesChanged="OnAnimesChanged"></OrderComponent>
+            </RadzenColumn>
+    </RadzenRow>
+
+        <RadzenDataList WrapItems="true" AllowPaging="false" Data="@animes_per_page" TItem="LiGenreAnimeDTO">
+            <Template Context="anime">
+                <RadzenCard class="lga-card" @onclick="@(() => NavigateTo(anime.Mal_id))">
+                    <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center">
+                        <RadzenImage Path="@anime.Image_large_webp_url" Style="width: 100px; height: 100px; border-radius: 15%" AlternateText="no image" />
+                        <RadzenStack Gap="0" Style="width:70%">
+                            <RadzenText TextStyle="TextStyle.Overline" Style="color:White" class=" rz-display-flex rz-mt-2 rz-my-0">English Name</RadzenText>
+                            <RadzenText TextStyle="TextStyle.Body1" Style="color:White"><b>@(anime.Title_english)</b></RadzenText>
+                            <RadzenText TextStyle="TextStyle.Overline" Style="color:White" class="rz-display-flex rz-mt-4 rz-mb-0">Japanese Name</RadzenText>
+                            <RadzenText TextStyle="TextStyle.Body1" Style="color:White"><b>@(anime.Title_japanese)</b></RadzenText>
+                        </RadzenStack>
+                        <RadzenStack Gap="0">
+                            <RadzenText TextStyle="TextStyle.Overline" Style="color:White" class=" rz-display-flex rz-mt-2 rz-my-0">Score</RadzenText>
+                            <RadzenText TextStyle="TextStyle.Body1" Style="color:White"><b>@(anime.Score)</b></RadzenText>
+                            <RadzenText TextStyle="TextStyle.Overline" Style="color:White" class="rz-display-flex rz-mt-4 rz-mb-0">Popularity</RadzenText>
+                            <RadzenText TextStyle="TextStyle.Body1" Style="color:White"><b>@(anime.Popularity)</b></RadzenText>
+                        </RadzenStack>
+
+                        <RadzenStack Gap="0">
+                            <RadzenText TextStyle="TextStyle.Overline" Style="color:White" class=" rz-display-flex rz-mt-2 rz-my-0">Type</RadzenText>
+                            <RadzenText TextStyle="TextStyle.Body1" Style="color:White"><b>@(anime.Media_type)</b></RadzenText>
+                            <RadzenText TextStyle="TextStyle.Overline" Style="color:White" class="rz-display-flex rz-mt-4 rz-mb-0">Year</RadzenText>
+                            <RadzenText TextStyle="TextStyle.Body1" Style="color:White"><b>@(anime.Year)</b></RadzenText>
+                        </RadzenStack>
+                    </RadzenStack>
+                    <hr style="border: none; background-color: rgba(0,0,0,.2); height: 1px; margin: 1rem 0;" />
+                    <RadzenRow>
+                        <RadzenColumn Size="8" Class="rz-text-truncate">
+                            <b>Episodes: @(anime.Episodes)</b>
+
+                        </RadzenColumn>
+                    </RadzenRow>
+                </RadzenCard>
+            </Template>
+        </RadzenDataList>
+    }
+    else
+    {
+        NavigateToIndex();
+    }
+}
+
+@code {
+    bool loaded = false;
+    bool found = true;
+    [Parameter]
+    public int genreid { get; set; }
+    string? genrename;
+    List<LiGenreAnimeDTO>? animes = new List<LiGenreAnimeDTO>();
+    IEnumerable<LiGenreAnimeDTO> animes_per_page = new List<LiGenreAnimeDTO>();
+    string pagingSummaryFormat;
+    int pageSize = 9;
+    int count;
+    int last_skip = 0;
+    IEnumerable<string> filter_bys = new List<string>() {"Alphabetical ENG", "Alphabetical Descending ENG",  "Alphabetical JP", "Alphabetical Descending JP",
+    "Year", "Year Descending",
+    "Score", "Score Descending", "Popularity", "Popularity Descending", "Type", "Type Descending" };
+
+    protected override async Task OnInitializedAsync()
+    {
+        base.OnInitialized();
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            loaded = true;
+
+            var response = await httpClient.GetAsync($"https://localhost:7130/api/AnimeService/GetAnimesForListGenreAnimes/{genreid}");
+
+            if (response.IsSuccessStatusCode)
+            {
+                var content = await response.Content.ReadAsStringAsync();
+                var result = JsonConvert.DeserializeAnonymousType(content, new
+                {
+                    Animes = new List<LiGenreAnimeDTO>(),
+                    GenreName = string.Empty
+                });
+
+                animes = result.Animes;
+                genrename = result.GenreName;
+
+                pagingSummaryFormat = $"Displaying page {{0}} of {{1}} (total {{2}} records of {genrename} animes)";
+
+                if (animes[0].Mal_id != -1)
+                {
+                    found = true;
+                    animes = animes.OrderBy(anime => anime.Score == 0.0)
+                       .ThenByDescending(anime => anime.Score).ToList();
+                    count = animes.Count;
+                    animes_per_page = animes.Take(pageSize);
+                }
+                else
+                {
+                    found = false;
+                }
+
+                StateHasChanged();
+            }
+            else
+            {
+                return;
+            }
+        }
+    }
+
+    void PageChanged(PagerEventArgs args)
+    {
+        animes_per_page = animes.Skip(args.Skip).Take(args.Top);
+        last_skip = args.Skip;
+    }
+    
+    private void OnAnimesChanged(List<LiGenreAnimeDTO> updatedAnimes)
+    {
+        animes = updatedAnimes;
+        animes_per_page = animes.Skip(last_skip).Take(pageSize);
+        StateHasChanged();
+    }
+
+
+    protected async void NavigateTo(int mal_id)
+    {
+
+        navManager.NavigateTo($"/anime/{mal_id}");
+    }
+
+     protected void NavigateToIndex()
+    {
+        navManager.NavigateTo("./");
+    }
+}

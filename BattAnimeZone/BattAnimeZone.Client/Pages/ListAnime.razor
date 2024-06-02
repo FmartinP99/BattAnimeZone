@@ -1,0 +1,297 @@
+@using BattAnimeZone.Shared.Models.Genre
+@using BattAnimeZone.Shared.Models.Anime
+@using BattAnimeZone.Shared.Models.AnimeDTOs
+@using BattAnimeZone.Client.Components
+@inject NavigationManager navManager
+@inject HttpClient httpClient
+@rendermode InteractiveWebAssembly
+<link rel="stylesheet" href="/ListAnime.css" />
+@page "/animelist"
+
+<SearchBar></SearchBar>
+
+@if(!loaded){
+    <LoadingComponent></LoadingComponent>
+}
+else{
+    <RadzenStack class="rz-p-0 rz-p-md-12">
+
+        <RadzenCard Style="background:transparent;">
+            <RadzenPickList @bind-Source="@SourceGenres" @bind-Target="@TargetGenres" Style="height:300px; width:100%; background:transparent;" Orientation="@orientation"
+                            TextProperty="@nameof(AnimeGenre.Name)" AllowFiltering="@allowFilter" Multiple="@multiple" ShowHeader="@showHeader"
+                            ButtonGap="@gap" ButtonJustifyContent="@justifyContent" ButtonStyle="@style" ButtonSize="@size" ButtonShade="@shade" ButtonVariant="@variant">
+                <SourceHeader>
+                    Genres:
+                </SourceHeader>
+                <TargetHeader>
+                    Selected Genres:
+                </TargetHeader>
+                <Template>
+                    @context.Name
+                </Template>
+            </RadzenPickList>
+        </RadzenCard>
+
+  
+            <RadzenColumn class="rz-text-align-end">
+            <RadzenLabel Component="DropDownMultipleChips" Style="margin-right: 8px; vertical-align: middle;" />
+            <RadzenDropDown class="rzdropdown" @bind-Value=@selected_medias Data=@media_types Name="DropDownMultipleChips"
+                            Multiple=true AllowClear=true Placeholder="Select Media Types (OR search)" Chips=true Style="width: 100%; max-width: 400px;" />
+            </RadzenColumn>
+
+        <RadzenButton Click="Search" Style="background-image: linear-gradient(to right, #5832dd,#5025ce,#5832dd,#5025ce,#5832dd); margin-top:30px;">FILTER ANIMES</RadzenButton>
+    </RadzenStack>
+
+    @if (searching)
+    {
+        <LoadingComponent></LoadingComponent>
+    }else{
+        @if (searched_animes.Count > 0)
+        {
+            <RadzenColumn class="rz-text-align-end">
+            <OrderComponent T="LiAnimeDTO" animes="searched_animes" AnimesChanged="OnAnimesChanged"></OrderComponent>
+            </RadzenColumn>
+
+        <RadzenPager @ref=pager Style="overflow-x: clip; max-width: 75vw;" PagingSummaryFormat="@pagingSummaryFormat" ShowPagingSummary="true" HorizontalAlign="HorizontalAlign.Left" PageNumbersCount=@pagenumcount PageSize=@pageSize Count="count" PageChanged="@PageChanged" />
+
+
+            @foreach (LiAnimeDTO anime in animes_per_page)
+            {
+                <RadzenRow @onclick=@(() => NavigateTo(anime.Mal_id)) Style="height:100px; margin-bottom: 30px;">
+                    <RadzenColumn Style="max-width:100px; ">
+                        <RadzenImage Style="max-width:100px; max-height:100px;" Path="@anime.Image_large_webp_url"></RadzenImage>
+                    </RadzenColumn>
+                    <RadzenColumn Style="max-width:200px;">
+                        English Name: <br> @anime.Title_english
+                    </RadzenColumn>
+                    <RadzenColumn Style="max-width:200px;">
+                        Japanese name: <br> @anime.Title_japanese
+                    </RadzenColumn>
+                    <RadzenColumn Style="max-width:100px;">
+                        Type: <br> @anime.Media_type
+                    </RadzenColumn>
+                    <RadzenColumn Style="max-width:100px;">
+                        Episodes: <br> @anime.Episodes
+                    </RadzenColumn>
+                    <RadzenColumn Style="max-width:100px;">
+                        Score: <br> @anime.Score
+                    </RadzenColumn>
+                    <RadzenColumn Style="max-width:100px;">
+                        Popularity: <br> @anime.Popularity
+                    </RadzenColumn>
+                    <RadzenColumn Style="max-width:100px;">
+                        Year: <br> @anime.Year
+                    </RadzenColumn>
+                    <RadzenColumn Style="max-width:100px;">
+                        Status: <br> @anime.Status
+                    </RadzenColumn>
+                </RadzenRow>
+            }
+
+        <RadzenPager @ref=pager2 Style="overflow-x: clip; max-width: 75vw;" PagingSummaryFormat="@pagingSummaryFormat" ShowPagingSummary="true" HorizontalAlign="HorizontalAlign.Left" PageNumbersCount=@pagenumcount PageSize=@pageSize Count="count" PageChanged="@PageChanged" />
+        }
+    }
+}
+
+
+@code {
+    bool loaded = false;
+    bool searching = false;
+
+    Dictionary<int, int> animeCountPerGenre = new Dictionary<int, int>();
+
+    JustifyContent justifyContent = JustifyContent.Center;
+    Variant variant = Variant.Outlined;
+    ButtonStyle style = ButtonStyle.Secondary;
+    Shade shade = Shade.Default;
+    ButtonSize size = ButtonSize.Medium;
+    Orientation orientation = Orientation.Horizontal;
+
+    string gap = "12px";
+    bool allowFilter = true;
+    bool multiple = true;
+    bool showHeader = true;
+
+    IEnumerable<AnimeGenre> _sourceGenres = new List<AnimeGenre>();
+    IEnumerable<AnimeGenre> SourceGenres
+    {
+        get
+        {
+            return _sourceGenres;
+        }
+        set
+        {
+            if (value != null)
+            {
+                _sourceGenres = value;
+            }
+            else
+            {
+                _sourceGenres = new List<AnimeGenre>();
+            }
+        }
+    }
+
+    IEnumerable<AnimeGenre> _targetGenres = new List<AnimeGenre>();
+    IEnumerable<AnimeGenre> TargetGenres
+    {
+        get
+        {
+            return _targetGenres;
+        }
+        set
+        {
+            if (value != null)
+            {
+                _targetGenres = value;
+            }
+            else
+            {
+                _targetGenres = new List<AnimeGenre>();
+            }
+        }
+    }
+
+
+
+
+    Dictionary<int, HashSet<int>>? animesPerGenreIDs;
+    List<LiAnimeDTO> searched_animes = new List<LiAnimeDTO>();
+
+    Dictionary<string, HashSet<int>>? animesPerMediaTypeIDs;
+    List<string>? media_types;
+    List<string> selected_medias = new List<string>();
+
+
+    IEnumerable<LiAnimeDTO> animes_per_page = new List<LiAnimeDTO>();
+    string pagingSummaryFormat = "Displaying page {0} of {1} (total {2} records)";
+    int pageSize = 10;
+    int count;
+    int pageNumber;
+    int pagenumcount = 15;
+    int last_skip = 0;
+
+    RadzenPager pager;
+    RadzenPager pager2;
+
+    protected override async Task OnInitializedAsync()
+    {
+
+
+        await base.OnInitializedAsync();
+
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            loaded = true;
+
+            media_types = await httpClient.GetFromJsonAsync<List<string>>("https://localhost:7130/api/AnimeService/GetMediaTypes");
+            Dictionary<int, AnimeGenre>? ang = await httpClient.GetFromJsonAsync<Dictionary<int, AnimeGenre>>("https://localhost:7130/api/AnimeService/GetGenres");
+            SourceGenres = ang.Values.ToList();
+            animesPerGenreIDs = await httpClient.GetFromJsonAsync<Dictionary<int, HashSet<int>>>("https://localhost:7130/api/AnimeService/GetAnimesPerGenreIds");
+
+            animeCountPerGenre = animesPerGenreIDs.ToDictionary(
+                kvp => kvp.Key,
+                kvp => kvp.Value.Count
+            );
+
+            SourceGenres = SourceGenres
+                .OrderByDescending(genre => animeCountPerGenre.ContainsKey(genre.Mal_id) ? animeCountPerGenre[genre.Mal_id] : 0)
+                .Where(genre => animeCountPerGenre.ContainsKey(genre.Mal_id) && animeCountPerGenre[genre.Mal_id] != 0)
+                .ToList();
+
+            animesPerMediaTypeIDs = await httpClient.GetFromJsonAsync<Dictionary<string, HashSet<int>>>("https://localhost:7130/api/AnimeService/GetAnimesPerMediaTypeIds");
+
+            StateHasChanged();
+        }
+    }
+
+
+    protected async Task<HashSet<int>> SearchByGenres()
+    {
+        HashSet<int> found_animes = new HashSet<int>();
+        List<AnimeGenre> targetList = TargetGenres.ToList();
+        int first_index = targetList[0].Mal_id;
+        found_animes = new HashSet<int>(animesPerGenreIDs[first_index]);
+        for(int i=1; i<targetList.Count; i++)
+        {
+            HashSet<int> curr_animes = animesPerGenreIDs[targetList[i].Mal_id];
+            found_animes.IntersectWith(curr_animes);
+        }
+
+        return found_animes;
+
+    }
+
+    protected async Task<HashSet<int>> SearchByMediaTypes()
+    {
+        HashSet<int> commonElements = new HashSet<int>(animesPerMediaTypeIDs[selected_medias[0]]);
+        if (selected_medias.Count > 1)
+        {
+            foreach (string key in selected_medias.Skip(1))
+            {
+                commonElements.UnionWith(animesPerMediaTypeIDs[key]);
+            }
+        }
+        return commonElements;
+    }
+
+
+    protected async Task Search()
+    {
+        searching = true;
+        HashSet<int> found_animes = new HashSet<int>();
+
+        List<HashSet<int>> found_anime_ids = new List<HashSet<int>>();
+        if (!(TargetGenres == null || !TargetGenres.Any()))
+            found_anime_ids.Add(await SearchByGenres());
+        if (selected_medias != null && selected_medias.Count > 0)
+            found_anime_ids.Add(await SearchByMediaTypes());
+
+        if (found_anime_ids.Count > 0)
+        {
+            found_animes = found_anime_ids[0];
+            foreach (HashSet<int> faids in found_anime_ids.Skip(1))
+            {
+                found_animes.IntersectWith(faids);
+            }
+        }
+
+        var response = await httpClient.PostAsJsonAsync<HashSet<int>>("https://localhost:7130/api/AnimeService/GetAnimesForListAnime", found_animes);
+
+        Console.WriteLine(response);
+        Console.WriteLine(response);
+        searched_animes = await response.Content.ReadFromJsonAsync<List<LiAnimeDTO>>();
+
+        searched_animes = searched_animes.OrderByDescending(anim => anim.Score).ToList();
+        animes_per_page = searched_animes.Take(pageSize);
+        count = searched_animes.Count;
+
+        searching = false;
+    }
+
+
+    void PageChanged(PagerEventArgs args)
+    {
+        animes_per_page = searched_animes.Skip(args.Skip).Take(args.Top);
+        last_skip = args.Skip;
+        pager.GoToPage(args.PageIndex);
+        pager2.GoToPage(args.PageIndex);
+    }
+
+    private void OnAnimesChanged(List<LiAnimeDTO> updatedAnimes)
+    {
+        searched_animes = updatedAnimes;
+        animes_per_page = searched_animes.Skip(last_skip).Take(pageSize);
+        StateHasChanged(); 
+    }
+
+    protected async void NavigateTo(int mal_id)
+    {
+        navManager.NavigateTo($"/anime/{mal_id}");
+    }
+
+}

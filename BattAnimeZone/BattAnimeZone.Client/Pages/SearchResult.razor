@@ -1,0 +1,105 @@
+@inject NavigationManager navManager
+@using BattAnimeZone.Shared.Models.AnimeDTOs
+@using BattAnimeZone.Client.Components
+@inject HttpClient httpClient
+@rendermode InteractiveWebAssembly
+@page "/search/"
+@page "/search/{name}"
+<link rel="stylesheet" href="/SearchResult.css" />
+
+
+
+<SearchBar></SearchBar>
+
+@if (!loaded)
+{
+    <LoadingComponent></LoadingComponent>
+}
+else{
+    @if (this.similar_animes != null){
+    <div class="display-div">
+            @foreach (AnimeSearchResultDTO similar_anime in this.similar_animes)
+    {
+    
+                <RadzenRow @onclick=@(() => NavigateTo(similar_anime.Mal_id)) Style="height:100px; margin-bottom: 30px;">
+                    <RadzenColumn Style="max-width:100px; display:inline-block;">
+                        <RadzenImage Style="max-width:100px; max-height:100px;" Path="@similar_anime.Image_large_webp_url"></RadzenImage>
+            </RadzenColumn>
+            <RadzenColumn Style="max-width:200px; display:inline-block;">
+                English Name: <br> @similar_anime.Title_english
+            </RadzenColumn>
+                    <RadzenColumn Style="max-width:200px; display:inline-block;">
+                        Japanese name: <br> @similar_anime.Title_japanese
+            </RadzenColumn>
+                    <RadzenColumn Style="max-width:100px; display:inline-block;">
+                        Type: <br> @similar_anime.Media_type
+            </RadzenColumn>
+                    <RadzenColumn Style="max-width:100px; display:inline-block;">
+                Episodes: <br> @similar_anime.Episodes
+            </RadzenColumn>
+                    <RadzenColumn Style="max-width:100px; display:inline-block;">
+                Score: <br> @similar_anime.Score
+            </RadzenColumn>
+                    <RadzenColumn Style="max-width:100px; display:inline-block;">
+                Year: <br> @similar_anime.Year
+            </RadzenColumn>
+                    <RadzenColumn Style="max-width:100px; display:inline-block;">
+                        Status: <br> @similar_anime.Status
+            </RadzenColumn>
+            </RadzenRow>
+
+
+        }
+       </div>
+    }
+    else if (this.similar_animes == null || this.name == "" || this.name == null)
+    {
+        <h1 style="margin-top:50px">You did not search for anything!</h1>
+    }
+}
+
+
+
+@code {
+    bool loaded = false;
+    [Parameter]
+    public string name { get; set; } = "";
+    List<AnimeSearchResultDTO>? similar_animes;
+    int similar_anime_number = 20;
+
+    protected override async Task OnInitializedAsync()
+    {
+       
+        base.OnInitialized();
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            loaded = true;
+            await GetSimilarAnimes();
+            StateHasChanged();
+        }
+    }
+
+    protected async Task GetSimilarAnimes()
+    {
+        if (this.name == "" || this.name == null) return;
+        this.similar_animes = await httpClient.GetFromJsonAsync<List<AnimeSearchResultDTO>>($"https://localhost:7130/api/AnimeService/GetSimilarAnimesForSearchResult?similar_number={this.similar_anime_number}&searched_term={this.name}");
+        this.similar_animes = this.similar_animes.OrderByDescending(anime => anime.Score).ToList();
+    }
+
+
+    protected async void NavigateTo(int mal_id)
+    {
+
+        navManager.NavigateTo($"/anime/{mal_id}");
+    }
+
+    protected void NavigateToIndex()
+    {
+        navManager.NavigateTo("./");
+    }
+
+}

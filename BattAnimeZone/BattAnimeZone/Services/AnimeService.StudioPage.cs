@@ -44,7 +44,5 @@ namespace BattAnimeZone.Services
             return animeMapper.Map<List<AnimeStudioPageDTO>>(animelist);
         }
 
-
-
     }
 }

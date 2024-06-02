@@ -1,0 +1,162 @@
+﻿@inject NavigationManager navManager
+@using BattAnimeZone.Client.Components
+@using BattAnimeZone.Shared.Models.AnimeDTOs
+@using BattAnimeZone.Shared.Models.Anime
+@inject HttpClient httpClient
+@rendermode InteractiveWebAssembly
+@page "/anime/{mal_id:int}/relations"
+<link rel="stylesheet" href="/AnimePageRelations.css" />
+
+@if (currentAnime != null && currentAnime.Mal_id == -1) NavigateToIndex();
+
+<SearchBar></SearchBar>
+
+<RadzenPager Style="overflow-x: clip; max-width: 25vw; ;" PagingSummaryFormat="@pagingSummaryFormat" ShowPagingSummary="true" HorizontalAlign="HorizontalAlign.Left" PageNumbersCount=5 PageSize=@pageSize Count="count" PageChanged="@PageChanged" />
+
+@if (!loaded)
+{
+    <LoadingComponent></LoadingComponent>
+}else{
+    @if (relational_animes != null && relational_animes.Count > 0)
+    {
+        <RadzenDataList WrapItems="true" AllowPaging="false" Data="@relational_animes_per_page" TItem="AnimeRelationDTO">
+            <Template Context="anime">
+                <RadzenCard class="lga-card" @onclick="@(() => NavigateTo(anime.Mal_id))">
+                    <RadzenStack Style="height:70%" Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center">
+                        <RadzenImage Path="@anime.Image_large_webp_url" Style="width: 100px; height: 100px; border-radius: 15%" AlternateText="no image" />
+                        <RadzenStack Gap="0">
+                            <RadzenText TextStyle="TextStyle.Overline" Style="color:White" class=" rz-display-flex rz-mt-2 rz-my-0">English Name</RadzenText>
+                            <RadzenText TextStyle="TextStyle.Body1" Style="color:White"><b>@(anime.Title_english)</b></RadzenText>
+                            <RadzenText TextStyle="TextStyle.Overline" Style="color:White" class="rz-display-flex rz-mt-4 rz-mb-0">Japanese Name</RadzenText>
+                            <RadzenText TextStyle="TextStyle.Body1" Style="color:White"><b>@(anime.Title_japanese)</b></RadzenText>
+                        </RadzenStack>
+                        <RadzenStack Gap="0">
+                            <RadzenText TextStyle="TextStyle.Overline" Style="color:White" class=" rz-display-flex rz-mt-2 rz-my-0">Score</RadzenText>
+                            <RadzenText TextStyle="TextStyle.Body1" Style="color:White"><b>@(anime.Score)</b></RadzenText>
+                            <RadzenText TextStyle="TextStyle.Overline" Style="color:White" class="rz-display-flex rz-mt-4 rz-mb-0">Popularity</RadzenText>
+                            <RadzenText TextStyle="TextStyle.Body1" Style="color:White"><b>@(anime.Popularity)</b></RadzenText>
+                        </RadzenStack>
+
+                        <RadzenStack Gap="0">
+                            <RadzenText TextStyle="TextStyle.Overline" Style="color:White" class=" rz-display-flex rz-mt-2 rz-my-0">Type</RadzenText>
+                            <RadzenText TextStyle="TextStyle.Body1" Style="color:White"><b>@(anime.Media_type)</b></RadzenText>
+                            <RadzenText TextStyle="TextStyle.Overline" Style="color:White" class="rz-display-flex rz-mt-4 rz-mb-0">Year</RadzenText>
+                            <RadzenText TextStyle="TextStyle.Body1" Style="color:White"><b>@(anime.Year)</b></RadzenText>
+                        </RadzenStack>
+
+                    </RadzenStack>
+                    <hr style="border: none; background-color: rgba(255,255,255,.6); height: 1px; margin: 1rem 0;" />
+                    <RadzenRow class="bottom-row">
+                        <RadzenColumn Size="3" Class="bottom-col">
+                            <b class="bottom-p">Episodes: @(anime.Episodes)</b>
+                        </RadzenColumn>
+                        <RadzenColumn Size="7" Class="bottom-col">
+                            <b class="bottom-p">Relation Type: @(relation_types[anime.Mal_id])</b>
+                        </RadzenColumn>
+                    </RadzenRow>
+                </RadzenCard>
+            </Template>
+        </RadzenDataList>
+    }
+    else if (relational_animes != null && relational_animes.Count == 0)
+    {
+        <h1>Sorry, there are no relational animes for @currentAnime.Title_english --- @currentAnime.Title_japanese</h1>
+        <RadzenButton Click="NavigateBack">GO BACK!
+        </RadzenButton>
+    }
+    else
+    {
+        <h1>Sorry, the Anime does not exists!</h1>
+        <RadzenButton Click="NavigateBack">
+            GO BACK!
+        </RadzenButton>
+    }
+}
+
+
+
+
+
+
+@code {
+    bool loaded = false;
+    [Parameter]
+    public int mal_id { get; set; }
+    AnimeRelationsKeyDTO? currentAnime;
+    List<AnimeRelationDTO>? relational_animes;
+    IEnumerable<AnimeRelationDTO>? relational_animes_per_page;
+    string pagingSummaryFormat = "Displaying page {0} of {1} (total {2} records)";
+    int pageSize = 9;
+    int count;
+    int pageNumber;
+    Dictionary <int, string> relation_types = new Dictionary<int, string>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        base.OnInitialized();
+    }
+
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            loaded = true;
+            await getCurrentAnime();
+            if (currentAnime.Mal_id == -1) return;
+            await getRelationalAnimes(currentAnime);
+            await getRelationTypes();
+            relational_animes_per_page = relational_animes.Take(pageSize);
+            count = relational_animes.Count;
+            StateHasChanged();
+        }
+    }
+
+    protected async Task getCurrentAnime()
+    {
+        currentAnime = await httpClient.GetFromJsonAsync<AnimeRelationsKeyDTO>($"https://localhost:7130/api/AnimeService/GetAnimeRelationsKeyByID/{mal_id}");
+    }
+
+
+    protected async Task getRelationalAnimes(AnimeRelationsKeyDTO anime)
+    {
+        relational_animes = await httpClient.GetFromJsonAsync<List<AnimeRelationDTO>>($"https://localhost:7130/api/AnimeService/GetRelations/{anime.Mal_id}");
+    }
+
+    protected async Task getRelationTypes()
+    {
+        HashSet<int> rel_anim_ids = relational_animes.Select(an => an.Mal_id).ToHashSet();
+        foreach(Relations rel in currentAnime.Relations)
+        {
+            string rel_type = rel.Relation;
+            List<int> curr_rel_animeids = new List<int>();
+            foreach(Entry crid in rel.Entry){
+                if (rel_anim_ids.Contains(crid.Mal_id))
+                {
+                    rel_anim_ids.Remove(crid.Mal_id);
+                    relation_types.Add(crid.Mal_id, rel_type);
+                }
+            }
+        }
+    }
+
+    void PageChanged(PagerEventArgs args)
+    {
+        relational_animes_per_page = relational_animes.Skip(args.Skip).Take(args.Top);
+    }
+
+    protected void NavigateToIndex()
+    {
+        navManager.NavigateTo("./");
+    }
+
+    protected void NavigateTo(int r_mal_id)
+    {
+        navManager.NavigateTo($"/anime/{r_mal_id}", forceLoad: true);
+    }
+
+    protected void NavigateBack()
+    {
+        navManager.NavigateTo($"/anime/{mal_id}", forceLoad: true);
+    }
+}

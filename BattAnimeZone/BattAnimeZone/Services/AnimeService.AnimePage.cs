@@ -7,8 +7,8 @@ namespace BattAnimeZone.Services
     {
         public async Task<AnimePageDTO> GetAnimePageDTOByID(int mal_id)
         {
-            Anime return_anime;
-            if (this.animes.TryGetValue(mal_id, out return_anime)) return animeMapper.Map<AnimePageDTO>(return_anime); ;
+            Anime? return_anime;
+            if (this.animes.TryGetValue(mal_id, out return_anime)) return animeMapper.Map<AnimePageDTO>(return_anime);
             return new AnimePageDTO();
         }
     }

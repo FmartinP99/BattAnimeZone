@@ -1,0 +1,93 @@
+﻿@using BattAnimeZone.Shared.Models.ProductionEntityDTOs
+@using BattAnimeZone.Client.Components
+@inject NavigationManager navManager
+@inject HttpClient httpClient
+@rendermode InteractiveWebAssembly
+<link rel="stylesheet" href="/ListStudio.css" />
+@page "/studiolist"
+
+<SearchBar></SearchBar>
+
+@if (!loaded)
+{
+    <LoadingComponent></LoadingComponent>
+}
+else{
+    <RadzenRow Style="width:100%; display:flex;">
+        <RadzenColumn Style="min-width:62%;">
+            <RadzenPager Style="overflow-x: clip; " PagingSummaryFormat="@pagingSummaryFormat" ShowPagingSummary="true" HorizontalAlign="HorizontalAlign.Left" PageNumbersCount=12 PageSize=@pageSize Count="count" PageChanged="@PageChanged" />
+        </RadzenColumn>
+    </RadzenRow>
+    <RadzenDataList WrapItems="true" AllowPaging="false" Data="@prodents_per_page" TItem="LiProductionEntityDTO">
+        <Template Context="prodent">
+            <RadzenCard class="lga-card" @onclick="@(() => NavigateTo(prodent.Mal_id))">
+                <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center">
+                    <RadzenImage Path="@prodent.Image_url" Style="width: 100px; height: 100px; border-radius: 15%" AlternateText="no image" />
+                    <RadzenStack Gap="0" Style="width:70%">
+                        <RadzenText TextStyle="TextStyle.Overline" Style="color:White" class=" rz-display-flex rz-mt-2 rz-my-0">English Name</RadzenText>
+                        <RadzenText TextStyle="TextStyle.Body1" Style="color:White"><b>@GetTitle(prodent, "English")</b></RadzenText>
+                        <RadzenText TextStyle="TextStyle.Overline" Style="color:White" class="rz-display-flex rz-mt-4 rz-mb-0">Japanese Name</RadzenText>
+                        <RadzenText TextStyle="TextStyle.Body1" Style="color:White"><b>@GetTitle(prodent, "Japanese")</b></RadzenText>
+                    </RadzenStack>
+                    <RadzenStack Gap="0" Style="width:70%">
+                        <RadzenText TextStyle="TextStyle.Overline" Style="color:White" class=" rz-display-flex rz-mt-2 rz-my-0">Favorites</RadzenText>
+                        <RadzenText TextStyle="TextStyle.Body1" Style="color:White"><b>@prodent.Favorites</b></RadzenText>
+                        <RadzenText TextStyle="TextStyle.Overline" Style="color:White" class="rz-display-flex rz-mt-4 rz-mb-0">Title count</RadzenText>
+                        <RadzenText TextStyle="TextStyle.Body1" Style="color:White"><b>@prodent.Count</b></RadzenText>
+                    </RadzenStack>
+                </RadzenStack>
+                <hr style="border: none; background-color: rgba(0,0,0,.2); height: 1px; margin: 1rem 0;" />
+            </RadzenCard>
+        </Template>
+    </RadzenDataList>
+}
+
+@code {
+    bool loaded = false;
+    List<LiProductionEntityDTO> productionEntities;
+    IEnumerable<LiProductionEntityDTO> prodents_per_page;
+    string pagingSummaryFormat = "Displaying page {0} of {1} (total {2} records)";
+    int pageSize = 10;
+    int count;
+    int last_skip = 0;
+
+    protected override async Task OnInitializedAsync()
+    {
+        base.OnInitialized();
+    }
+
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            loaded = true;
+            var ProdEnts = await httpClient.GetFromJsonAsync<Dictionary<int, LiProductionEntityDTO>>($"https://localhost:7130/api/AnimeService/GetProductionEntities");
+            productionEntities = ProdEnts.Values.ToList();
+            productionEntities = productionEntities.OrderByDescending(prodent => prodent.Favorites).ToList();
+            prodents_per_page = productionEntities.Take(pageSize);
+            count = productionEntities.Count;
+            StateHasChanged();
+        }
+    }
+
+    private string GetTitle(LiProductionEntityDTO prodent, string keyword)
+    {
+        var prodtitle = prodent.Titles.FirstOrDefault(title => title.Type == keyword);
+        var defaultTitle = prodent.Titles.FirstOrDefault(title => title.Type == "Default");
+        return prodtitle?.Title ?? defaultTitle.Title ?? "--No Title Found--";
+    }
+
+    void PageChanged(PagerEventArgs args)
+    {
+        prodents_per_page = productionEntities.Skip(args.Skip).Take(args.Top);
+        last_skip = args.Skip;
+    }
+
+    protected void NavigateTo(int prodent_id)
+    {
+
+        navManager.NavigateTo($"/studio/{prodent_id}");
+    }
+
+}

@@ -1,0 +1,186 @@
+@inject NavigationManager navManager
+@using BattAnimeZone.Client.Components
+@using BattAnimeZone.Shared.Models.AnimeDTOs
+@inject HttpClient httpClient
+@rendermode InteractiveWebAssembly
+@page "/anime/{mal_id:int}"
+<link rel="stylesheet" href="/AnimePage.css" />
+
+
+@if (!loaded)
+{
+    <LoadingComponent></LoadingComponent>
+}
+else{
+    @if (currentAnime != null && currentAnime.Mal_id == -1) NavigateToIndex();
+    <PageTitle>AnimeView</PageTitle>
+    <SearchBar></SearchBar>
+
+    @if (currentAnime != null){
+    <div Style="padding-left: 20px; padding-right: 20px;">
+
+        <div class="defaultTitleDiv">@currentAnime.Title</div>
+        <hr />
+        <RadzenButton id="relation-button" Click="NavigateToRelationsPage" Text="RELATED ANIMES" Style="background-image: linear-gradient(to right, #5832dd,#5025ce,#5832dd,#5025ce,#5832dd);"></RadzenButton>
+        <RadzenButton id="relation-button" Click="NavigateToMALAnime" Text="MAL LINK" Style="background-image: linear-gradient(to right, #5832dd,#5025ce,#5832dd,#5025ce,#5832dd);"></RadzenButton>
+        <br />
+   
+        <RadzenRow Style="height:500px; flex:auto; margin-bottom:20px; justify-content: space-between;">
+       
+            <div class="imageDiv">
+                <img src="@currentAnime.Image_large_webp_url" class="img-fluid" alt="Anime image is missing!">
+            </div>
+
+                <div class="attributesDiv">
+                @if (currentAnime.Title_english.Length > 0 || currentAnime.Title_japanese.Length > 0)
+                {
+                    <div class="rowDiv">
+                        <span class="titleSpan">Alternative Name(s):</span><br />
+                        @if (currentAnime.Title_english.Length > 0)
+                        {
+                            <span class="titleLanguage">ENG: </span>
+                            @currentAnime.Title_english
+                            <br />
+                        }
+                        @if (currentAnime.Title_japanese.Length > 0)
+                        {
+                            <span class="titleLanguage">JP: </span>
+                            @currentAnime.Title_japanese
+                        }
+                    </div>
+                    }
+          
+
+                    <div class="rowDiv"><span class="titleSpan">Episodes: </span>@currentAnime.Episodes</div>
+                    <div class="rowDiv"><span class="titleSpan">Type: </span>@currentAnime.Media_type</div>
+
+                    <div class="rowDiv"><span class="titleSpan">Airing: </span>@currentAnime.Status</div>
+                    <div class="rowDiv"><span class="titleSpan">Season: </span>@currentAnime.Season</div>
+                    <div class="rowDiv"><span class="titleSpan">Aired: </span>@currentAnime.Aired_string</div>
+
+                    <div class="rowDiv"><span class="titleSpan">Rank: </span>@currentAnime.Rank</div>
+                    <div class="rowDiv"><span class="titleSpan">Score: </span>@currentAnime.Score</div>
+                    <div class="rowDiv"><span class="titleSpan">Popularity: </span>@currentAnime.Popularity</div>
+
+
+                    @if(currentAnime.Producers.Count > 0){
+                        <div class="rowDiv">
+                            <span class="titleSpan">Producers: </span>
+                         
+                                    @foreach (var prod in currentAnime.Producers)
+                                    {
+                                    <span class="prodentSpan" @onclick="(args) => NavigateToProdEnt(prod.Mal_id)">@prod.Name, </span>
+                            }
+                        </div>
+                    }
+
+                     @if(currentAnime.Licensors.Count > 0){
+                        <div  class="rowDiv">
+                            <span class="titleSpan">Licensors: </span>
+                      
+                                @foreach (var lic in currentAnime.Licensors)
+                                {
+                                <span class="prodentSpan" @onclick="(args) => NavigateToProdEnt(lic.Mal_id)">@lic.Name, </span>
+                        }</div>
+                 }
+
+                  @if(currentAnime.Studios.Count > 0){
+
+                        <div class="rowDiv">
+                                <span class="titleSpan">Studios: </span>
+                 
+                                @foreach (var studio in currentAnime.Studios)
+                                    {
+                                    <span class="prodentSpan" @onclick="(args) => NavigateToProdEnt(studio.Mal_id)">@studio.Name, </span>
+                            } </div>
+                  }
+
+                </div>
+
+
+            @if(currentAnime.Synopsis.Length > 0){
+            <div class="synopsisHeaderDiv">
+                    Synopsis:
+                    <div class="synopsisDiv">
+                        @currentAnime.Synopsis
+                    </div>
+                </div>
+            }
+
+               @if(currentAnime.Background.Length > 0){
+            <div class="synopsisHeaderDiv">
+                Background:
+                <div class="synopsisDiv">
+                    @currentAnime.Background
+                </div>
+            </div>
+               }
+
+
+        </RadzenRow>
+    </div>
+    }
+}
+@code{
+    bool loaded = false;
+    [Parameter]
+    public int mal_id { get; set; }
+    AnimePageDTO? currentAnime;
+
+    protected override async Task OnInitializedAsync()
+    {
+       
+        base.OnInitialized();
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            loaded = true;
+            await getCurrentAnime();
+            if (currentAnime.Mal_id == -1) return;
+            //make the first character of the Season  uppercase
+            if (currentAnime.Season.Length > 0)
+                currentAnime.Season = char.ToUpper(currentAnime.Season[0]) + currentAnime.Season.Substring(1);
+            StateHasChanged();
+        }
+    }
+
+    protected async Task getCurrentAnime()
+    {
+        currentAnime = await httpClient.GetFromJsonAsync<AnimePageDTO>($"https://localhost:7130/api/AnimeService/GetAnime/{mal_id}");
+    }
+
+    private string TruncateTitles(string title, int title_length)
+    {
+        if (title.Length <= title_length) return title;
+        return title.Substring(0, title_length - 3) + "...";
+    }
+
+    protected void NavigateToIndex()
+    {
+        navManager.NavigateTo("./");
+    }
+
+    protected void NavigateToProdEnt(int prodent_id)
+    {
+        navManager.NavigateTo($"./studio/{prodent_id}");
+    }
+
+    protected void NavigateToMALAnime()
+    {
+        navManager.NavigateTo($"https://myanimelist.net/anime/{mal_id}");
+    }
+
+
+    protected void NavigateToRelationsPage()
+    {
+        navManager.NavigateTo($"/anime/{mal_id}/relations", forceLoad: true);
+    }
+
+    protected void NavigateToGenre(int genre_id)
+    {
+        navManager.NavigateTo($"/genrelist/{genre_id}", forceLoad: true);
+    }
+}
