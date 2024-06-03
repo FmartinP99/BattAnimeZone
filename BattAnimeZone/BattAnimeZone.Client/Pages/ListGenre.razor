@@ -3,6 +3,7 @@
 @inject NavigationManager navManager
 <link rel="stylesheet" href="/ListGenre.css" />
 @inject HttpClient httpClient
+@inject IJSRuntime JSRuntime
 @rendermode InteractiveWebAssembly
 @page "/genrelist"
 
@@ -56,23 +57,47 @@
         {
             loaded = true;
 
-            Dictionary<int, AnimeGenre> ang = await httpClient.GetFromJsonAsync<Dictionary<int, AnimeGenre>>("https://localhost:7130/api/AnimeService/GetGenres");
-            animeGenres = ang.Values.ToList();
+            try
+            {
+                var angResponse = await httpClient.GetAsync("https://localhost:7130/api/AnimeService/GetGenres");
+                var temnpAnimesPerGenreIDsResponse = await httpClient.GetAsync("https://localhost:7130/api/AnimeService/GetAnimesPerGenreIds");
 
-            var temnpAnimesPerGenreIDs = await httpClient.GetFromJsonAsync<Dictionary<int, HashSet<int>>>("https://localhost:7130/api/AnimeService/GetAnimesPerGenreIds");
+                if (angResponse.IsSuccessStatusCode && temnpAnimesPerGenreIDsResponse.IsSuccessStatusCode)
+                {
+                    var ang = await angResponse.Content.ReadFromJsonAsync<Dictionary<int, AnimeGenre>>();
+                    var temnpAnimesPerGenreIDs = await temnpAnimesPerGenreIDsResponse.Content.ReadFromJsonAsync<Dictionary<int, HashSet<int>>>();
 
-            animeCountPerGenre = temnpAnimesPerGenreIDs.ToDictionary(
-                kvp => kvp.Key,
-                kvp => kvp.Value.Count
-            );
+                    animeGenres = ang.Values.ToList();
 
-            animeGenres = animeGenres
-                .OrderByDescending(genre => animeCountPerGenre.ContainsKey(genre.Mal_id) ? animeCountPerGenre[genre.Mal_id] : 0)
-                .Where(genre => animeCountPerGenre.ContainsKey(genre.Mal_id) && animeCountPerGenre[genre.Mal_id] != 0)
-                .ToList();
+                    animeCountPerGenre = temnpAnimesPerGenreIDs.ToDictionary(
+                        kvp => kvp.Key,
+                        kvp => kvp.Value.Count
+                    );
 
+                    animeGenres = animeGenres
+                        .OrderByDescending(genre => animeCountPerGenre.ContainsKey(genre.Mal_id) ? animeCountPerGenre[genre.Mal_id] : 0)
+                        .Where(genre => animeCountPerGenre.ContainsKey(genre.Mal_id) && animeCountPerGenre[genre.Mal_id] != 0)
+                        .ToList();
 
-            StateHasChanged();
+                    StateHasChanged();
+                }
+                else
+                {
+                    if (!angResponse.IsSuccessStatusCode)
+                    {
+                        await JSRuntime.InvokeVoidAsync("console.error", $"{angResponse.StatusCode}\n {angResponse.ReasonPhrase}");
+                        Console.WriteLine();
+                    }
+                    if (!temnpAnimesPerGenreIDsResponse.IsSuccessStatusCode)
+                    {
+                        await JSRuntime.InvokeVoidAsync("console.error", $"{temnpAnimesPerGenreIDsResponse.StatusCode}\n {temnpAnimesPerGenreIDsResponse.ReasonPhrase}");
+                    }
+
+                }
+            }catch(Exception e)
+            {
+                await JSRuntime.InvokeVoidAsync("console.error", $"{e.Message}"); ;
+            }
         }
     }
 

@@ -3,6 +3,7 @@
 @using BattAnimeZone.Client.Components
 @inject NavigationManager navManager
 @inject HttpClient httpClient
+@inject IJSRuntime JSRuntime
 @rendermode InteractiveWebAssembly
 @page "/"
 <link rel="stylesheet" href="/Home.css" />
@@ -70,13 +71,30 @@
 		if (firstRender)
 		{
 			loaded = true;
-			IEnumerable<AnimeHomePageDTO>? animes = await httpClient.GetFromJsonAsync<IEnumerable<AnimeHomePageDTO>>("https://localhost:7130/api/AnimeService/GetAnimesByYear/2024");
-			winterAnimes = animes.Where(anime => anime.Season == "winter");
-			springAnimes = animes.Where(anime => anime.Season == "spring");
-			summerAnimes = animes.Where(anime => anime.Season == "summer");
-			fallAnimes = animes.Where(anime => anime.Season == "fall");
-			currentlySelectedAnimes = winterAnimes;
-			StateHasChanged();
+			try
+			{
+				var response = await httpClient.GetAsync($"https://localhost:7130/api/AnimeService/GetAnimesByYear/2024");
+				if (response.IsSuccessStatusCode)
+				{
+					IEnumerable<AnimeHomePageDTO>? animes = await response.Content.ReadFromJsonAsync<IEnumerable<AnimeHomePageDTO>>();
+					winterAnimes = animes.Where(anime => anime.Season == "winter");
+					springAnimes = animes.Where(anime => anime.Season == "spring");
+					summerAnimes = animes.Where(anime => anime.Season == "summer");
+					fallAnimes = animes.Where(anime => anime.Season == "fall");
+					currentlySelectedAnimes = winterAnimes;
+				}
+				else
+				{
+					await JSRuntime.InvokeVoidAsync("console.error", $"{response.StatusCode}\n {response.ReasonPhrase}");
+					return;
+				}
+
+				StateHasChanged();
+			}catch (Exception e)
+			{
+				await JSRuntime.InvokeVoidAsync("console.error", $"{e.Message}");
+				return;
+			}
 		}
 	}
 

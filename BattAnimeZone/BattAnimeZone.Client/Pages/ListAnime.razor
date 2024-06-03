@@ -4,6 +4,7 @@
 @using BattAnimeZone.Client.Components
 @inject NavigationManager navManager
 @inject HttpClient httpClient
+@inject IJSRuntime JSRuntime
 @rendermode InteractiveWebAssembly
 <link rel="stylesheet" href="/ListAnime.css" />
 @page "/animelist"
@@ -154,7 +155,7 @@ else{
 
 
 
-
+    Dictionary<int, AnimeGenre>? ang;
     Dictionary<int, HashSet<int>>? animesPerGenreIDs;
     List<LiAnimeDTO> searched_animes = new List<LiAnimeDTO>();
 
@@ -188,10 +189,10 @@ else{
         {
             loaded = true;
 
-            media_types = await httpClient.GetFromJsonAsync<List<string>>("https://localhost:7130/api/AnimeService/GetMediaTypes");
-            Dictionary<int, AnimeGenre>? ang = await httpClient.GetFromJsonAsync<Dictionary<int, AnimeGenre>>("https://localhost:7130/api/AnimeService/GetGenres");
+            bool success = await LoadRequestsAsync();
+            if (!success) return;
             SourceGenres = ang.Values.ToList();
-            animesPerGenreIDs = await httpClient.GetFromJsonAsync<Dictionary<int, HashSet<int>>>("https://localhost:7130/api/AnimeService/GetAnimesPerGenreIds");
+
 
             animeCountPerGenre = animesPerGenreIDs.ToDictionary(
                 kvp => kvp.Key,
@@ -203,10 +204,100 @@ else{
                 .Where(genre => animeCountPerGenre.ContainsKey(genre.Mal_id) && animeCountPerGenre[genre.Mal_id] != 0)
                 .ToList();
 
-            animesPerMediaTypeIDs = await httpClient.GetFromJsonAsync<Dictionary<string, HashSet<int>>>("https://localhost:7130/api/AnimeService/GetAnimesPerMediaTypeIds");
-
             StateHasChanged();
         }
+    }
+
+
+    private async Task<bool> LoadRequestsAsync()
+    {
+
+        bool found_error = false;
+
+        try
+        {
+            var response = await httpClient.GetAsync("https://localhost:7130/api/AnimeService/GetMediaTypes");
+
+            if (response.IsSuccessStatusCode)
+            {
+                media_types = await response.Content.ReadFromJsonAsync<List<string>>();
+            }
+            else
+            {
+                await JSRuntime.InvokeVoidAsync("console.error", $"{response.StatusCode}\n {response.ReasonPhrase}");
+                found_error = true;
+            }
+        }
+        catch (Exception ex)
+        {
+            found_error = true;
+            await JSRuntime.InvokeVoidAsync("console.error", $"{ex.Message}"); ;
+        }
+
+
+        try
+        {
+            var response = await httpClient.GetAsync("https://localhost:7130/api/AnimeService/GetAnimesPerGenreIds");
+
+            if (response.IsSuccessStatusCode)
+            {
+                animesPerGenreIDs = await response.Content.ReadFromJsonAsync<Dictionary<int, HashSet<int>>>();
+            }
+            else
+            {
+                await JSRuntime.InvokeVoidAsync("console.error", $"{response.StatusCode}\n {response.ReasonPhrase}");
+                found_error = true;
+            }
+        }
+        catch (Exception ex)
+        {
+            found_error = true;
+            await JSRuntime.InvokeVoidAsync("console.error", $"{ex.Message}"); ;
+        }
+
+
+        try
+        {
+            var response = await httpClient.GetAsync("https://localhost:7130/api/AnimeService/GetAnimesPerMediaTypeIds");
+
+            if (response.IsSuccessStatusCode)
+            {
+                animesPerMediaTypeIDs = await response.Content.ReadFromJsonAsync<Dictionary<string, HashSet<int>>>();
+            }
+            else
+            {
+                await JSRuntime.InvokeVoidAsync("console.error", $"{response.StatusCode}\n {response.ReasonPhrase}");
+                found_error = true;
+            }
+        }
+        catch (Exception ex)
+        {
+            found_error = true;
+            await JSRuntime.InvokeVoidAsync("console.error", $"{ex.Message}"); ;
+        }
+
+
+        try
+        {
+            var response = await httpClient.GetAsync("https://localhost:7130/api/AnimeService/GetGenres");
+
+            if (response.IsSuccessStatusCode)
+            {
+                ang = await response.Content.ReadFromJsonAsync<Dictionary<int, AnimeGenre>>();
+            }
+            else
+            {
+                await JSRuntime.InvokeVoidAsync("console.error", $"{response.StatusCode}\n {response.ReasonPhrase}");
+                found_error = true;
+            }
+        }
+        catch (Exception ex)
+        {
+            found_error = true;
+            await JSRuntime.InvokeVoidAsync("console.error", $"{ex.Message}"); ;
+        }
+
+        return !found_error;
     }
 
 
@@ -260,15 +351,27 @@ else{
             }
         }
 
-        var response = await httpClient.PostAsJsonAsync<HashSet<int>>("https://localhost:7130/api/AnimeService/GetAnimesForListAnime", found_animes);
+        try
+        {
+            var response = await httpClient.PostAsJsonAsync<HashSet<int>>("https://localhost:7130/api/AnimeService/GetAnimesForListAnime", found_animes);
 
-        Console.WriteLine(response);
-        Console.WriteLine(response);
-        searched_animes = await response.Content.ReadFromJsonAsync<List<LiAnimeDTO>>();
+            if (response.IsSuccessStatusCode)
+            {
+                searched_animes = await response.Content.ReadFromJsonAsync<List<LiAnimeDTO>>();
 
-        searched_animes = searched_animes.OrderByDescending(anim => anim.Score).ToList();
-        animes_per_page = searched_animes.Take(pageSize);
-        count = searched_animes.Count;
+                searched_animes = searched_animes.OrderByDescending(anim => anim.Score).ToList();
+                animes_per_page = searched_animes.Take(pageSize);
+                count = searched_animes.Count;
+            }
+            else
+            {
+                await JSRuntime.InvokeVoidAsync("console.error", $"{response.StatusCode}\n {response.ReasonPhrase}");
+            }
+        }
+        catch(Exception e)
+        {
+            await JSRuntime.InvokeVoidAsync("console.error", $"{e.Message}");
+        }
 
         searching = false;
     }

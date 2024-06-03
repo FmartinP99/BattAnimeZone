@@ -3,9 +3,11 @@
 @using BattAnimeZone.Shared.Models.AnimeDTOs
 @using BattAnimeZone.Shared.Models.Anime
 @inject HttpClient httpClient
+@inject IJSRuntime JSRuntime
 @rendermode InteractiveWebAssembly
 @page "/anime/{mal_id:int}/relations"
 <link rel="stylesheet" href="/AnimePageRelations.css" />
+
 
 @if (currentAnime != null && currentAnime.Mal_id == -1) NavigateToIndex();
 
@@ -102,25 +104,46 @@
         if (firstRender)
         {
             loaded = true;
-            await getCurrentAnime();
-            if (currentAnime.Mal_id == -1) return;
-            await getRelationalAnimes(currentAnime);
-            await getRelationTypes();
-            relational_animes_per_page = relational_animes.Take(pageSize);
-            count = relational_animes.Count;
-            StateHasChanged();
+
+            try
+            {
+                var response = await httpClient.GetAsync($"https://localhost:7130/api/AnimeService/GetAnimeRelationsKeyByID/{mal_id}");
+                if (response.IsSuccessStatusCode)
+                {
+                    try
+                    {
+                        currentAnime = await response.Content.ReadFromJsonAsync<AnimeRelationsKeyDTO>();
+                        var response2 = await httpClient.GetAsync($"https://localhost:7130/api/AnimeService/GetRelations/{mal_id}");
+                        if (response2.IsSuccessStatusCode)
+                        {
+                            relational_animes = await response2.Content.ReadFromJsonAsync<List<AnimeRelationDTO>>();
+                            await getRelationTypes();
+                            relational_animes_per_page = relational_animes.Take(pageSize);
+                            count = relational_animes.Count;
+                        }
+                        else
+                        {
+                            await JSRuntime.InvokeVoidAsync("console.error", $"{response.StatusCode}\n {response.ReasonPhrase}");
+                            return;
+                        }
+                    }catch(Exception e)
+                    {
+                        Console.WriteLine(e.Message);
+                        return;
+                    }
+                }
+                else
+                {
+                    await JSRuntime.InvokeVoidAsync("console.error", $"{response.StatusCode}\n {response.ReasonPhrase}");
+                    return;
+                }
+                StateHasChanged();
+            }catch (Exception e)
+            {
+                await JSRuntime.InvokeVoidAsync("console.error", $"{e.Message}");
+                return;
+            }
         }
-    }
-
-    protected async Task getCurrentAnime()
-    {
-        currentAnime = await httpClient.GetFromJsonAsync<AnimeRelationsKeyDTO>($"https://localhost:7130/api/AnimeService/GetAnimeRelationsKeyByID/{mal_id}");
-    }
-
-
-    protected async Task getRelationalAnimes(AnimeRelationsKeyDTO anime)
-    {
-        relational_animes = await httpClient.GetFromJsonAsync<List<AnimeRelationDTO>>($"https://localhost:7130/api/AnimeService/GetRelations/{anime.Mal_id}");
     }
 
     protected async Task getRelationTypes()

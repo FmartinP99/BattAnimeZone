@@ -2,6 +2,7 @@
 @using BattAnimeZone.Client.Components
 @inject NavigationManager navManager
 @inject HttpClient httpClient
+@inject IJSRuntime JSRuntime
 @rendermode InteractiveWebAssembly
 <link rel="stylesheet" href="/ListStudio.css" />
 @page "/studiolist"
@@ -62,12 +63,26 @@ else{
         if (firstRender)
         {
             loaded = true;
-            var ProdEnts = await httpClient.GetFromJsonAsync<Dictionary<int, LiProductionEntityDTO>>($"https://localhost:7130/api/AnimeService/GetProductionEntities");
-            productionEntities = ProdEnts.Values.ToList();
-            productionEntities = productionEntities.OrderByDescending(prodent => prodent.Favorites).ToList();
-            prodents_per_page = productionEntities.Take(pageSize);
-            count = productionEntities.Count;
-            StateHasChanged();
+            try
+            {
+                var response = await httpClient.GetAsync($"https://localhost:7130/api/AnimeService/GetProductionEntities");
+                if (response.IsSuccessStatusCode)
+                {
+                    var ProdEnts = await response.Content.ReadFromJsonAsync<Dictionary<int, LiProductionEntityDTO>>();
+                    productionEntities = ProdEnts.Values.ToList();
+                    productionEntities = productionEntities.OrderByDescending(prodent => prodent.Favorites).ToList();
+                    prodents_per_page = productionEntities.Take(pageSize);
+                    count = productionEntities.Count;
+                    StateHasChanged();
+                }
+                else
+                {
+                    await JSRuntime.InvokeVoidAsync("console.error", $"{response.StatusCode}\n {response.ReasonPhrase}");
+                }
+            }catch(Exception e)
+            {
+                await JSRuntime.InvokeVoidAsync("console.error", $"{e.Message}"); ;
+            }
         }
     }
 

@@ -5,7 +5,7 @@ namespace BattAnimeZone.Services
 {
     public partial class AnimeService
     {
-        public async Task<List<LiGenreAnimeDTO>> GetAnimesForListGenreAnimes(int genre_id)
+        public async Task<List<LiGenreAnimeDTO>>? GetAnimesForListGenreAnimes(int genre_id)
         {
             List<Anime> apgs;
             if (this.animesPerGenre.TryGetValue(genre_id, out apgs)) return animeMapper.Map<List<LiGenreAnimeDTO>>(apgs);

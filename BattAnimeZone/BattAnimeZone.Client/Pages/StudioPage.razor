@@ -4,10 +4,12 @@
 @using BattAnimeZone.Client.Components
 @using Newtonsoft.Json
 @inject HttpClient httpClient
+@inject IJSRuntime JSRuntime
 @rendermode InteractiveWebAssembly
 @using System.Globalization
 @page "/studio/{prodent_id:int}"
 <link rel="stylesheet" href="/StudioPage.css" />
+
 
 <PageTitle>StudioPage</PageTitle>
 
@@ -131,31 +133,40 @@ else{
         if (firstRender)
         {
             loaded = true;
-
-            var response = await httpClient.GetAsync($"https://localhost:7130/api/AnimeService/GetAnimesForProdEnt/{prodent_id}");
-            if (response.IsSuccessStatusCode)
+            try
             {
-                var content = await response.Content.ReadAsStringAsync();
-
-                var result = JsonConvert.DeserializeAnonymousType(content, new
+                var response = await httpClient.GetAsync($"https://localhost:7130/api/AnimeService/GetAnimesForProdEnt/{prodent_id}");
+                if (response.IsSuccessStatusCode)
                 {
-                    ProdEnt = new ProductionEntity(),
-                    ProducedAnimes = new List<AnimeStudioPageDTO>(),
-                    LicensedAnimes = new List<AnimeStudioPageDTO>(),
-                    StudioAnimes = new List<AnimeStudioPageDTO>()
-                });
+                    var content = await response.Content.ReadAsStringAsync();
 
-                currentProductionEntity = result.ProdEnt;
-                producerAnimes = result.ProducedAnimes;
-                licensorAnimes = result.LicensedAnimes;
-                studioAnimes = result.StudioAnimes;
+                    var result = JsonConvert.DeserializeAnonymousType(content, new
+                    {
+                        ProdEnt = new ProductionEntity(),
+                        ProducedAnimes = new List<AnimeStudioPageDTO>(),
+                        LicensedAnimes = new List<AnimeStudioPageDTO>(),
+                        StudioAnimes = new List<AnimeStudioPageDTO>()
+                    });
+
+                    currentProductionEntity = result.ProdEnt;
+                    producerAnimes = result.ProducedAnimes;
+                    licensorAnimes = result.LicensedAnimes;
+                    studioAnimes = result.StudioAnimes;
 
 
-                if (currentProductionEntity.Mal_id == -1) return;
-            }
-            else
+                    if (currentProductionEntity.Mal_id == -1){
+                        await JSRuntime.InvokeVoidAsync("console.error", "Could not find any data!"); ;
+                        return;
+                    }
+                }
+                else
+                {
+                    await JSRuntime.InvokeVoidAsync("console.error", $"{response.StatusCode}\n {response.ReasonPhrase}");
+                    return;
+                }
+            }catch (Exception e)
             {
-                return;
+                await JSRuntime.InvokeVoidAsync("console.error", $"{e.Message}"); ;
             }
 
             if (studioAnimes.Count > 0) currentlySelectedAnimes = studioAnimes;

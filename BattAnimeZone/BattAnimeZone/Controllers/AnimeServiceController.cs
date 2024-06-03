@@ -20,11 +20,11 @@ namespace BattAnimeZone.Controllers
 		public async Task<IActionResult> GetAnimesByYear(int year)
 		{
 			var result  =  await _animeService.GetAnimesForHomePageByYear(year);
-			if (result == null)
-			{
-				return NotFound();
-			}
-			return Ok(result);
+            if (result == null)  
+            {
+                return NotFound();
+            }
+            return Ok(result);
 		}
 
 
@@ -33,7 +33,7 @@ namespace BattAnimeZone.Controllers
 		public async Task<IActionResult> GetAnimePageDTOByID(int mal_id)
 		{
 			var result = await _animeService.GetAnimePageDTOByID(mal_id);
-			if (result == null)
+			if (result.Mal_id == -1)
 			{
 				return NotFound();
 			}
@@ -45,7 +45,7 @@ namespace BattAnimeZone.Controllers
         public async Task<IActionResult> GetAnimeRelationsKeyByID(int mal_id)
         {
             var result = await _animeService.GetAnimeRelationsKeyByID(mal_id);
-            if (result == null)
+            if (result.Mal_id == -1)
             {
                 return NotFound();
             }
@@ -114,7 +114,7 @@ namespace BattAnimeZone.Controllers
         public async Task<IActionResult> GetAnimesPerMediaTypeIds([FromBody] HashSet<int> animeids)
         {
             var result = await _animeService.GetAnimesForListAnime(animeids);
-            if (result == null)
+            if (!result.Any())
             {
                 return NotFound();
             }

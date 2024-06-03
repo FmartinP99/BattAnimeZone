@@ -2,10 +2,10 @@
 @using BattAnimeZone.Client.Components
 @using BattAnimeZone.Shared.Models.AnimeDTOs
 @inject HttpClient httpClient
+@inject IJSRuntime JSRuntime
 @rendermode InteractiveWebAssembly
 @page "/anime/{mal_id:int}"
 <link rel="stylesheet" href="/AnimePage.css" />
-
 
 @if (!loaded)
 {
@@ -23,6 +23,7 @@ else{
         <hr />
         <RadzenButton id="relation-button" Click="NavigateToRelationsPage" Text="RELATED ANIMES" Style="background-image: linear-gradient(to right, #5832dd,#5025ce,#5832dd,#5025ce,#5832dd);"></RadzenButton>
         <RadzenButton id="relation-button" Click="NavigateToMALAnime" Text="MAL LINK" Style="background-image: linear-gradient(to right, #5832dd,#5025ce,#5832dd,#5025ce,#5832dd);"></RadzenButton>
+ 
         <br />
    
         <RadzenRow Style="height:500px; flex:auto; margin-bottom:20px; justify-content: space-between;">
@@ -129,7 +130,7 @@ else{
 
     protected override async Task OnInitializedAsync()
     {
-       
+
         base.OnInitialized();
     }
 
@@ -138,18 +139,34 @@ else{
         if (firstRender)
         {
             loaded = true;
-            await getCurrentAnime();
-            if (currentAnime.Mal_id == -1) return;
-            //make the first character of the Season  uppercase
-            if (currentAnime.Season.Length > 0)
-                currentAnime.Season = char.ToUpper(currentAnime.Season[0]) + currentAnime.Season.Substring(1);
-            StateHasChanged();
-        }
-    }
 
-    protected async Task getCurrentAnime()
-    {
-        currentAnime = await httpClient.GetFromJsonAsync<AnimePageDTO>($"https://localhost:7130/api/AnimeService/GetAnime/{mal_id}");
+            try
+            {
+                var response = await httpClient.GetAsync($"https://localhost:7130/api/AnimeService/GetAnime/{mal_id}");
+
+                if (response.IsSuccessStatusCode)
+                {
+                    currentAnime = await response.Content.ReadFromJsonAsync<AnimePageDTO>();
+                    //make the first character of the Season  uppercase
+                    if (currentAnime.Season.Length > 0)
+                        currentAnime.Season = char.ToUpper(currentAnime.Season[0]) + currentAnime.Season.Substring(1);
+                }
+                else if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
+                {
+                    return;
+                }
+                else
+                {
+                    await JSRuntime.InvokeVoidAsync("console.error", $"{response.StatusCode}\n {response.ReasonPhrase}");
+                    return;
+                }
+                StateHasChanged();
+            }catch(Exception e)
+            {
+                await JSRuntime.InvokeVoidAsync("console.error", $"{e.Message}");
+                return;
+            }
+        }
     }
 
     private string TruncateTitles(string title, int title_length)
@@ -168,9 +185,12 @@ else{
         navManager.NavigateTo($"./studio/{prodent_id}");
     }
 
-    protected void NavigateToMALAnime()
+    protected void NavigateToMALAnime(MouseEventArgs e)
     {
-        navManager.NavigateTo($"https://myanimelist.net/anime/{mal_id}");
+        if (e.Button == 0)
+        {
+            JSRuntime.InvokeVoidAsync("open", $"https://myanimelist.net/anime/{mal_id}", "_blank");
+        }
     }
 
 

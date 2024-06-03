@@ -4,6 +4,7 @@
 @using Newtonsoft.Json
 @inject NavigationManager navManager
 @inject HttpClient httpClient
+@inject IJSRuntime JSRuntime
 @rendermode InteractiveWebAssembly
 <link rel="stylesheet" href="/ListGenreAnimes.css" />
 @page "/genrelist/{genreid:int}"
@@ -98,40 +99,46 @@
         {
             loaded = true;
 
-            var response = await httpClient.GetAsync($"https://localhost:7130/api/AnimeService/GetAnimesForListGenreAnimes/{genreid}");
-
-            if (response.IsSuccessStatusCode)
+            try
             {
-                var content = await response.Content.ReadAsStringAsync();
-                var result = JsonConvert.DeserializeAnonymousType(content, new
+                var response = await httpClient.GetAsync($"https://localhost:7130/api/AnimeService/GetAnimesForListGenreAnimes/{genreid}");
+
+                if (response.IsSuccessStatusCode)
                 {
-                    Animes = new List<LiGenreAnimeDTO>(),
-                    GenreName = string.Empty
-                });
+                    var content = await response.Content.ReadAsStringAsync();
+                    var result = JsonConvert.DeserializeAnonymousType(content, new
+                    {
+                        Animes = new List<LiGenreAnimeDTO>(),
+                        GenreName = string.Empty
+                    });
 
-                animes = result.Animes;
-                genrename = result.GenreName;
+                    animes = result.Animes;
+                    genrename = result.GenreName;
 
-                pagingSummaryFormat = $"Displaying page {{0}} of {{1}} (total {{2}} records of {genrename} animes)";
+                    pagingSummaryFormat = $"Displaying page {{0}} of {{1}} (total {{2}} records of {genrename} animes)";
 
-                if (animes[0].Mal_id != -1)
-                {
-                    found = true;
-                    animes = animes.OrderBy(anime => anime.Score == 0.0)
-                       .ThenByDescending(anime => anime.Score).ToList();
-                    count = animes.Count;
-                    animes_per_page = animes.Take(pageSize);
+                    if (animes[0].Mal_id != -1)
+                    {
+                        found = true;
+                        animes = animes.OrderBy(anime => anime.Score == 0.0)
+                           .ThenByDescending(anime => anime.Score).ToList();
+                        count = animes.Count;
+                        animes_per_page = animes.Take(pageSize);
+                    }
+                    else
+                    {
+                        found = false;
+                    }
+
+                    StateHasChanged();
                 }
                 else
                 {
-                    found = false;
+                    await JSRuntime.InvokeVoidAsync("console.error", $"{response.StatusCode}\n {response.ReasonPhrase}");
                 }
-
-                StateHasChanged();
-            }
-            else
+            }catch(Exception e)
             {
-                return;
+                await JSRuntime.InvokeVoidAsync("console.error", $"{e.Message}"); ;
             }
         }
     }

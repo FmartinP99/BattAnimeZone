@@ -2,6 +2,7 @@
 @using BattAnimeZone.Shared.Models.AnimeDTOs
 @using BattAnimeZone.Client.Components
 @inject HttpClient httpClient
+@inject IJSRuntime JSRuntime
 @rendermode InteractiveWebAssembly
 @page "/search/"
 @page "/search/{name}"
@@ -69,7 +70,7 @@ else{
 
     protected override async Task OnInitializedAsync()
     {
-       
+
         base.OnInitialized();
     }
 
@@ -85,9 +86,26 @@ else{
 
     protected async Task GetSimilarAnimes()
     {
-        if (this.name == "" || this.name == null) return;
-        this.similar_animes = await httpClient.GetFromJsonAsync<List<AnimeSearchResultDTO>>($"https://localhost:7130/api/AnimeService/GetSimilarAnimesForSearchResult?similar_number={this.similar_anime_number}&searched_term={this.name}");
-        this.similar_animes = this.similar_animes.OrderByDescending(anime => anime.Score).ToList();
+        if (string.IsNullOrEmpty(name))
+            return;
+        try
+        {
+            var response = await httpClient.GetAsync($"https://localhost:7130/api/AnimeService/GetSimilarAnimesForSearchResult?similar_number={similar_anime_number}&searched_term={name}");
+
+            if (response.IsSuccessStatusCode)
+            {
+                similar_animes = await response.Content.ReadFromJsonAsync<List<AnimeSearchResultDTO>>();
+                similar_animes = similar_animes.OrderByDescending(anime => anime.Score).ToList();
+            }
+            else
+            {
+                await JSRuntime.InvokeVoidAsync("console.error", $"{response.StatusCode}\n {response.ReasonPhrase}");
+            }
+        }
+        catch (Exception e)
+        {
+            await JSRuntime.InvokeVoidAsync("console.error", $"{e.Message}"); ;
+        }
     }
 
 
