@@ -31,7 +31,7 @@ namespace BattAnimeZone.Services
 		private Dictionary<int, List<Anime>> animesPerGenre = new Dictionary<int, List<Anime>>();
 
 		private List<string> mediaTypes = new List<string>();
-		private Dictionary<string, HashSet<int>> animesPerMediaTypeIdsHash = new Dictionary<string, HashSet<int>>();
+		private Dictionary<string, HashSet<int>> animesPerMediaTypesHash = new Dictionary<string, HashSet<int>>();
 
 		public void Initialize()
 		{
@@ -353,7 +353,7 @@ namespace BattAnimeZone.Services
                tempApM[ani.Value.Media_type].Add(ani.Value.Mal_id);
             }
 
-			this.animesPerMediaTypeIdsHash = tempApM;
+			this.animesPerMediaTypesHash = tempApM;
         }
 
 		public Task<Dictionary<int, Anime>> GetAllAnimes()
@@ -437,7 +437,7 @@ namespace BattAnimeZone.Services
 
         public async Task<Dictionary<string, HashSet<int>>> GetAnimesPerMediaTypeIds()
         {
-            return this.animesPerMediaTypeIdsHash;
+            return this.animesPerMediaTypesHash;
         }
 
         public async Task<List<string>> GetMediaTypes()
