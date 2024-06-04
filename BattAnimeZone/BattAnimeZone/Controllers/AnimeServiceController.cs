@@ -98,6 +98,21 @@ namespace BattAnimeZone.Controllers
             return Ok(result);
         }
 
+
+        [HttpGet("GetFilteredAnimes")]
+        public async Task<IActionResult> GetFilteredAnimes([FromQuery] List<int>? genres, [FromQuery] List<string>? mediaTypes)
+        {
+           
+            var result = await _animeService.GetFilteredAnimes(genres, mediaTypes);
+            if (!result.Any())
+            {
+                return NotFound();
+            }
+            return Ok(result);
+        }
+
+
+
         [HttpGet("GetAnimesPerGenreIdCount")]
         public async Task<IActionResult> GetAnimesPerGenreIdCount()
         {

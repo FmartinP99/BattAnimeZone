@@ -155,12 +155,12 @@ else{
 
 
 
-    Dictionary<int, AnimeGenre>? ang;
+    Dictionary<int, AnimeGenre>? genres;
     Dictionary<int, HashSet<int>>? animesPerGenreIDs;
     List<LiAnimeDTO> searched_animes = new List<LiAnimeDTO>();
 
-    Dictionary<string, HashSet<int>>? animesPerMediaTypeIDs;
     List<string>? media_types;
+
     List<string> selected_medias = new List<string>();
 
 
@@ -191,7 +191,7 @@ else{
 
             bool success = await LoadRequestsAsync();
             if (!success) return;
-            SourceGenres = ang.Values.ToList();
+            SourceGenres = genres.Values.ToList();
 
 
             animeCountPerGenre = animesPerGenreIDs.ToDictionary(
@@ -255,35 +255,13 @@ else{
             await JSRuntime.InvokeVoidAsync("console.error", $"{ex.Message}"); ;
         }
 
-
-        try
-        {
-            var response = await httpClient.GetAsync("https://localhost:7130/api/AnimeService/GetAnimesPerMediaTypeIds");
-
-            if (response.IsSuccessStatusCode)
-            {
-                animesPerMediaTypeIDs = await response.Content.ReadFromJsonAsync<Dictionary<string, HashSet<int>>>();
-            }
-            else
-            {
-                await JSRuntime.InvokeVoidAsync("console.error", $"{response.StatusCode}\n {response.ReasonPhrase}");
-                found_error = true;
-            }
-        }
-        catch (Exception ex)
-        {
-            found_error = true;
-            await JSRuntime.InvokeVoidAsync("console.error", $"{ex.Message}"); ;
-        }
-
-
         try
         {
             var response = await httpClient.GetAsync("https://localhost:7130/api/AnimeService/GetGenres");
 
             if (response.IsSuccessStatusCode)
             {
-                ang = await response.Content.ReadFromJsonAsync<Dictionary<int, AnimeGenre>>();
+                genres = await response.Content.ReadFromJsonAsync<Dictionary<int, AnimeGenre>>();
             }
             else
             {
@@ -300,60 +278,18 @@ else{
         return !found_error;
     }
 
-
-    protected async Task<HashSet<int>> SearchByGenres()
-    {
-        HashSet<int> found_animes = new HashSet<int>();
-        List<AnimeGenre> targetList = TargetGenres.ToList();
-        int first_index = targetList[0].Mal_id;
-        found_animes = new HashSet<int>(animesPerGenreIDs[first_index]);
-        for(int i=1; i<targetList.Count; i++)
-        {
-            HashSet<int> curr_animes = animesPerGenreIDs[targetList[i].Mal_id];
-            found_animes.IntersectWith(curr_animes);
-        }
-
-        return found_animes;
-
-    }
-
-    protected async Task<HashSet<int>> SearchByMediaTypes()
-    {
-        HashSet<int> commonElements = new HashSet<int>(animesPerMediaTypeIDs[selected_medias[0]]);
-        if (selected_medias.Count > 1)
-        {
-            foreach (string key in selected_medias.Skip(1))
-            {
-                commonElements.UnionWith(animesPerMediaTypeIDs[key]);
-            }
-        }
-        return commonElements;
-    }
-
-
     protected async Task Search()
     {
         searching = true;
-        HashSet<int> found_animes = new HashSet<int>();
-
-        List<HashSet<int>> found_anime_ids = new List<HashSet<int>>();
-        if (!(TargetGenres == null || !TargetGenres.Any()))
-            found_anime_ids.Add(await SearchByGenres());
-        if (selected_medias != null && selected_medias.Count > 0)
-            found_anime_ids.Add(await SearchByMediaTypes());
-
-        if (found_anime_ids.Count > 0)
-        {
-            found_animes = found_anime_ids[0];
-            foreach (HashSet<int> faids in found_anime_ids.Skip(1))
-            {
-                found_animes.IntersectWith(faids);
-            }
-        }
-
         try
         {
-            var response = await httpClient.PostAsJsonAsync<HashSet<int>>("https://localhost:7130/api/AnimeService/GetAnimesForListAnime", found_animes);
+   
+            string genreQuery = TargetGenres.Select(g => g).Count() > 0 ? string.Join("&", TargetGenres.Select(g => $"genres={Uri.EscapeDataString(g.Mal_id.ToString())}")) : "";
+            string mediaTypeQuery = selected_medias.Count > 0 ? string.Join("&", selected_medias.Select(m => $"mediaTypes={Uri.EscapeDataString(m)}")) : "";
+
+            string fullQuery = string.Join("&", new[] { genreQuery, mediaTypeQuery }.Where(q => !string.IsNullOrWhiteSpace(q)));
+
+            var response = await httpClient.GetAsync($"https://localhost:7130/api/AnimeService/GetFilteredAnimes?{fullQuery}");
 
             if (response.IsSuccessStatusCode)
             {
