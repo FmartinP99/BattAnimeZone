@@ -27,6 +27,7 @@ namespace BattAnimeZone.Services
 
         private Dictionary<int, AnimeGenre> genres = new Dictionary<int, AnimeGenre> { };
 		private Dictionary<int, HashSet<int>> animesPerGenreIdsHash = new Dictionary<int, HashSet<int>>();
+		private Dictionary<int, int> animesPerGenreIdCount = new Dictionary<int, int>();
 		private Dictionary<int, List<Anime>> animesPerGenre = new Dictionary<int, List<Anime>>();
 
 		private List<string> mediaTypes = new List<string>();
@@ -46,6 +47,7 @@ namespace BattAnimeZone.Services
 			FillProductionIdHashes();
 			FillGenres();
 			FillAnimesPerGenreIdsHash();
+			FillAnimesPerGenreIdCount();
 			FillAnimesPerGenreList();
 			FillAnimesPerMediaTypeIdsHas();
 
@@ -311,8 +313,17 @@ namespace BattAnimeZone.Services
 			this.animesPerGenreIdsHash = tempApG;
 		}
 
+		public void FillAnimesPerGenreIdCount()
+		{
+            this.animesPerGenreIdCount = animesPerGenreIdsHash.ToDictionary(
+                        kvp => kvp.Key,
+                        kvp => kvp.Value.Count
+                    );
+        }
 
-		public void FillAnimesPerGenreList()
+
+
+        public void FillAnimesPerGenreList()
 		{
 			Dictionary<int, List<Anime>> tempApG = new Dictionary<int, List<Anime>>();
 
@@ -417,7 +428,12 @@ namespace BattAnimeZone.Services
 		public async Task<Dictionary<int, HashSet<int>>> GetAnimesPerGenreIds()
 		{
 			return this.animesPerGenreIdsHash;
-		}
+        }
+
+        public async Task<Dictionary<int, int>> GetAnimesPerGenreIdCount()
+        {
+            return this.animesPerGenreIdCount;
+        }
 
         public async Task<Dictionary<string, HashSet<int>>> GetAnimesPerMediaTypeIds()
         {

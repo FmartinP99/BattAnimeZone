@@ -60,19 +60,14 @@
             try
             {
                 var angResponse = await httpClient.GetAsync("https://localhost:7130/api/AnimeService/GetGenres");
-                var temnpAnimesPerGenreIDsResponse = await httpClient.GetAsync("https://localhost:7130/api/AnimeService/GetAnimesPerGenreIds");
+                var tempGetAnimesPerGenreIdCountResponse = await httpClient.GetAsync("https://localhost:7130/api/AnimeService/GetAnimesPerGenreIdCount");
 
-                if (angResponse.IsSuccessStatusCode && temnpAnimesPerGenreIDsResponse.IsSuccessStatusCode)
+                if (angResponse.IsSuccessStatusCode && tempGetAnimesPerGenreIdCountResponse.IsSuccessStatusCode)
                 {
                     var ang = await angResponse.Content.ReadFromJsonAsync<Dictionary<int, AnimeGenre>>();
-                    var temnpAnimesPerGenreIDs = await temnpAnimesPerGenreIDsResponse.Content.ReadFromJsonAsync<Dictionary<int, HashSet<int>>>();
+                    animeCountPerGenre = await tempGetAnimesPerGenreIdCountResponse.Content.ReadFromJsonAsync<Dictionary<int, int>>();
 
                     animeGenres = ang.Values.ToList();
-
-                    animeCountPerGenre = temnpAnimesPerGenreIDs.ToDictionary(
-                        kvp => kvp.Key,
-                        kvp => kvp.Value.Count
-                    );
 
                     animeGenres = animeGenres
                         .OrderByDescending(genre => animeCountPerGenre.ContainsKey(genre.Mal_id) ? animeCountPerGenre[genre.Mal_id] : 0)
@@ -88,9 +83,9 @@
                         await JSRuntime.InvokeVoidAsync("console.error", $"{angResponse.StatusCode}\n {angResponse.ReasonPhrase}");
                         Console.WriteLine();
                     }
-                    if (!temnpAnimesPerGenreIDsResponse.IsSuccessStatusCode)
+                    if (!tempGetAnimesPerGenreIdCountResponse.IsSuccessStatusCode)
                     {
-                        await JSRuntime.InvokeVoidAsync("console.error", $"{temnpAnimesPerGenreIDsResponse.StatusCode}\n {temnpAnimesPerGenreIDsResponse.ReasonPhrase}");
+                        await JSRuntime.InvokeVoidAsync("console.error", $"{tempGetAnimesPerGenreIdCountResponse.StatusCode}\n {tempGetAnimesPerGenreIdCountResponse.ReasonPhrase}");
                     }
 
                 }
