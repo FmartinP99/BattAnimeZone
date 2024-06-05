@@ -16,6 +16,8 @@ builder.Services.AddScoped<Radzen.DialogService>();
 builder.Services.AddScoped<Radzen.TooltipService>();
 builder.Services.AddScoped<Radzen.ContextMenuService>();
 builder.Services.AddScoped<Radzen.NotificationService>();
+builder.Services.AddBlazorBootstrap();
+
 
 builder.Services.AddHttpClient();
 
