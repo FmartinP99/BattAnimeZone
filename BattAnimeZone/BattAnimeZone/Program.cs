@@ -1,6 +1,9 @@
+using BattAnimeZone.Authentication;
 using BattAnimeZone.Client.Pages;
 using BattAnimeZone.Components;
 using BattAnimeZone.Services;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,11 +14,32 @@ builder.Services.AddRazorComponents()
 
 builder.Services.AddControllersWithViews();
 
+builder.Services.AddSingleton<UserAccountService>();
+
+builder.Services.AddAuthentication(o => 
+{
+    o.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    o.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+}).AddJwtBearer( o=>
+{
+    o.RequireHttpsMetadata = true;
+    o.SaveToken = true;
+    o.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuerSigningKey = true,
+        IssuerSigningKey = new SymmetricSecurityKey(System.Text.Encoding.ASCII.GetBytes(JwtAuthenticationManager.JWT_SECURITY_KEY)),
+        ValidateIssuer = false,
+        ValidateAudience = false,
+
+    };
+});
+
 builder.Services.AddSingleton<AnimeService>();
 builder.Services.AddScoped<Radzen.DialogService>();
 builder.Services.AddScoped<Radzen.TooltipService>();
 builder.Services.AddScoped<Radzen.ContextMenuService>();
 builder.Services.AddScoped<Radzen.NotificationService>();
+
 builder.Services.AddBlazorBootstrap();
 
 
@@ -48,6 +72,9 @@ else
 }
 
 app.UseHttpsRedirection();
+
+app.UseAuthentication();
+app.UseAuthorization();
 
 app.UseStaticFiles();
 app.UseAntiforgery();
