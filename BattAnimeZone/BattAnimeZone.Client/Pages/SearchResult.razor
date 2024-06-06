@@ -95,7 +95,7 @@ else{
             if (response.IsSuccessStatusCode)
             {
                 similar_animes = await response.Content.ReadFromJsonAsync<List<AnimeSearchResultDTO>>();
-                similar_animes = similar_animes.OrderByDescending(anime => anime.Score).ToList();
+          
             }
             else
             {
