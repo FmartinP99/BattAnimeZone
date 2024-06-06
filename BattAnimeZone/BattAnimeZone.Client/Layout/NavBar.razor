@@ -8,6 +8,9 @@
         <RadzenColumn class="navbar-column" Style="min-width: 10vh; max-width: 10vh;" @onclick="NavigateToAnimes">ANIMES</RadzenColumn>
         <RadzenColumn class="navbar-column" Style="min-width: 10vh; max-width: 10vh;" @onclick="NavigateToGenres">GENRES</RadzenColumn>
         <RadzenColumn class="navbar-column" Style="min-width: 10vh; max-width: 10vh;" @onclick="NavigateToStudios">STUDIOS</RadzenColumn>
+        <AuthorizeView Roles="Administrator, User">
+            <RadzenColumn class="navbar-column" Style="min-width: 10vh; max-width: 10vh;" @onclick="NavigateToIndex">YOU ARE LOGGED IN!</RadzenColumn>
+        </AuthorizeView>
     </RadzenRow>
 </RadzenRow>
 
