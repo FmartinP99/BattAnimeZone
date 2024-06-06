@@ -216,7 +216,7 @@ else{
 
         try
         {
-            var response = await httpClient.GetAsync("{navManager.BaseUri}api/AnimeService/GetMediaTypes");
+            var response = await httpClient.GetAsync($"{navManager.BaseUri}api/AnimeService/GetMediaTypes");
 
             if (response.IsSuccessStatusCode)
             {
@@ -237,7 +237,7 @@ else{
 
         try
         {
-            var response = await httpClient.GetAsync("{navManager.BaseUri}api/AnimeService/GetAnimesPerGenreIds");
+            var response = await httpClient.GetAsync($"{navManager.BaseUri}api/AnimeService/GetAnimesPerGenreIds");
 
             if (response.IsSuccessStatusCode)
             {
@@ -257,7 +257,7 @@ else{
 
         try
         {
-            var response = await httpClient.GetAsync("{navManager.BaseUri}api/AnimeService/GetGenres");
+            var response = await httpClient.GetAsync($"{navManager.BaseUri}api/AnimeService/GetGenres");
 
             if (response.IsSuccessStatusCode)
             {
