@@ -18,7 +18,8 @@
 
 @if (!loaded)
 {
-    <LoadingComponent></LoadingComponent>    }
+    <LoadingComponent></LoadingComponent>    
+}
 else{
     @if (currentProductionEntity.Mal_id != -1 ){
         <RadzenButton id="relation-button" Click="NavigateToMALStudio" Text="MAL LINK" Style="background-image: linear-gradient(to right, #5832dd,#5025ce,#5832dd,#5025ce,#5832dd); margin-bottom:30px;"></RadzenButton>
@@ -135,7 +136,7 @@ else{
             loaded = true;
             try
             {
-                var response = await httpClient.GetAsync($"https://localhost:7130/api/AnimeService/GetAnimesForProdEnt/{prodent_id}");
+                var response = await httpClient.GetAsync($"{navManager.BaseUri}api/AnimeService/GetAnimesForProdEnt/{prodent_id}");
                 if (response.IsSuccessStatusCode)
                 {
                     var content = await response.Content.ReadAsStringAsync();

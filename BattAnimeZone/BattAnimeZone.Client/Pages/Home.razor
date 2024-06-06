@@ -73,7 +73,7 @@
 			loaded = true;
 			try
 			{
-				var response = await httpClient.GetAsync($"https://localhost:7130/api/AnimeService/GetAnimesByYear/2024");
+				var response = await httpClient.GetAsync($"{navManager.BaseUri}api/AnimeService/GetAnimesByYear/2024");
 				if (response.IsSuccessStatusCode)
 				{
 					IEnumerable<AnimeHomePageDTO>? animes = await response.Content.ReadFromJsonAsync<IEnumerable<AnimeHomePageDTO>>();
