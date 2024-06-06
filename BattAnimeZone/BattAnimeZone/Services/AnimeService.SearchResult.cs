@@ -23,17 +23,17 @@ namespace BattAnimeZone.Services
                 if (anime.Title_english != "") eng_distance = distance_metric.Distance(name, anime.Title_japanese.ToLower());
                 if (anime.Title_japanese != "") jp_distance = distance_metric.Distance(name, anime.Title_japanese.ToLower());
                 double min_distance = Math.Min(jp_distance, Math.Min(eng_distance, default_distance));
-                if (min_distance < 0.7) distances.Add(anime.Mal_id, min_distance);
+                if (min_distance < 0.4) distances.Add(anime.Mal_id, min_distance);
             }
 
             var sorted_distances = distances.OrderBy(kv => kv.Value);
+
             var top_n = sorted_distances.Take(n).Select(kv => kv.Key);
 
-            List<Anime> return_Animes = new List<Anime>();
-            foreach (int id in top_n)
-            {
-                return_Animes.Add(await this.GetAnimeByID(id));
-            }
+			List<Task<Anime>> tasks = top_n.Select(id => this.GetAnimeByID(id)).ToList();
+			Anime[] fetchedAnimes = await Task.WhenAll(tasks);
+            List<Anime> return_Animes = fetchedAnimes.ToList();
+
             return animeMapper.Map<List<AnimeSearchResultDTO>>(return_Animes);
         }
     }
