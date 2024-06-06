@@ -46,11 +46,6 @@
     List<AnimeGenre> animeGenres;
     Dictionary<int, int> animeCountPerGenre = new Dictionary<int, int>();
 
-    protected override async Task OnInitializedAsync()
-    {
-        base.OnInitialized();
-    }
-
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
