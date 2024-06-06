@@ -26,7 +26,8 @@ namespace BattAnimeZone.Services
                     }
                 }
             }
-            return animeMapper.Map<List<AnimeRelationDTO>> (relational_animes);
+			relational_animes.RemoveAll(anime => anime.Mal_id == -1);
+			return animeMapper.Map<List<AnimeRelationDTO>> (relational_animes);
         }
     }
 }
