@@ -7,7 +7,7 @@ namespace BattAnimeZone.Services
     {
         public async Task<AnimeRelationsKeyDTO> GetAnimeRelationsKeyByID(int mal_id)
         {
-            Anime return_anime;
+            Anime? return_anime;
             if (this.animes.TryGetValue(mal_id, out return_anime)) return animeMapper.Map<AnimeRelationsKeyDTO>(return_anime);
             return new AnimeRelationsKeyDTO();
         }

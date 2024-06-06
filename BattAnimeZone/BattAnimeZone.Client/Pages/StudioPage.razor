@@ -122,13 +122,6 @@ else{
     int count;
     int last_skip = 0;
 
-
-    protected override async Task OnInitializedAsync()
-    {
-        base.OnInitialized();
-    }
-
-
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
@@ -221,7 +214,7 @@ else{
         await pager.GoToPage(0);
     } 
 
-    protected async void NavigateTo(int mal_id)
+    protected void NavigateTo(int mal_id)
     {
 
         navManager.NavigateTo($"/anime/{mal_id}");

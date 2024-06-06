@@ -117,19 +117,19 @@ namespace BattAnimeZone.Services
 					csv.GetField("aired.string");
 					*/
 
-					List<string> title_synonyms = JsonConvert.DeserializeObject<List<string>>(csv.GetField("title_synonyms"));
-					List<Producer> producers = JsonConvert.DeserializeObject<List<Producer>>(csv.GetField("producers"));
-					List<Licensor> licensors = JsonConvert.DeserializeObject<List<Licensor>>(csv.GetField("licensors"));
-					List<Studio> studios = JsonConvert.DeserializeObject<List<Studio>>(csv.GetField("studios"));
-					List<Genre> genres = JsonConvert.DeserializeObject<List<Genre>>(csv.GetField("genres"));
-					List<Theme> themes = JsonConvert.DeserializeObject<List<Theme>>(csv.GetField("themes"));
+					List<string>? title_synonyms = JsonConvert.DeserializeObject<List<string>>(csv.GetField("title_synonyms"));
+					List<Producer>? producers = JsonConvert.DeserializeObject<List<Producer>>(csv.GetField("producers"));
+					List<Licensor>? licensors = JsonConvert.DeserializeObject<List<Licensor>>(csv.GetField("licensors"));
+					List<Studio>? studios = JsonConvert.DeserializeObject<List<Studio>>(csv.GetField("studios"));
+					List<Genre>? genres = JsonConvert.DeserializeObject<List<Genre>>(csv.GetField("genres"));
+					List<Theme>? themes = JsonConvert.DeserializeObject<List<Theme>>(csv.GetField("themes"));
 
-					string relationship_str = csv.GetField("relations");
+					string? relationship_str = csv.GetField("relations");
 					relationship_str = JsonStringProcessor.DecodeJSString(relationship_str);
-					List<Relations> relations = JsonConvert.DeserializeObject<List<Relations>>(relationship_str);
+					List<Relations>? relations = JsonConvert.DeserializeObject<List<Relations>>(relationship_str);
 
-					List<External> externals = JsonConvert.DeserializeObject<List<External>>(csv.GetField("external"));
-					List<Streaming> streamings = JsonConvert.DeserializeObject<List<Streaming>>(csv.GetField("streaming"));
+					List<External>? externals = JsonConvert.DeserializeObject<List<External>>(csv.GetField("external"));
+					List<Streaming>? streamings = JsonConvert.DeserializeObject<List<Streaming>>(csv.GetField("streaming"));
 
                     Anime new_anime = new Anime
 					{
@@ -202,7 +202,7 @@ namespace BattAnimeZone.Services
 				csv.ReadHeader();
 				while (csv.Read())
 				{
-					List<ProductionEntityTitle> producerTitle = JsonConvert.DeserializeObject<List<ProductionEntityTitle>>(csv.GetField("titles"));
+					List<ProductionEntityTitle>? producerTitle = JsonConvert.DeserializeObject<List<ProductionEntityTitle>>(csv.GetField("titles"));
 
 					ProductionEntity new_producer = new ProductionEntity
 					{
@@ -363,14 +363,14 @@ namespace BattAnimeZone.Services
 
 		public async Task<Anime> GetAnimeByID(int mal_id)
 		{
-			Anime return_anime;
+			Anime? return_anime;
 			if (this.animes.TryGetValue(mal_id, out return_anime)) return return_anime;
 			return new Anime();
 		}
 
 		public Anime GetAnimeByIDSync(int mal_id)
 		{
-			Anime return_anime;
+			Anime? return_anime;
 			if (this.animes.TryGetValue(mal_id, out return_anime)) return return_anime;
 			return new Anime();
 
@@ -383,7 +383,7 @@ namespace BattAnimeZone.Services
 
         public async Task<ProductionEntity> GetProductionEntityById(int prodid)
         {
-            ProductionEntity prodent;
+            ProductionEntity? prodent;
             if (this.productionEntities.TryGetValue(prodid, out prodent)) return prodent;
             return new ProductionEntity();
         }
@@ -406,21 +406,21 @@ namespace BattAnimeZone.Services
 
         public Task<HashSet<int>> GetAnimesOfProducer(int prodid)
         {
-			HashSet<int> animes;
+			HashSet<int>? animes;
             if (this.animesPerProducerIdHash.TryGetValue(prodid, out animes)) return Task.FromResult(animes);
 			return Task.FromResult(new HashSet<int>());
         }
 
         public Task<HashSet<int>> GetAnimesOfLicensor(int prodid)
         {
-            HashSet<int> animes;
+            HashSet<int>? animes;
             if (this.animesPerLicensorIdHash.TryGetValue(prodid, out animes)) return Task.FromResult(animes);
             return Task.FromResult(new HashSet<int>());
         }
 
         public Task<HashSet<int>> GetAnimesOfStudio(int prodid)
         {
-            HashSet<int> animes;
+            HashSet<int>? animes;
             if (this.animesPerStudioIdHash.TryGetValue(prodid, out animes)) return Task.FromResult(animes);
             return Task.FromResult(new HashSet<int>());
         }

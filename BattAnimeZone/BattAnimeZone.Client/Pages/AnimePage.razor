@@ -128,12 +128,6 @@ else{
     public int mal_id { get; set; }
     AnimePageDTO? currentAnime;
 
-    protected override async Task OnInitializedAsync()
-    {
-
-        base.OnInitialized();
-    }
-
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
