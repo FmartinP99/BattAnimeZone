@@ -58,7 +58,7 @@ namespace BattAnimeZone.Services
 
 		private void FillAnimesAndMedia()
 		{
-            using (var reader = new StreamReader("Files/mal_data_filtered_filled.csv"))
+            using (var reader = new StreamReader("Files/mal_data_2020plus_subset.csv"))
 			using (var csv = new CsvReader(reader, CultureInfo.InvariantCulture))
 			{
 				csv.Read();

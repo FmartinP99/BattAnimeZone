@@ -90,7 +90,7 @@ else{
             return;
         try
         {
-            var response = await httpClient.GetAsync($"https://localhost:7130/api/AnimeService/GetSimilarAnimesForSearchResult?similar_number={similar_anime_number}&searched_term={name}");
+            var response = await httpClient.GetAsync($"{navManager.BaseUri}api/AnimeService/GetSimilarAnimesForSearchResult?similar_number={similar_anime_number}&searched_term={name}");
 
             if (response.IsSuccessStatusCode)
             {
