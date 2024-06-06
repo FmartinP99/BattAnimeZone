@@ -93,12 +93,6 @@
     int pageNumber;
     Dictionary <int, string> relation_types = new Dictionary<int, string>();
 
-    protected override async Task OnInitializedAsync()
-    {
-        base.OnInitialized();
-    }
-
-
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
@@ -117,7 +111,7 @@
                         if (response2.IsSuccessStatusCode)
                         {
                             relational_animes = await response2.Content.ReadFromJsonAsync<List<AnimeRelationDTO>>();
-                            await getRelationTypes();
+                            fillRelationTypes();
                             relational_animes_per_page = relational_animes.Take(pageSize);
                             count = relational_animes.Count;
                         }
@@ -146,7 +140,7 @@
         }
     }
 
-    protected async Task getRelationTypes()
+    protected void fillRelationTypes()
     {
         HashSet<int> rel_anim_ids = relational_animes.Select(an => an.Mal_id).ToHashSet();
         foreach(Relations rel in currentAnime.Relations)
