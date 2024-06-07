@@ -2,10 +2,12 @@
 using BattAnimeZone.Services;
 using BattAnimeZone.Shared.Models.User;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BattAnimeZone.Controllers
 {
+	[Authorize]
 	[Route("api/AccountController")]
 	[ApiController]
 	public class AccountController : ControllerBase
@@ -22,7 +24,6 @@ namespace BattAnimeZone.Controllers
 		[AllowAnonymous]
 		public ActionResult<UserSession> Login([FromBody] LoginRequest loginRequest)
 		{
-            Console.WriteLine("belépett ide");
             var jwtAuthenticationManager = new JwtAuthenticationManager(_userAccountService);
 			var userSession = jwtAuthenticationManager.GenerateJwtToken(loginRequest.UserName, loginRequest.Password);
 			if (userSession is null)
@@ -30,5 +31,18 @@ namespace BattAnimeZone.Controllers
 			else
 				return userSession;
 		}
-	}
+
+        [HttpPost]
+        [Route("Register")]
+        [AllowAnonymous]
+        public ActionResult<UserSession> Register([FromBody] RegisterRequest registerRequest)
+        {
+            bool response = _userAccountService.RegisterUser(registerRequest);
+
+            if (response)
+                return Ok();
+            else
+                return BadRequest();
+        }
+    }
 }
