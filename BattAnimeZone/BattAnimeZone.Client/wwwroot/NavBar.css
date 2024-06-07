@@ -1,7 +1,36 @@
 ﻿body {
 }
 
+
+.left-items {
+    display: flex;
+    flex-wrap: wrap; 
+}
+
+.right-items {
+    margin-left: auto;
+    flex-wrap: wrap;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+}
+
+.navbar-column-right {
+   
+    display: table;
+    &:hover
+
+{
+    text-decoration: underline;
+    box-shadow: none;
+    opacity: 0.9;
+    cursor: pointer;
+}
+}
+
+
 .navbar-row {
+    display:flex;
     &:hover
 {
     border: none !important;
@@ -18,4 +47,9 @@
     opacity: 0.9;
     cursor: pointer;
 }
+}
+
+
+.offcanvas {
+    background-image: linear-gradient(to right, #151515,#202020,#252525,#202020,#151515) !important;
 }
