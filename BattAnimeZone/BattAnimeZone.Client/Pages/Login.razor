@@ -29,8 +29,34 @@
     </div>
 </div>
 
+
+<div class="row">
+    <div class="col-lg-4 offset-lg-4 pt-4 pb-4 border">
+        <div class="mb-3 text-center">
+            <h3>REGISTER</h3>
+        </div>
+        <div class="mb-3">
+            <label>User Name</label>
+            <input @bind="registerRequest.UserName" class="form-control" placeholder="User Name" />
+        </div>
+        <div class="mb-3">
+            <label>Email</label>
+            <input @bind="registerRequest.Email" class="form-control" placeholder="Email" />
+        </div>
+        <div class="mb-3">
+            <label>Password</label>
+            <input @bind="registerRequest.Password" type="password" class="form-control" placeholder="Password" />
+        </div>
+        <div class="mb-3 d-grid gap-2">
+            <button @onclick="Register" class="btn btn-primary">Register</button>
+        </div>
+    </div>
+</div>
+
+
 @code {
     private LoginRequest loginRequest = new LoginRequest();
+    private RegisterRequest registerRequest = new RegisterRequest();
 
     private async Task Authenticate()
     {
@@ -49,4 +75,21 @@
             return;
         }
     }
+
+
+    private async Task Register()
+    {
+        var response = await httpClient.PostAsJsonAsync<RegisterRequest>($"{navManager.BaseUri}api/AccountController/Register", registerRequest);
+        if (response.IsSuccessStatusCode)
+        {
+            await JSRuntime.InvokeVoidAsync("alert", "Registering successful!");
+        }
+        else if (response.StatusCode == HttpStatusCode.BadRequest)
+        {
+            await JSRuntime.InvokeVoidAsync("console.error", $"{response.StatusCode}\n {response.ReasonPhrase}");
+            await JSRuntime.InvokeVoidAsync("alert", "The username/email is aready exists!");
+            return;
+        }
+    }
+
 }
