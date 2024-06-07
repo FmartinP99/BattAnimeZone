@@ -1,6 +1,7 @@
 ﻿@using BattAnimeZone.Shared.Models.Genre
 @using BattAnimeZone.Shared.Models.AnimeDTOs
 @using BattAnimeZone.Client.Components
+@using BlazorBootstrap;
 @inject NavigationManager navManager
 @inject HttpClient httpClient
 @inject IJSRuntime JSRuntime
@@ -46,6 +47,7 @@
 			}
 		</div>
 	</div>
+
 }
 @code{
 	bool loaded = false;
@@ -59,11 +61,6 @@
 	string filter_str = "WINTER";
 	string info_str = "2024 Winter Animes";
 	IEnumerable<string> filter_bys = new List<string>() {"WINTER", "SPRING", "SUMMER", "FALL" };
-
-	protected override async Task OnInitializedAsync()
-	{
-		await base.OnInitializedAsync();
-	}
 
 
 	protected override async Task OnAfterRenderAsync(bool firstRender)

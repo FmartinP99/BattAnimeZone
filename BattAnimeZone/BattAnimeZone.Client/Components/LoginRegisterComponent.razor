@@ -1,0 +1,114 @@
+﻿@using BattAnimeZone.Shared.Models.User
+@using BattAnimeZone.Client.Authentication
+@using System.Net
+@inject NavigationManager navManager
+@inject HttpClient httpClient
+@inject IJSRuntime JSRuntime
+@inject AuthenticationStateProvider authenticationStateProvider
+<link rel="stylesheet" href="/LoginRegisterComponent.css" />
+
+<div class="offcanvasContainerDiv">
+
+<div class="row">
+    <div class="col-lg-10 offset-lg-1 pt-4 pb-4">
+        <div class="mb-3 text-center">
+            <h3>LOGIN</h3>
+        </div>
+        <div class="mb-3">
+            <label class="login-input-label">Username</label>
+            <input @bind="loginRequest.UserName" class="login-input" placeholder="Username" />
+        </div>
+        <div class="mb-3">
+            <label class="login-input-label">Password</label>
+                <input @bind="loginRequest.Password" type="password" class="login-input" placeholder="Password" />
+        </div>
+      
+        <RadzenButton Click="Authenticate" Style="width: 93%; Margin-left:10px; Margin-right:10px; background-image: linear-gradient(to right, #5832dd,#5025ce,#5832dd,#5025ce,#5832dd);" Text="Login"></RadzenButton>
+      
+    </div>
+</div>
+
+
+<hr />
+
+
+  <div class="row">
+        <div class="col-lg-10 offset-lg-1 pt-4 pb-4 ">
+            <div class="mb-3 text-center">
+                <h3>REGISTER</h3>
+            </div>
+            <div class="mb-3">
+                <label>User Name</label>
+                <input @bind="registerRequest.UserName" class="login-input" placeholder="User Name" />
+            </div>
+            <div class="mb-3">
+                <label>Email</label>
+                <input @bind="registerRequest.Email" class="login-input" placeholder="Email" />
+            </div>
+            <div class="mb-3">
+                <label>Password</label>
+                <input @bind="registerRequest.Password" type="password" class="login-input" placeholder="Password" />
+            </div>
+
+            <div class="mb-3">
+                <label>Confirm Password</label>
+                <input @bind="confirmPassword" type="password" class="login-input" placeholder="Confirm password" />
+            </div>
+           
+            <RadzenButton Click="Register" Style="width: 93%; Margin-left:10px; Margin-right:10px; background-image: linear-gradient(to right, #5832dd,#5025ce,#5832dd,#5025ce,#5832dd);" Text="Register"></RadzenButton>
+           
+        </div>
+    </div>
+
+
+
+</div>
+
+@code {
+    private LoginRequest loginRequest = new LoginRequest();
+    private RegisterRequest registerRequest = new RegisterRequest();
+    private string confirmPassword = "";
+
+
+    private async Task Authenticate()
+    {
+        var loginResponse = await httpClient.PostAsJsonAsync<LoginRequest>($"{navManager.BaseUri}api/AccountController/Login", loginRequest);
+
+        if (loginResponse.IsSuccessStatusCode)
+        {
+            var userSession = await loginResponse.Content.ReadFromJsonAsync<UserSession>();
+            var customAuthStateProvider = (CustomAuthenticationStateProvider)authenticationStateProvider;
+            await customAuthStateProvider.UpdateAuthenticationState(userSession);
+            navManager.NavigateTo("/", true);
+        }
+        else if (loginResponse.StatusCode == HttpStatusCode.Unauthorized)
+        {
+            await JSRuntime.InvokeVoidAsync("alert", "Invalid User Name or Password");
+            return;
+        }
+    }
+
+    private async Task Register()
+    {
+
+        if (confirmPassword != registerRequest.Password)
+        {
+            await JSRuntime.InvokeVoidAsync("alert", "The 2 passwords doesn't match!");
+            return;
+        }
+
+        var response = await httpClient.PostAsJsonAsync<RegisterRequest>($"{navManager.BaseUri}api/AccountController/Register", registerRequest);
+        if (response.IsSuccessStatusCode)
+        {
+            await JSRuntime.InvokeVoidAsync("alert", "Registering successful!\nYou can now log in!");
+            registerRequest = new RegisterRequest();
+
+        }
+        else if (response.StatusCode == HttpStatusCode.BadRequest)
+        {
+            await JSRuntime.InvokeVoidAsync("console.error", $"{response.StatusCode}\n {response.ReasonPhrase}");
+            await JSRuntime.InvokeVoidAsync("alert", "The username/email is aready exists!");
+            return;
+        }
+    }
+}

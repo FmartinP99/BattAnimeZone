@@ -1,0 +1,17 @@
+﻿
+.login-input{
+	background-color: transparent;
+	color:white;
+	display:block;
+	width:100%;
+	font-size:1rem;
+	font-weight:400;
+	line-heigt:1.5;
+	appearance: none;
+	background-clip: padding-box;
+	border-radius: 5px;
+}
+
+.row{
+margin-bottom:50px;
+}

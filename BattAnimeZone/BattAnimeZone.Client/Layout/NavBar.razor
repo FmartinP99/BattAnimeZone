@@ -1,22 +1,65 @@
 @using BattAnimeZone.Client.Authentication
+@using BattAnimeZone.Client.Components
+@using BlazorBootstrap;
 @inject IJSRuntime JSRuntime
 @inject NavigationManager navManager
 @inject AuthenticationStateProvider authStateProvider
 <link rel="stylesheet" href="/NavBar.css" />
 
 <RadzenRow Style="border:solid 1px black; border-radius:8px; height: 50px; width:100%; padding:7px; margin-bottom:20px;">
-<RadzenRow class="navbar-row" Style="border-radius: 5px;  ;height: 100%; padding: 6px; width: 100%; background-image: linear-gradient(to right, #5832dd,#5025ce,#5832dd,#5025ce,#5832dd)">
-        <RadzenColumn class="navbar-column" Style="min-width: 200px; max-width: 20vh; " @onclick="NavigateToIndex">BattAnimeZone!!</RadzenColumn>
-        <RadzenColumn class="navbar-column" Style="min-width: 10vh; max-width: 10vh;" @onclick="NavigateToAnimes">ANIMES</RadzenColumn>
-        <RadzenColumn class="navbar-column" Style="min-width: 10vh; max-width: 10vh;" @onclick="NavigateToGenres">GENRES</RadzenColumn>
-        <RadzenColumn class="navbar-column" Style="min-width: 10vh; max-width: 10vh;" @onclick="NavigateToStudios">STUDIOS</RadzenColumn>
-        <AuthorizeView Roles="Administrator, User">
-            <RadzenColumn class="navbar-column" Style="min-width: 10vh; max-width: 10vh;" @onclick="Logout">YOU ARE LOGGED IN!</RadzenColumn>
+<div class="navbar-row" style="border-radius: 5px;  ;height: 100%; padding: 6px; width: 100%; background-image: linear-gradient(to right, #5832dd,#5025ce,#5832dd,#5025ce,#5832dd)">
+    <div class="left-items"> 
+        <div class="navbar-column" Style="min-width: 200px; max-width: 20vh; " @onclick="NavigateToIndex">BattAnimeZone!!</div>
+        <div class="navbar-column" Style="min-width: 10vh; max-width: 10vh;" @onclick="NavigateToAnimes">ANIMES</div>
+        <div class="navbar-column" Style="min-width: 10vh; max-width: 10vh;" @onclick="NavigateToGenres">GENRES</div>
+        <div class="navbar-column" Style="min-width: 10vh; max-width: 10vh;" @onclick="NavigateToStudios">STUDIOS</div>
+       
+    </div>
+    <div class="right-items">
+            <AuthorizeView Roles="Administrator, User">
+                <Authorized>
+                    <div class="navbar-column-right" Style="min-width: 10vh; max-width: 10vh;" @onclick="ShowOffCanvasAuth">@userName</div>
+                    <div class="navbar-column-right" Style="min-width: 10vh; max-width: 10vh;" @onclick="Logout">LOGOUT!</div>
+                </Authorized>
+                <NotAuthorized>
+        <div class="navbar-column-right" Style="min-width: 10vh; max-width: 10vh;" @onclick="ShowOffCanvasNotAuth">LOGIN/REGISTER</div>
+                </NotAuthorized>
+         
         </AuthorizeView>
-    </RadzenRow>
+    </div>
+</div>
 </RadzenRow>
 
+<AuthorizeView Roles="Administrator, User">
+    <Authorized>
+        <Offcanvas @ref="offcanvasAuthorized" Class="offcanvas"> </Offcanvas>
+    </Authorized>
+    <NotAuthorized>
+        <Offcanvas @ref="offcanvasNotAuthorized" Class="offcanvas"> </Offcanvas>
+    </NotAuthorized>
+</AuthorizeView>
+
+
+
+
+
 @code {
+
+    [CascadingParameter] private Task<AuthenticationState>? authenticationState { get; set; }
+
+    private Offcanvas offcanvasNotAuthorized = default!;
+    private Offcanvas offcanvasAuthorized = default!;
+
+
+    string? userName = "";
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        await GetUserName();
+        await base.OnInitializedAsync();
+    }
+
 
     public void NavigateToIndex()
     {
@@ -38,11 +81,42 @@
         navManager.NavigateTo($"/studiolist", forceLoad: true);
     }
 
-    public async void Logout()
+    public async Task Logout()
     {
-        var customAuthStateProvider = (CustomAuthenticationStateProvider)authStateProvider;
-        await customAuthStateProvider.UpdateAuthenticationState(null);
-        StateHasChanged();
+        bool confirmed = await JSRuntime.InvokeAsync<bool>("confirm", "Do you want to logout?");
+        if (confirmed)
+        {
+            var customAuthStateProvider = (CustomAuthenticationStateProvider)authStateProvider;
+            await customAuthStateProvider.UpdateAuthenticationState(null);
+            StateHasChanged();
+        }
+    }
+
+    public async Task GetUserName()
+    {
+        try
+        {
+            if (authenticationState == null) return;
+            var authState = await authenticationState;
+            var user = authState.User;
+            if (user.Identity.Name != null)
+            userName = user.Identity.Name.ToString();
+        }catch(Exception e)
+        {
+            return;
+        }
+    }
+
+    private async Task ShowOffCanvasNotAuth()
+    {
+       
+        await offcanvasNotAuthorized.ShowAsync<LoginRegisterComponent>(title: "");
+    }
+
+    private async Task ShowOffCanvasAuth()
+    {
+
+        await offcanvasAuthorized.ShowAsync<LoginRegisterComponent>(title: "");
     }
 
 }
