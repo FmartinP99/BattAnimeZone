@@ -2,6 +2,7 @@
 }
 
 
+
 .left-items {
     display: flex;
     flex-wrap: wrap; 
@@ -11,13 +12,11 @@
     margin-left: auto;
     flex-wrap: wrap;
     display: flex;
-    flex-direction: column;
-    justify-content: flex-end;
 }
 
 .navbar-column-right {
-   
     display: table;
+    font-size: 20px;
     &:hover
 
 {
@@ -30,7 +29,8 @@
 
 
 .navbar-row {
-    display:flex;
+    display: flex;
+    align-items: center;
     &:hover
 {
     border: none !important;
@@ -39,7 +39,7 @@
 
 .navbar-column {
     display: table;
-
+    font-size: 20px;
     &:hover{
              
     text-decoration: underline;
@@ -53,3 +53,4 @@
 .offcanvas {
     background-image: linear-gradient(to right, #151515,#202020,#252525,#202020,#151515) !important;
 }
+

@@ -5,27 +5,29 @@
 @inject NavigationManager navManager
 @inject AuthenticationStateProvider authStateProvider
 
-<link rel="stylesheet" href="/NavBar.css" />
+<link rel="stylesheet" href="/NavBar.css?version=0.1" />
 
 <RadzenRow Style="border:solid 1px black; border-radius:8px; height: 50px; width:100%; padding:7px; margin-bottom:20px;">
 <div class="navbar-row" style="border-radius: 5px;  ;height: 100%; padding: 6px; width: 100%; background-image: linear-gradient(to right, #5832dd,#5025ce,#5832dd,#5025ce,#5832dd)">
     <div class="left-items"> 
-        <RadzenColumn class="navbar-column" Style="min-width: 200px; max-width: 20vh; " @onclick="NavigateToIndex">BattAnimeZone!!</RadzenColumn>
-            <RadzenColumn class="navbar-column" Style="min-width: 10vh; max-width: 10vh;" @onclick="NavigateToAnimes">ANIMES</RadzenColumn>
-            <RadzenColumn class="navbar-column" Style="min-width: 10vh; max-width: 10vh;" @onclick="NavigateToGenres">GENRES</RadzenColumn>
-            <RadzenColumn class="navbar-column" Style="min-width: 10vh; max-width: 10vh;" @onclick="NavigateToStudios">STUDIOS</RadzenColumn>
+        <RadzenColumn class="navbar-column" Style="min-width: 170px; max-width: 20vh; " @onclick="NavigateToIndex">BattAnimeZone!!</RadzenColumn>
+        <RadzenColumn class="navbar-column" Style="min-width: 10vh; max-width: 10vh;" @onclick="NavigateToAnimes">ANIMES</RadzenColumn>
+        <RadzenColumn class="navbar-column" Style="min-width: 10vh; max-width: 10vh;" @onclick="NavigateToGenres">GENRES</RadzenColumn>
+        <RadzenColumn class="navbar-column" Style="min-width: 10vh; max-width: 10vh;" @onclick="NavigateToStudios">STUDIOS</RadzenColumn>
+        
        
     </div>
     <div class="right-items">
+            <RadzenColumn class="navbar-column-right" Style="min-width: 10vh; max-width: 10vh; font-weight: 600;" @onclick="ShowOffCanvasAbout">ABOUT</RadzenColumn>
             <AuthorizeView Roles="Administrator, User">
                 <Authorized>
-                    <RadzenColumn class="navbar-column-right" Style="min-width: 10vh; max-width: 10vh;" @onclick="ShowOffCanvasAuth">@userName</RadzenColumn>
-                    <RadzenColumn class="navbar-column-right" Style="min-width: 10vh; max-width: 10vh;" @onclick="Logout">LOGOUT!</RadzenColumn>
+                    <div class="navbar-column-right" Style="min-width: 10vh; max-width: 10vh;font-weight: 600;" @onclick="ShowOffCanvasAuth">
+                        @userName.ToUpper()
+                    </div>
                 </Authorized>
                 <NotAuthorized>
-        <div class="navbar-column-right" Style="min-width: 10vh; max-width: 10vh;" @onclick="ShowOffCanvasNotAuth">LOGIN/REGISTER</div>
+                    <div class="navbar-column-right" Style="min-width: 10vh; max-width: 10vh; font-weight: 600;" @onclick="ShowOffCanvasNotAuth">LOGIN/REGISTER</div>
                 </NotAuthorized>
-         
         </AuthorizeView>
     </div>
 </div>
@@ -39,7 +41,7 @@
         <Offcanvas @ref="offcanvasNotAuthorized" Class="offcanvas"> </Offcanvas>
     </NotAuthorized>
 </AuthorizeView>
-
+<Offcanvas @ref="offcanvasAbout" Class="offcanvas"> </Offcanvas>
 
 
 
@@ -50,6 +52,7 @@
 
     private Offcanvas offcanvasNotAuthorized = default!;
     private Offcanvas offcanvasAuthorized = default!;
+    private Offcanvas offcanvasAbout = default!;
 
 
     string? userName = "";
@@ -82,17 +85,6 @@
         navManager.NavigateTo($"/studiolist", forceLoad: true);
     }
 
-    public async Task Logout()
-    {
-        bool confirmed = await JSRuntime.InvokeAsync<bool>("confirm", "Do you want to logout?");
-        if (confirmed)
-        {
-            var customAuthStateProvider = (CustomAuthenticationStateProvider)authStateProvider;
-            await customAuthStateProvider.UpdateAuthenticationState(null);
-            StateHasChanged();
-        }
-    }
-
     public async Task GetUserName()
     {
         try
@@ -117,7 +109,14 @@
     private async Task ShowOffCanvasAuth()
     {
 
-        await offcanvasAuthorized.ShowAsync<LoginRegisterComponent>(title: "");
+        await offcanvasAuthorized.ShowAsync<LoggedInComponent>(title: userName);
+    }
+
+
+    private async Task ShowOffCanvasAbout()
+    {
+
+        await offcanvasAbout.ShowAsync<AboutComponent>(title: "About");
     }
 
 }

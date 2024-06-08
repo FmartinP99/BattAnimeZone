@@ -1,0 +1,11 @@
+﻿.logOutButton {
+    display: table;
+    &:hover
+
+{
+    text-decoration: underline;
+    box-shadow: none;
+    opacity: 0.9;
+    cursor: pointer;
+}
+}
