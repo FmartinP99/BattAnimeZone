@@ -4,22 +4,23 @@
 @inject IJSRuntime JSRuntime
 @inject NavigationManager navManager
 @inject AuthenticationStateProvider authStateProvider
+
 <link rel="stylesheet" href="/NavBar.css" />
 
 <RadzenRow Style="border:solid 1px black; border-radius:8px; height: 50px; width:100%; padding:7px; margin-bottom:20px;">
 <div class="navbar-row" style="border-radius: 5px;  ;height: 100%; padding: 6px; width: 100%; background-image: linear-gradient(to right, #5832dd,#5025ce,#5832dd,#5025ce,#5832dd)">
     <div class="left-items"> 
-        <div class="navbar-column" Style="min-width: 200px; max-width: 20vh; " @onclick="NavigateToIndex">BattAnimeZone!!</div>
-        <div class="navbar-column" Style="min-width: 10vh; max-width: 10vh;" @onclick="NavigateToAnimes">ANIMES</div>
-        <div class="navbar-column" Style="min-width: 10vh; max-width: 10vh;" @onclick="NavigateToGenres">GENRES</div>
-        <div class="navbar-column" Style="min-width: 10vh; max-width: 10vh;" @onclick="NavigateToStudios">STUDIOS</div>
+        <RadzenColumn class="navbar-column" Style="min-width: 200px; max-width: 20vh; " @onclick="NavigateToIndex">BattAnimeZone!!</RadzenColumn>
+            <RadzenColumn class="navbar-column" Style="min-width: 10vh; max-width: 10vh;" @onclick="NavigateToAnimes">ANIMES</RadzenColumn>
+            <RadzenColumn class="navbar-column" Style="min-width: 10vh; max-width: 10vh;" @onclick="NavigateToGenres">GENRES</RadzenColumn>
+            <RadzenColumn class="navbar-column" Style="min-width: 10vh; max-width: 10vh;" @onclick="NavigateToStudios">STUDIOS</RadzenColumn>
        
     </div>
     <div class="right-items">
             <AuthorizeView Roles="Administrator, User">
                 <Authorized>
-                    <div class="navbar-column-right" Style="min-width: 10vh; max-width: 10vh;" @onclick="ShowOffCanvasAuth">@userName</div>
-                    <div class="navbar-column-right" Style="min-width: 10vh; max-width: 10vh;" @onclick="Logout">LOGOUT!</div>
+                    <RadzenColumn class="navbar-column-right" Style="min-width: 10vh; max-width: 10vh;" @onclick="ShowOffCanvasAuth">@userName</RadzenColumn>
+                    <RadzenColumn class="navbar-column-right" Style="min-width: 10vh; max-width: 10vh;" @onclick="Logout">LOGOUT!</RadzenColumn>
                 </Authorized>
                 <NotAuthorized>
         <div class="navbar-column-right" Style="min-width: 10vh; max-width: 10vh;" @onclick="ShowOffCanvasNotAuth">LOGIN/REGISTER</div>
