@@ -23,7 +23,7 @@
 	[Parameter]
 	public EventCallback Search{ get; set; }
 
-	public async void NavigateTo()
+	public void NavigateTo()
 	{
 		navManager.NavigateTo($"/search/{name_to_search}", forceLoad: true);
 	}

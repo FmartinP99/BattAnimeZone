@@ -1,0 +1,20 @@
+﻿@using BattAnimeZone.Client.Authentication
+@using System.Net
+@inject NavigationManager navManager
+@inject IJSRuntime JSRuntime
+@inject AuthenticationStateProvider authStateProvider
+<link rel="stylesheet" href="/AboutComponent.css" />
+
+
+<RadzenColumn class="gitButton" Style="min-width: 10vh; max-width: 10vh;" @onclick="NavigateToGit">GIT</RadzenColumn>
+
+@code {
+
+    [CascadingParameter] private Task<AuthenticationState>? authenticationState { get; set; }
+
+
+    public void NavigateToGit()
+    {
+        navManager.NavigateTo($"https://github.com/FmartinP99/BattAnimeZone", forceLoad: true);
+    }
+}

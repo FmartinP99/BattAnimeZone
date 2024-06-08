@@ -1,0 +1,27 @@
+﻿@using BattAnimeZone.Shared.Models.User
+@using BattAnimeZone.Client.Authentication
+@using System.Net
+@inject NavigationManager navManager
+@inject HttpClient httpClient
+@inject IJSRuntime JSRuntime
+@inject AuthenticationStateProvider authStateProvider
+<link rel="stylesheet" href="/LoggedInComponent.css" />
+
+
+<RadzenColumn class="logOutButton" Style="min-width: 10vh; max-width: 10vh;" @onclick="Logout">LOGOUT!</RadzenColumn>
+
+@code {
+
+    [CascadingParameter] private Task<AuthenticationState>? authenticationState { get; set; }
+
+    public async Task Logout()
+    {
+        bool confirmed = await JSRuntime.InvokeAsync<bool>("confirm", "Do you want to logout?");
+        if (confirmed)
+        {
+            var customAuthStateProvider = (CustomAuthenticationStateProvider)authStateProvider;
+            await customAuthStateProvider.UpdateAuthenticationState(null);
+            StateHasChanged();
+        }
+    }
+}
