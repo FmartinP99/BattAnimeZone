@@ -86,7 +86,7 @@ def get_producers():
         request_url = f"https://api.jikan.moe/v4/producers?page={pagination}"
         response = requests.get(request_url)
         if response.status_code != 200:
-            return
+            break
         data = response.text
         loaded = json.loads(data)
         print()
@@ -95,9 +95,9 @@ def get_producers():
         flattened = pd.json_normalize(loaded_data)
         flattened = flattened.drop_duplicates(subset=["mal_id"])
         if not os.path.isfile('mal_producers.csv'):
-            flattened.to_csv('mal_producers.csv',  index=False)
+            flattened.to_csv('mal_producers_2.csv',  index=False)
         else:  # else it exists so append without writing the header
-            flattened.to_csv('mal_producers.csv', mode='a', header=False,  index=False)
+            flattened.to_csv('mal_producers_2.csv', mode='a', header=False,  index=False)
         pagination += 1
         time.sleep(1)
         has_next_page = loaded["pagination"]["has_next_page"]
@@ -120,7 +120,13 @@ def check_and_fill_empty_cols():
     df.drop(["Unnamed: 0"], axis=1, inplace=True)
     df.to_csv("mal_data_filtered_filled.csv", index=False)
 
+def make_smaller_animes_csv():
 
+    df = pd.read_csv("mal_data_filtered_filled.csv")
+
+    df = df[df["aired.prop.from.year"] > 2021]
+
+    df.to_csv("mal_data_2022plus_subset.csv")
 
 
 if __name__ == "__main__":
@@ -147,3 +153,4 @@ if __name__ == "__main__":
 
     #get_producers()
 
+    make_smaller_animes_csv()
