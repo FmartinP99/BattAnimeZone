@@ -58,7 +58,7 @@ namespace BattAnimeZone.Services
 
 		private void FillAnimesAndMedia()
 		{
-            using (var reader = new StreamReader("Files/mal_data_2020plus_subset.csv"))
+            using (var reader = new StreamReader("Files/mal_data_2022plus_subset.csv"))
 			using (var csv = new CsvReader(reader, CultureInfo.InvariantCulture))
 			{
 				csv.Read();
@@ -154,7 +154,7 @@ namespace BattAnimeZone.Services
 						Synopsis = csv.GetField("synopsis"),
 						Background = csv.GetField("background"),
 						Season = csv.GetField("season"),
-						Year = csv.GetField<float>("year"),
+						Year = csv.GetField<float>("aired.prop.from.year"),
 						Producers = producers,
 						Licensors = licensors,
 						Studios = studios,
@@ -185,7 +185,7 @@ namespace BattAnimeZone.Services
 						Aired_string = csv.GetField("aired.string"),
 					};
 					animes.Add(new_anime.Mal_id, new_anime);
-					if (!mediaTypes.Contains(new_anime.Media_type)) mediaTypes.Add(new_anime.Media_type);
+                    if (!mediaTypes.Contains(new_anime.Media_type)) mediaTypes.Add(new_anime.Media_type);
 
 				}
 			}

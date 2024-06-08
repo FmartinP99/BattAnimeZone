@@ -89,7 +89,11 @@ else{
                 </RadzenRow>
             }
 
-        <RadzenPager @ref=pager2 Style="overflow-x: clip; max-width: 75vw;" PagingSummaryFormat="@pagingSummaryFormat" ShowPagingSummary="true" HorizontalAlign="HorizontalAlign.Left" PageNumbersCount=@pagenumcount PageSize=@pageSize Count="count" PageChanged="@PageChanged" />
+            <RadzenPager @ref=pager2 Style="overflow-x: clip; max-width: 75vw;" PagingSummaryFormat="@pagingSummaryFormat" ShowPagingSummary="true" HorizontalAlign="HorizontalAlign.Left" PageNumbersCount=@pagenumcount PageSize=@pageSize Count="count" PageChanged="@PageChanged" />
+        }
+        else if (firstsearch)
+        {
+            <h1>There are no animes with the given search terms!</h1>
         }
     }
 }
@@ -98,6 +102,7 @@ else{
 @code {
     bool loaded = false;
     bool searching = false;
+    bool firstsearch = false;
 
     Dictionary<int, int> animeCountPerGenre = new Dictionary<int, int>();
 
@@ -281,6 +286,7 @@ else{
     protected async Task Search()
     {
         searching = true;
+        firstsearch = true;
         try
         {
    
