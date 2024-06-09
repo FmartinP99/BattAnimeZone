@@ -1,5 +1,4 @@
-﻿using BattAnimeZone.Authentication;
-using BattAnimeZone.Services;
+﻿using BattAnimeZone.Services;
 using BattAnimeZone.Shared.Models.User;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -24,8 +23,7 @@ namespace BattAnimeZone.Controllers
 		[AllowAnonymous]
 		public ActionResult<UserSession> Login([FromBody] LoginRequest loginRequest)
 		{
-            var jwtAuthenticationManager = new JwtAuthenticationManager(_userAccountService);
-			var userSession = jwtAuthenticationManager.GenerateJwtToken(loginRequest.UserName, loginRequest.Password);
+			var userSession = _userAccountService.Login(loginRequest);
 			if (userSession is null)
 				return Unauthorized();
 			else
