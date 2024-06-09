@@ -21,16 +21,8 @@ namespace BattAnimeZone.Authentication
 			_userAccountService = userAccountService;
 		}
 
-		public UserSession? GenerateJwtToken(string userName, string password)
+		public UserSession? GenerateJwtToken(UserAccount? userAccount)
 		{
-			if (string.IsNullOrWhiteSpace(userName) || string.IsNullOrWhiteSpace(password))
-				return null;
-
-			/* Validating the User Credentials */
-			var userAccount = _userAccountService.GetUserAccountByUserName(userName);
-			if (userAccount == null || userAccount.Password != password)
-				return null;
-
 			/* Generating JWT Token */
 			var tokenExpiryTimeStamp = DateTime.Now.AddMinutes(JWT_TOKEN_VALIDITY_MINS);
 			var tokenKey = Encoding.ASCII.GetBytes(JWT_SECURITY_KEY);

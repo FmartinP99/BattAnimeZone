@@ -1,4 +1,5 @@
 using BattAnimeZone.Authentication;
+using BattAnimeZone.Authentication.PasswordHasher;
 using BattAnimeZone.Client.Pages;
 using BattAnimeZone.Components;
 using BattAnimeZone.Services;
@@ -13,8 +14,6 @@ builder.Services.AddRazorComponents()
     .AddInteractiveWebAssemblyComponents();
 
 builder.Services.AddControllersWithViews();
-
-builder.Services.AddSingleton<UserAccountService>();
 
 builder.Services.AddAuthentication(o => 
 {
@@ -33,8 +32,11 @@ builder.Services.AddAuthentication(o =>
 
     };
 });
-
+builder.Services.AddSingleton<UserAccountService>();
 builder.Services.AddSingleton<AnimeService>();
+
+builder.Services.AddScoped<IPasswordHasher, PasswordHasher>();
+
 builder.Services.AddScoped<Radzen.DialogService>();
 builder.Services.AddScoped<Radzen.TooltipService>();
 builder.Services.AddScoped<Radzen.ContextMenuService>();
