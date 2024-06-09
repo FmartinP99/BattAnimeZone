@@ -32,10 +32,10 @@ builder.Services.AddAuthentication(o =>
 
     };
 });
-builder.Services.AddSingleton<UserAccountService>();
+//dont read/write from database, yet
 builder.Services.AddSingleton<AnimeService>();
+builder.Services.AddSingleton<UserAccountService>();
 
-builder.Services.AddScoped<IPasswordHasher, PasswordHasher>();
 
 builder.Services.AddScoped<Radzen.DialogService>();
 builder.Services.AddScoped<Radzen.TooltipService>();
