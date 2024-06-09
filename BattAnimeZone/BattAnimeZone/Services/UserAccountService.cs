@@ -23,11 +23,6 @@ namespace BattAnimeZone.Services
 
 		public UserAccount? GetUserAccountByUserName(string userName)
 		{
-            foreach(var userAccount in _userAccountList)
-			{
-                Console.WriteLine($"{userAccount.UserName} - {userAccount.Password}");
-            }
-
             return _userAccountList.FirstOrDefault(x => x.UserName == userName);
 		}
 
