@@ -5,9 +5,9 @@
     {
         string Title_english { get; }
         string Title_japanese { get; }
-        public float Year { get; }
+        public int Year { get; }
         float Score { get; }
-        float Popularity { get; }
+        int Popularity { get; }
         string Media_type { get; }
     }
 }
