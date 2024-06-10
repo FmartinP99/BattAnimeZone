@@ -6,6 +6,7 @@ using BattAnimeZone.Shared.Models.ProductionEntity;
 using BattAnimeZone.Shared.Models.Genre;
 using BattAnimeZone.Utilities;
 using AutoMapper;
+using BattAnimeZone.DbContexts;
 
 namespace BattAnimeZone.Services
 {
@@ -33,7 +34,7 @@ namespace BattAnimeZone.Services
 		private List<string> mediaTypes = new List<string>();
 		private Dictionary<string, HashSet<int>> animesPerMediaTypesHash = new Dictionary<string, HashSet<int>>();
 
-        public void Initialize()
+        public async Task Initialize()
 		{
             Console.WriteLine("AnimeService initialization has started!");
             MapperConfiguration config = new MapperConfiguration(cfg => cfg.AddProfile<MappingProfileAnime>());
@@ -55,6 +56,7 @@ namespace BattAnimeZone.Services
         }
 
 
+	
 
 		private void FillAnimesAndMedia()
 		{

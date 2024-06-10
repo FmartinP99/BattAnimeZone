@@ -2,8 +2,10 @@ using BattAnimeZone.Authentication;
 using BattAnimeZone.Authentication.PasswordHasher;
 using BattAnimeZone.Client.Pages;
 using BattAnimeZone.Components;
+using BattAnimeZone.DbContexts;
 using BattAnimeZone.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -35,6 +37,11 @@ builder.Services.AddAuthentication(o =>
 //dont read/write from database, yet
 builder.Services.AddSingleton<AnimeService>();
 builder.Services.AddSingleton<UserAccountService>();
+
+
+//databasecontexts
+builder.Services.AddDbContext<AnimeDbContext>(options =>
+    options.UseSqlite(builder.Configuration.GetConnectionString("AnimeDatabase")));
 
 
 builder.Services.AddScoped<Radzen.DialogService>();
@@ -87,7 +94,7 @@ app.MapRazorComponents<App>()
     .AddAdditionalAssemblies(typeof(BattAnimeZone.Client._Imports).Assembly);
 
 var animeService = app.Services.GetRequiredService<AnimeService>();
-animeService.Initialize();
+await animeService.Initialize();
 
 app.MapControllers();
 
