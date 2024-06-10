@@ -1,5 +1,5 @@
 CREATE TABLE Anime (
-  id integer NOT NULL PRIMARY KEY AUTOINCREMENT,
+  id integer NOT NULL PRIMARY KEY,
   title text DEFAULT "",
   title_english text title_english text DEFAULT "",
   title_japanese text title_japanese text DEFAULT "",
@@ -64,7 +64,8 @@ CREATE TABLE External (
 CREATE TABLE Streaming (
    id integer NOT NULL PRIMARY KEY AUTOINCREMENT,
   "name" text NOT NULL,
-   url  text NOT NULL
+   url  text NOT NULL,
+   UNIQUE("name", url)
 );
 
 
