@@ -33,7 +33,7 @@ namespace BattAnimeZone.Services
 		private List<string> mediaTypes = new List<string>();
 		private Dictionary<string, HashSet<int>> animesPerMediaTypesHash = new Dictionary<string, HashSet<int>>();
 
-		public void Initialize()
+        public void Initialize()
 		{
             Console.WriteLine("AnimeService initialization has started!");
             MapperConfiguration config = new MapperConfiguration(cfg => cfg.AddProfile<MappingProfileAnime>());
@@ -118,11 +118,11 @@ namespace BattAnimeZone.Services
 					*/
 
 					List<string>? title_synonyms = JsonConvert.DeserializeObject<List<string>>(csv.GetField("title_synonyms"));
-					List<Producer>? producers = JsonConvert.DeserializeObject<List<Producer>>(csv.GetField("producers"));
-					List<Licensor>? licensors = JsonConvert.DeserializeObject<List<Licensor>>(csv.GetField("licensors"));
-					List<Studio>? studios = JsonConvert.DeserializeObject<List<Studio>>(csv.GetField("studios"));
-					List<Genre>? genres = JsonConvert.DeserializeObject<List<Genre>>(csv.GetField("genres"));
-					List<Theme>? themes = JsonConvert.DeserializeObject<List<Theme>>(csv.GetField("themes"));
+					List<Entry>? producers = JsonConvert.DeserializeObject<List<Entry>>(csv.GetField("producers"));
+					List<Entry>? licensors = JsonConvert.DeserializeObject<List<Entry>>(csv.GetField("licensors"));
+					List<Entry>? studios = JsonConvert.DeserializeObject<List<Entry>>(csv.GetField("studios"));
+					List<Entry>? genres = JsonConvert.DeserializeObject<List<Entry>>(csv.GetField("genres"));
+					List<Entry>? themes = JsonConvert.DeserializeObject<List<Entry>>(csv.GetField("themes"));
 
 					string? relationship_str = csv.GetField("relations");
 					relationship_str = JsonStringProcessor.DecodeJSString(relationship_str);
@@ -141,20 +141,20 @@ namespace BattAnimeZone.Services
 						//Ttile_synonyms = title_synonyms,
 						Media_type = csv.GetField("type"),
 						Source = csv.GetField("source"),
-						Episodes = csv.GetField<float>("episodes"),
+						Episodes = (int)csv.GetField<float>("episodes"),
 						Status = csv.GetField("status"),
 						Duration = csv.GetField("duration"),
 						Rating = csv.GetField("rating"),
 						Score = csv.GetField<float>("score"),
-						Scored_by = csv.GetField<float>("scored_by"),
-						Rank = csv.GetField<float>("rank"),
-						Popularity = csv.GetField<float>("popularity"),
-						Members = csv.GetField<float>("members"),
-						Favorites = csv.GetField<float>("favorites"),
+						Scored_by = (int)csv.GetField<float>("scored_by"),
+						Rank = (int)csv.GetField<float>("rank"),
+						Popularity = (int)csv.GetField<float>("popularity"),
+						Members = (int)csv.GetField<float>("members"),
+						Favorites = (int)csv.GetField<float>("favorites"),
 						Synopsis = csv.GetField("synopsis"),
 						Background = csv.GetField("background"),
 						Season = csv.GetField("season"),
-						Year = csv.GetField<float>("aired.prop.from.year"),
+						Year = (int)csv.GetField<float>("aired.prop.from.year"),
 						Producers = producers,
 						Licensors = licensors,
 						Studios = studios,
@@ -176,12 +176,12 @@ namespace BattAnimeZone.Services
 						//Trailer_image_medium_url = csv.GetField("trailer.images.medium_image_url"),
 						//Trailer_image_large_url = csv.GetField("trailer.images.large_image_url"),
 						//Trailer_image_maximum_url = csv.GetField("trailer.images.maximum_image_url"),
-						Aired_from_day = csv.GetField<float>("aired.prop.from.day"),
-						Aired_from_month = csv.GetField<float>("aired.prop.from.month"),
-						Aired_from_year = csv.GetField<float>("aired.prop.from.year"),
-						Aired_to_day = csv.GetField<float>("aired.prop.to.day"),
-						Aired_to_month = csv.GetField<float>("aired.prop.to.month"),
-						Aired_to_year = csv.GetField<float>("aired.prop.to.year"),
+						Aired_from_day = (int)csv.GetField<float>("aired.prop.from.day"),
+						Aired_from_month = (int)csv.GetField<float>("aired.prop.from.month"),
+						Aired_from_year = (int)csv.GetField<float>("aired.prop.from.year"),
+						Aired_to_day = (int)csv.GetField<float>("aired.prop.to.day"),
+						Aired_to_month = (int)csv.GetField<float>("aired.prop.to.month"),
+						Aired_to_year = (int)csv.GetField<float>("aired.prop.to.year"),
 						Aired_string = csv.GetField("aired.string"),
 					};
 					animes.Add(new_anime.Mal_id, new_anime);
@@ -237,19 +237,19 @@ namespace BattAnimeZone.Services
 			foreach (Anime anim in this.animes.Values)
 			{
 
-				foreach(Producer prod in anim.Producers)
+				foreach(Entry prod in anim.Producers)
 				{
 					if(productionEntities.Keys.Contains(prod.Mal_id))
 					producerhashes[prod.Mal_id].Add(anim.Mal_id);
 				}
 
-                foreach (Licensor licensor in anim.Licensors)
+                foreach (Entry licensor in anim.Licensors)
                 {
                     if (productionEntities.Keys.Contains(licensor.Mal_id))
                         licensorhashes[licensor.Mal_id].Add(anim.Mal_id);
                 }
 
-                foreach (Studio studio in anim.Studios)
+                foreach (Entry studio in anim.Studios)
                 {
                     if (productionEntities.Keys.Contains(studio.Mal_id))
                         studiohashes[studio.Mal_id].Add(anim.Mal_id);
