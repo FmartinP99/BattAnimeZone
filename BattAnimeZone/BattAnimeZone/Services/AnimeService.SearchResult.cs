@@ -19,9 +19,9 @@ namespace BattAnimeZone.Services
                 double default_distance = double.MaxValue;
                 double eng_distance = double.MaxValue;
                 double jp_distance = double.MaxValue;
-                if (anime.Title != "") default_distance = distance_metric.Distance(name, anime.Title_english.ToLower());
-                if (anime.Title_english != "") eng_distance = distance_metric.Distance(name, anime.Title_japanese.ToLower());
-                if (anime.Title_japanese != "") jp_distance = distance_metric.Distance(name, anime.Title_japanese.ToLower());
+                if (anime.Title != "") default_distance = distance_metric.Distance(name, anime.TitleEnglish.ToLower());
+                if (anime.TitleEnglish != "") eng_distance = distance_metric.Distance(name, anime.TitleJapanese.ToLower());
+                if (anime.TitleJapanese != "") jp_distance = distance_metric.Distance(name, anime.TitleJapanese.ToLower());
                 double min_distance = Math.Min(jp_distance, Math.Min(eng_distance, default_distance));
                 if (min_distance < 0.4) distances.Add(anime.Mal_id, min_distance);
             }

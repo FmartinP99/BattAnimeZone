@@ -134,19 +134,19 @@ namespace BattAnimeZone.Services
                     Anime new_anime = new Anime
 					{
 						Mal_id = csv.GetField<int>("mal_id"),
-						//Url = csv.GetField("url"),
+						Url = csv.GetField("url"),
 						Title = csv.GetField("title"),
-						Title_english = csv.GetField("title_english"),
-						Title_japanese = csv.GetField("title_japanese"),
-						//Ttile_synonyms = title_synonyms,
-						Media_type = csv.GetField("type"),
+						TitleEnglish = csv.GetField("title_english"),
+						TitleJapanese = csv.GetField("title_japanese"),
+						TtileSynonyms = title_synonyms,
+						MediaType  = csv.GetField("type"),
 						Source = csv.GetField("source"),
 						Episodes = (int)csv.GetField<float>("episodes"),
 						Status = csv.GetField("status"),
 						Duration = csv.GetField("duration"),
 						Rating = csv.GetField("rating"),
 						Score = csv.GetField<float>("score"),
-						Scored_by = (int)csv.GetField<float>("scored_by"),
+						ScoredBy = (int)csv.GetField<float>("scored_by"),
 						Rank = (int)csv.GetField<float>("rank"),
 						Popularity = (int)csv.GetField<float>("popularity"),
 						Members = (int)csv.GetField<float>("members"),
@@ -161,31 +161,31 @@ namespace BattAnimeZone.Services
 						Genres = genres,
 						Themes = themes,
 						Relations = relations,
-						//Externals = externals,
-						//Streamings = streamings,
-						//Image_jpg_url = csv.GetField("images.jpg.image_url"),
-						//Image_small_jpg_url = csv.GetField("images.jpg.small_image_url"),
-						//Image_large_jpg_url = csv.GetField("images.jpg.large_image_url"),
-						//Image_webp_url = csv.GetField("images.webp.image_url"),
-						//Image_small_webp_url = csv.GetField("images.webp.small_image_url"),
-						Image_large_webp_url = csv.GetField("images.webp.large_image_url"),
-						//Trailer_url = csv.GetField("trailer.url"),
-						//Trailer_embed_url = csv.GetField("trailer.embed_url"),
-						//Trailer_image_url = csv.GetField("trailer.images.image_url"),
-						//Trailer_image_small_url = csv.GetField("trailer.images.small_image_url"),
-						//Trailer_image_medium_url = csv.GetField("trailer.images.medium_image_url"),
-						//Trailer_image_large_url = csv.GetField("trailer.images.large_image_url"),
-						//Trailer_image_maximum_url = csv.GetField("trailer.images.maximum_image_url"),
-						Aired_from_day = (int)csv.GetField<float>("aired.prop.from.day"),
-						Aired_from_month = (int)csv.GetField<float>("aired.prop.from.month"),
-						Aired_from_year = (int)csv.GetField<float>("aired.prop.from.year"),
-						Aired_to_day = (int)csv.GetField<float>("aired.prop.to.day"),
-						Aired_to_month = (int)csv.GetField<float>("aired.prop.to.month"),
-						Aired_to_year = (int)csv.GetField<float>("aired.prop.to.year"),
-						Aired_string = csv.GetField("aired.string"),
+						Externals = externals,
+						Streamings = streamings,
+						ImageJpgUrl = csv.GetField("images.jpg.image_url"),
+						ImageSmallJpgUrl = csv.GetField("images.jpg.small_image_url"),
+						ImageLargeJpgUrl = csv.GetField("images.jpg.large_image_url"),
+						ImageWebpUrl = csv.GetField("images.webp.image_url"),
+						ImageSmallWebpUrl = csv.GetField("images.webp.small_image_url"),
+						ImageLargeWebpUrl = csv.GetField("images.webp.large_image_url"),
+						TrailerUrl = csv.GetField("trailer.url"),
+						TrailerEmbedUrl = csv.GetField("trailer.embed_url"),
+						TrailerImageUrl = csv.GetField("trailer.images.image_url"),
+						TrailerImageSmallUrl = csv.GetField("trailer.images.small_image_url"),
+						TrailerImageMediumUrl = csv.GetField("trailer.images.medium_image_url"),
+						TrailerImageLargeUrl = csv.GetField("trailer.images.large_image_url"),
+						TrailerImageMaximumUrl = csv.GetField("trailer.images.maximum_image_url"),
+						AiredFromDay = (int)csv.GetField<float>("aired.prop.from.day"),
+						AiredFromMonth = (int)csv.GetField<float>("aired.prop.from.month"),
+						AiredFromYear = (int)csv.GetField<float>("aired.prop.from.year"),
+						AiredToDay = (int)csv.GetField<float>("aired.prop.to.day"),
+						AiredToMonth = (int)csv.GetField<float>("aired.prop.to.month"),
+						AiredToYear = (int)csv.GetField<float>("aired.prop.to.year"),
+						AiredString = csv.GetField("aired.string"),
 					};
 					animes.Add(new_anime.Mal_id, new_anime);
-                    if (!mediaTypes.Contains(new_anime.Media_type)) mediaTypes.Add(new_anime.Media_type);
+                    if (!mediaTypes.Contains(new_anime.MediaType )) mediaTypes.Add(new_anime.MediaType );
 
 				}
 			}
@@ -350,7 +350,7 @@ namespace BattAnimeZone.Services
 
             foreach (var ani in this.animes)
             {
-               tempApM[ani.Value.Media_type].Add(ani.Value.Mal_id);
+               tempApM[ani.Value.MediaType ].Add(ani.Value.Mal_id);
             }
 
 			this.animesPerMediaTypesHash = tempApM;
