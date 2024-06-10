@@ -32,9 +32,9 @@
 			{
 				<div class="col-2">
 					<div class="card card-block card-1" @onclick="@(() => NavigateTo(anime.Mal_id))">
-							<img src="@anime.Image_large_webp_url" class="img-fluid" alt="Anime image is missing!">
+							<img src="@anime.ImageLargeWebpUrl" class="img-fluid" alt="Anime image is missing!">
 							<div class="scoreDiv">@anime.Score</div>
-							<div class="typeDiv">@anime.Media_type</div>
+							<div class="typeDiv">@anime.MediaType</div>
 							<div class="titleDiv">@GetTitle(anime)</div>
 							@if(anime.Status != "Finished Airing")
 							{
@@ -99,7 +99,7 @@
 
 	protected string GetTitle(AnimeHomePageDTO anime)
 	{
-		return anime.Title ?? anime.Title_english ?? anime.Title_japanese ?? "No Title Found!";
+		return anime.Title ?? anime.TitleEnglish ?? anime.TitleJapanese ?? "No Title Found!";
 	} 
 
 

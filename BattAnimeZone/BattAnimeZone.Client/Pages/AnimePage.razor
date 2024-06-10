@@ -29,35 +29,35 @@ else{
         <RadzenRow Style="height:500px; flex:auto; margin-bottom:20px; justify-content: space-between;">
        
             <div class="imageDiv">
-                <img src="@currentAnime.Image_large_webp_url" class="img-fluid" alt="Anime image is missing!">
+                <img src="@currentAnime.ImageLargeWebpUrl" class="img-fluid" alt="Anime image is missing!">
             </div>
 
                 <div class="attributesDiv">
-                @if (currentAnime.Title_english.Length > 0 || currentAnime.Title_japanese.Length > 0)
+                @if (currentAnime.TitleEnglish.Length > 0 || currentAnime.TitleJapanese.Length > 0)
                 {
                     <div class="rowDiv">
                         <span class="titleSpan">Alternative Name(s):</span><br />
-                        @if (currentAnime.Title_english.Length > 0)
+                        @if (currentAnime.TitleEnglish.Length > 0)
                         {
                             <span class="titleLanguage">ENG: </span>
-                            @currentAnime.Title_english
+                            @currentAnime.TitleEnglish
                             <br />
                         }
-                        @if (currentAnime.Title_japanese.Length > 0)
+                        @if (currentAnime.TitleJapanese.Length > 0)
                         {
                             <span class="titleLanguage">JP: </span>
-                            @currentAnime.Title_japanese
+                            @currentAnime.TitleJapanese
                         }
                     </div>
                     }
           
 
                     <div class="rowDiv"><span class="titleSpan">Episodes: </span>@currentAnime.Episodes</div>
-                    <div class="rowDiv"><span class="titleSpan">Type: </span>@currentAnime.Media_type</div>
+                    <div class="rowDiv"><span class="titleSpan">Type: </span>@currentAnime.MediaType</div>
 
                     <div class="rowDiv"><span class="titleSpan">Airing: </span>@currentAnime.Status</div>
                     <div class="rowDiv"><span class="titleSpan">Season: </span>@currentAnime.Season</div>
-                    <div class="rowDiv"><span class="titleSpan">Aired: </span>@currentAnime.Aired_string</div>
+                    <div class="rowDiv"><span class="titleSpan">Aired: </span>@currentAnime.AiredString</div>
 
                     <div class="rowDiv"><span class="titleSpan">Rank: </span>@currentAnime.Rank</div>
                     <div class="rowDiv"><span class="titleSpan">Score: </span>@currentAnime.Score</div>

@@ -24,27 +24,27 @@
         switch (filter_str)
         {
             case "Alphabetical ENG":
-                animes = animes.OrderBy(anime => string.IsNullOrEmpty(anime.Title_english) && string.IsNullOrEmpty(anime.Title_japanese) ? 2 :
-                string.IsNullOrEmpty(anime.Title_english) ? 1 : 0)
-                .ThenBy(anime => anime.Title_english)
+                animes = animes.OrderBy(anime => string.IsNullOrEmpty(anime.TitleEnglish) && string.IsNullOrEmpty(anime.TitleJapanese) ? 2 :
+                string.IsNullOrEmpty(anime.TitleEnglish) ? 1 : 0)
+                .ThenBy(anime => anime.TitleEnglish)
                 .ToList();
                 break;
             case "Alphabetical Descending ENG":
-                animes = animes.OrderBy(anime => string.IsNullOrEmpty(anime.Title_english) && string.IsNullOrEmpty(anime.Title_japanese) ? 2 :
-               string.IsNullOrEmpty(anime.Title_english) ? 1 : 0)
-               .ThenByDescending(anime => anime.Title_english)
+                animes = animes.OrderBy(anime => string.IsNullOrEmpty(anime.TitleEnglish) && string.IsNullOrEmpty(anime.TitleJapanese) ? 2 :
+               string.IsNullOrEmpty(anime.TitleEnglish) ? 1 : 0)
+               .ThenByDescending(anime => anime.TitleEnglish)
                .ToList();
                 break;
             case "Alphabetical JP":
-                animes = animes.OrderBy(anime => string.IsNullOrEmpty(anime.Title_english) && string.IsNullOrEmpty(anime.Title_japanese) ? 2 :
-                string.IsNullOrEmpty(anime.Title_japanese) ? 1 : 0)
-               .ThenBy(anime => anime.Title_japanese)
+                animes = animes.OrderBy(anime => string.IsNullOrEmpty(anime.TitleEnglish) && string.IsNullOrEmpty(anime.TitleJapanese) ? 2 :
+                string.IsNullOrEmpty(anime.TitleJapanese) ? 1 : 0)
+               .ThenBy(anime => anime.TitleJapanese)
                .ToList();
                 break;
             case "Alphabetical Descending JP":
-                animes = animes.OrderBy(anime => string.IsNullOrEmpty(anime.Title_english) && string.IsNullOrEmpty(anime.Title_japanese) ? 2 :
-                string.IsNullOrEmpty(anime.Title_japanese) ? 1 : 0)
-               .ThenByDescending(anime => anime.Title_japanese)
+                animes = animes.OrderBy(anime => string.IsNullOrEmpty(anime.TitleEnglish) && string.IsNullOrEmpty(anime.TitleJapanese) ? 2 :
+                string.IsNullOrEmpty(anime.TitleJapanese) ? 1 : 0)
+               .ThenByDescending(anime => anime.TitleJapanese)
                .ToList();
                 break;
             case "Year":
@@ -72,12 +72,12 @@
                 .ThenByDescending(anime => anime.Popularity).ToList();
                 break;
             case "Type":
-                animes = animes.OrderBy(anime => string.IsNullOrEmpty(anime.Media_type))
-                .ThenBy(anime => anime.Media_type).ToList();
+                animes = animes.OrderBy(anime => string.IsNullOrEmpty(anime.MediaType))
+                .ThenBy(anime => anime.MediaType).ToList();
                 break;
             case "Type Descending":
-                animes = animes.OrderBy(anime => string.IsNullOrEmpty(anime.Media_type))
-                .ThenByDescending(anime => anime.Media_type).ToList();
+                animes = animes.OrderBy(anime => string.IsNullOrEmpty(anime.MediaType))
+                .ThenByDescending(anime => anime.MediaType).ToList();
                 break;
             default:
                 break;

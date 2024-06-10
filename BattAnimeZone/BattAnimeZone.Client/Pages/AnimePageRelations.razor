@@ -25,12 +25,12 @@
             <Template Context="anime">
                 <RadzenCard class="lga-card" @onclick="@(() => NavigateTo(anime.Mal_id))">
                     <RadzenStack Style="height:70%" Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center">
-                        <RadzenImage Path="@anime.Image_large_webp_url" Style="width: 100px; height: 100px; border-radius: 15%" AlternateText="no image" />
+                        <RadzenImage Path="@anime.ImageLargeWebpUrl" Style="width: 100px; height: 100px; border-radius: 15%" AlternateText="no image" />
                         <RadzenStack Gap="0">
                             <RadzenText TextStyle="TextStyle.Overline" Style="color:White" class=" rz-display-flex rz-mt-2 rz-my-0">English Name</RadzenText>
-                            <RadzenText TextStyle="TextStyle.Body1" Style="color:White"><b>@(anime.Title_english)</b></RadzenText>
+                            <RadzenText TextStyle="TextStyle.Body1" Style="color:White"><b>@(anime.TitleEnglish)</b></RadzenText>
                             <RadzenText TextStyle="TextStyle.Overline" Style="color:White" class="rz-display-flex rz-mt-4 rz-mb-0">Japanese Name</RadzenText>
-                            <RadzenText TextStyle="TextStyle.Body1" Style="color:White"><b>@(anime.Title_japanese)</b></RadzenText>
+                            <RadzenText TextStyle="TextStyle.Body1" Style="color:White"><b>@(anime.TitleJapanese)</b></RadzenText>
                         </RadzenStack>
                         <RadzenStack Gap="0">
                             <RadzenText TextStyle="TextStyle.Overline" Style="color:White" class=" rz-display-flex rz-mt-2 rz-my-0">Score</RadzenText>
@@ -41,7 +41,7 @@
 
                         <RadzenStack Gap="0">
                             <RadzenText TextStyle="TextStyle.Overline" Style="color:White" class=" rz-display-flex rz-mt-2 rz-my-0">Type</RadzenText>
-                            <RadzenText TextStyle="TextStyle.Body1" Style="color:White"><b>@(anime.Media_type)</b></RadzenText>
+                            <RadzenText TextStyle="TextStyle.Body1" Style="color:White"><b>@(anime.MediaType)</b></RadzenText>
                             <RadzenText TextStyle="TextStyle.Overline" Style="color:White" class="rz-display-flex rz-mt-4 rz-mb-0">Year</RadzenText>
                             <RadzenText TextStyle="TextStyle.Body1" Style="color:White"><b>@(anime.Year)</b></RadzenText>
                         </RadzenStack>
@@ -62,7 +62,7 @@
     }
     else if (relational_animes != null && relational_animes.Count == 0)
     {
-        <h1>Sorry, there are no relational animes for @currentAnime.Title_english --- @currentAnime.Title_japanese</h1>
+        <h1>Sorry, there are no relational animes for @currentAnime.TitleEnglish --- @currentAnime.TitleJapanese</h1>
         <RadzenButton Click="NavigateBack">GO BACK!
         </RadzenButton>
     }

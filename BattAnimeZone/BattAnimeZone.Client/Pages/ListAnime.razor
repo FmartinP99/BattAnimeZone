@@ -60,16 +60,16 @@ else{
             {
                 <RadzenRow @onclick=@(() => NavigateTo(anime.Mal_id)) Style="height:100px; margin-bottom: 30px;">
                     <RadzenColumn Style="max-width:100px; ">
-                        <RadzenImage Style="max-width:100px; max-height:100px;" Path="@anime.Image_large_webp_url"></RadzenImage>
+                        <RadzenImage Style="max-width:100px; max-height:100px;" Path="@anime.ImageLargeWebpUrl"></RadzenImage>
                     </RadzenColumn>
                     <RadzenColumn Style="max-width:200px;">
-                        English Name: <br> @anime.Title_english
+                        English Name: <br> @anime.TitleEnglish
                     </RadzenColumn>
                     <RadzenColumn Style="max-width:200px;">
-                        Japanese name: <br> @anime.Title_japanese
+                        Japanese name: <br> @anime.TitleJapanese
                     </RadzenColumn>
                     <RadzenColumn Style="max-width:100px;">
-                        Type: <br> @anime.Media_type
+                        Type: <br> @anime.MediaType
                     </RadzenColumn>
                     <RadzenColumn Style="max-width:100px;">
                         Episodes: <br> @anime.Episodes

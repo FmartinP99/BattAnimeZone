@@ -3,11 +3,11 @@
 {
     public interface IAnimeDTO
     {
-        string Title_english { get; }
-        string Title_japanese { get; }
+        string TitleEnglish { get; }
+        string TitleJapanese { get; }
         public int Year { get; }
         float Score { get; }
         int Popularity { get; }
-        string Media_type { get; }
+        string MediaType { get; }
     }
 }

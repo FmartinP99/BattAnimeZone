@@ -71,12 +71,12 @@ else{
                     <Template Context="anime">
                         <RadzenCard class="lga-card" @onclick="@(() => NavigateTo(anime.Mal_id))">
                             <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center">
-                                <RadzenImage Path="@anime.Image_large_webp_url" Style="width: 100px; height: 100px; border-radius: 15%" AlternateText="no image" />
+                                <RadzenImage Path="@anime.ImageLargeWebpUrl" Style="width: 100px; height: 100px; border-radius: 15%" AlternateText="no image" />
                                 <RadzenStack Gap="0" Style="width:70%">
                                     <RadzenText TextStyle="TextStyle.Overline" Style="color:White" class=" rz-display-flex rz-mt-2 rz-my-0">English Name</RadzenText>
-                                    <RadzenText TextStyle="TextStyle.Body1" Style="color:White"><b>@TruncateTitles(anime.Title_english, 45)</b></RadzenText>
+                                    <RadzenText TextStyle="TextStyle.Body1" Style="color:White"><b>@TruncateTitles(anime.TitleEnglish, 45)</b></RadzenText>
                                     <RadzenText TextStyle="TextStyle.Overline" Style="color:White" class="rz-display-flex rz-mt-4 rz-mb-0">Japanese Name</RadzenText>
-                                    <RadzenText TextStyle="TextStyle.Body1" Style="color:White"><b>@TruncateTitles(anime.Title_japanese, 30)</b></RadzenText>
+                                    <RadzenText TextStyle="TextStyle.Body1" Style="color:White"><b>@TruncateTitles(anime.TitleJapanese, 30)</b></RadzenText>
                                 </RadzenStack>
                             </RadzenStack>
                           
