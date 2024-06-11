@@ -1,11 +1,11 @@
 using BattAnimeZone.Authentication;
-using BattAnimeZone.Authentication.PasswordHasher;
-using BattAnimeZone.Client.Pages;
 using BattAnimeZone.Components;
+using BattAnimeZone.DatabaseInitializer;
 using BattAnimeZone.DbContexts;
 using BattAnimeZone.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Internal;
 using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -40,8 +40,11 @@ builder.Services.AddSingleton<UserAccountService>();
 
 
 //databasecontexts
-builder.Services.AddDbContext<AnimeDbContext>(options =>
-    options.UseSqlite(builder.Configuration.GetConnectionString("AnimeDatabase")));
+//builder.Services.AddDbContext<AnimeDbContext>(options =>
+  //  options.UseSqlite(builder.Configuration.GetConnectionString("AnimeDatabase")));
+  builder.Services.AddDbContextFactory<AnimeDbContext>((DbContextOptionsBuilder options) => options.UseSqlite(builder.Configuration.GetConnectionString("AnimeDatabase")));
+
+builder.Services.AddTransient<DbInitializer>();
 
 
 builder.Services.AddScoped<Radzen.DialogService>();
@@ -93,9 +96,22 @@ app.MapRazorComponents<App>()
     .AddInteractiveWebAssemblyRenderMode()
     .AddAdditionalAssemblies(typeof(BattAnimeZone.Client._Imports).Assembly);
 
+
+using (var serviceScope = app.Services.GetService<IServiceScopeFactory>().CreateScope())
+{
+    if (serviceScope == null) return;
+    var contextFactory = serviceScope.ServiceProvider.GetRequiredService<IDbContextFactory<AnimeDbContext>>();
+   
+    var dbInitializer = serviceScope.ServiceProvider.GetRequiredService<DbInitializer>();
+    dbInitializer.Initialize(contextFactory);
+    
+}
+
+
 var animeService = app.Services.GetRequiredService<AnimeService>();
 await animeService.Initialize();
 
 app.MapControllers();
 
+GC.Collect();
 app.Run();

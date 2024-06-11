@@ -1,28 +1,28 @@
 ﻿using BattAnimeZone.DbContexts;
-using CsvHelper;
-using System.Globalization;
 using BattAnimeZone.Shared.Models.Anime;
-using BattAnimeZone.Shared.DatabaseModels.Anime;
-using BattAnimeZone.Shared.DatabaseModels.Relation;
-using BattAnimeZone.Shared.DatabaseModels.External;
-using BattAnimeZone.Shared.DatabaseModels.Streaming;
-using BattAnimeZone.Shared.DatabaseModels.AnimeStreaming;
-using CsvHelper.Configuration;
-using System.Linq;
-using static System.Runtime.InteropServices.JavaScript.JSType;
-using System.Xml.Linq;
-using System;
+using BattAnimeZone.Shared.Models.ProductionEntity;
+using BattAnimeZone.Shared.Models.Genre;
+using BattAnimeZone.DatabaseModels;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Internal;
+using BattAnimeZone.Shared.Models.AnimeDTOs;
+
+
+
 
 namespace BattAnimeZone.Utilities.CsvToDatabase
 {
     public class CsvToDataBaseHandler
     {
 
-        private readonly AnimeDbContext _context;
+		private readonly static int batchsize = 100;
+		private IDbContextFactory<AnimeDbContext> _dbContextFactory;
 
-        public CsvToDataBaseHandler(AnimeDbContext context)
+		private bool disposedValue;
+
+		public CsvToDataBaseHandler(IDbContextFactory<AnimeDbContext> dbContextFactory)
         {
-            _context = context;
+			_dbContextFactory = dbContextFactory;
         }
 
         public AnimeModel MapAnimeCsvToAnime(Anime anime)
@@ -82,8 +82,26 @@ namespace BattAnimeZone.Utilities.CsvToDatabase
                 AnimeModel animeModel = this.MapAnimeCsvToAnime(an);
                 animeModels.Add(animeModel);
             }
-            await _context.Animes.AddRangeAsync(animeModels);
-            await _context.SaveChangesAsync();
+
+
+			using (var _context = _dbContextFactory.CreateDbContext())
+			{
+
+				for (int i = 0; i < animeModels.Count; i += batchsize)
+				{
+
+					var batch = animeModels.Skip(i).Take(batchsize).ToList();
+
+
+					await _context.Animes.AddRangeAsync(batch);
+					await _context.SaveChangesAsync();
+
+					foreach (var rmod in batch)
+					{
+						_context.Entry(rmod).State = EntityState.Detached;
+					}
+				}
+			}
 		}
 
 
@@ -121,17 +139,22 @@ namespace BattAnimeZone.Utilities.CsvToDatabase
 
 			foreach (Anime anime in animes.Values)
             {
-                foreach (Relations relations in anime.Relations)
+				var entity2 = animes[anime.Mal_id];
+				if (entity2 == null) continue;
+
+				foreach (Relations relations in anime.Relations)
                 {
                     foreach (Entry entry in relations.Entry)
                     {
                         if (entry.Type != "anime") continue;
 
+						Anime entity;
+						if (!animes.TryGetValue(entry.Mal_id, out entity)) continue;
+
 						var dictionary = new Dictionary<Dictionary<int, int>, string> {{ new Dictionary<int, int> { { 1, anime.Mal_id }, { 2, entry.Mal_id } }, relations.Relation },};
 						bool alreadyVisited = visited.Any(d => AreDictionariesEqual(d, dictionary));
 						if (alreadyVisited)
                         {
-                            await Console.Out.WriteLineAsync($"{relations.Relation} -  parent: {anime.Mal_id} child: {entry.Mal_id}");
                             continue;
                         }
 
@@ -149,11 +172,34 @@ namespace BattAnimeZone.Utilities.CsvToDatabase
 
                         relationModels.Add(relmod);
 
+
+
+
+
                     }
                 }
             }
-			await _context.Relations.AddRangeAsync(relationModels);
-			await _context.SaveChangesAsync();
+
+
+
+			using (var _context = _dbContextFactory.CreateDbContext())
+			{
+				for (int i = 0; i < relationModels.Count; i += batchsize)
+				{
+
+					var batch = relationModels.Skip(i).Take(batchsize).ToList();
+					await _context.Relations.AddRangeAsync(batch);
+					await _context.SaveChangesAsync();
+
+
+					foreach (var rmod in batch)
+					{
+						_context.Entry(rmod).State = EntityState.Detached;
+					}
+
+				}
+			}
+
 		}
 
 
@@ -162,25 +208,40 @@ namespace BattAnimeZone.Utilities.CsvToDatabase
 
 			List<ExternalModel> externalModels = new List<ExternalModel>();
 
+			using (var _context = _dbContextFactory.CreateDbContext())
+			{
+				foreach (Anime an in animes)
+					{
+					var entity2 = _context.Animes.Find(an.Mal_id);
+					if (entity2 == null) continue;
 
-            foreach (Anime an in animes)
-            {
+					foreach (External ext in an.Externals) {
 
-                foreach (External ext in an.Externals) {
+						ExternalModel extm = new ExternalModel
+						{
+							Name = ext.Name,
+							Url = ext.Url,
+							AnimeId = an.Mal_id
+						};
+						externalModels.Add(extm);
+					}
+				}
 
-                    ExternalModel extm = new ExternalModel
-                    {
-                        Name = ext.Name,
-                        Url = ext.Url,
-                        AnimeId = an.Mal_id
-                    };
-                    externalModels.Add(extm);
-                }
-            }
+			
+				for (int i = 0; i < externalModels.Count; i += batchsize)
+				{
 
+					var batch = externalModels.Skip(i).Take(batchsize).ToList();
 
-				await _context.Externals.AddRangeAsync(externalModels);
-			    await _context.SaveChangesAsync();
+					await _context.Externals.AddRangeAsync(batch);
+					await _context.SaveChangesAsync();
+
+					foreach (var rmod in batch)
+					{
+						_context.Entry(rmod).State = EntityState.Detached;
+					}
+				}
+			}
 		}
 
 		public async Task SaveStreamingsToDatabase(List<Anime> animes)
@@ -207,10 +268,22 @@ namespace BattAnimeZone.Utilities.CsvToDatabase
 					streamingModels.Add(stm);
 				}
 			}
+			using (var _context = _dbContextFactory.CreateDbContext())
+			{
+				for (int i = 0; i < streamingModels.Count; i += batchsize)
+				{
 
+					var batch = streamingModels.Skip(i).Take(batchsize).ToList();
+					await _context.Streamings.AddRangeAsync(batch);
+					await _context.SaveChangesAsync();
 
-			await _context.Streamings.AddRangeAsync(streamingModels);
-			await _context.SaveChangesAsync();
+					foreach (var rmod in batch)
+					{
+						_context.Entry(rmod).State = EntityState.Detached;
+					}
+				}
+			}
+
 		}
 
 
@@ -220,36 +293,407 @@ namespace BattAnimeZone.Utilities.CsvToDatabase
 
 			List<AnimeStreamingModel> animeStreamingModels = new List<AnimeStreamingModel>();
 
-            HashSet<string> visited = new HashSet<string>();
-
-            foreach(Anime anime in animes)
-            {
-                foreach(Streaming streaming in anime.Streamings)
+			HashSet<string> visited = new HashSet<string>();
+			using (var _context = _dbContextFactory.CreateDbContext())
+			{
+				foreach (Anime anime in animes)
 				{
-					StreamingModel? streamingModel = _context.Streamings.FirstOrDefault(s => s.Name == streaming.Name && s.Url == streaming.Url);
-                    if (streamingModel == null) continue;
+					foreach (Streaming streaming in anime.Streamings)
+					{
+						StreamingModel? streamingModel = _context.Streamings.FirstOrDefault(s => s.Name == streaming.Name && s.Url == streaming.Url);
+						if (streamingModel == null) continue;
 
-                    int streamingId = streamingModel.Id;
+						var entity2 = _context.Animes.Find(anime.Mal_id);
+						if (entity2 == null) continue;
 
-                    string key = $"{streamingId}|!!|{anime.Mal_id}";
-                    if (visited.Contains(key)) continue;  
-                    visited.Add(key);
+						int streamingId = streamingModel.Id;
 
-                    AnimeStreamingModel astm = new AnimeStreamingModel
-                    {
-                        AnimeId = anime.Mal_id,
-                        StreamingId = streamingId
-                    };
+						string key = $"{streamingId}|!!|{anime.Mal_id}";
+						if (visited.Contains(key)) continue;
+						visited.Add(key);
 
-					animeStreamingModels.Add(astm);
+						AnimeStreamingModel astm = new AnimeStreamingModel
+						{
+							AnimeId = anime.Mal_id,
+							StreamingId = streamingId
+						};
 
+						animeStreamingModels.Add(astm);
+
+					}
+				}
+
+			
+				for (int i = 0; i < animeStreamingModels.Count; i += batchsize)
+				{
+
+					var batch = animeStreamingModels.Skip(i).Take(batchsize).ToList();
+
+					await _context.AnimeStreamings.AddRangeAsync(batch);
+					await _context.SaveChangesAsync();
+
+					foreach (var rmod in batch)
+					{
+						_context.Entry(rmod).State = EntityState.Detached;
+					}
 				}
 			}
-
-			await _context.AnimeStreamings.AddRangeAsync(animeStreamingModels);
-			await _context.SaveChangesAsync();
 		}
 
+
+
+		public async Task SaveProductionEntitiesToDatabase(List<ProductionEntity> prodents)
+		{
+
+			List<ProductionEntityModel> prodentsModel = new List<ProductionEntityModel>();
+
+			foreach (ProductionEntity prod in prodents) {
+
+				prodentsModel.Add(new ProductionEntityModel
+				{
+					Id = prod.Mal_id,
+					Favorites = prod.Favorites,
+					Established = prod.Established,
+					About = prod.About,
+					Count = prod.Count,
+					ImageUrl = prod.Image_url
+
+				});
+			}
+
+			using (var _context = _dbContextFactory.CreateDbContext())
+			{
+				for (int i = 0; i < prodentsModel.Count; i += batchsize)
+				{
+
+					var batch = prodentsModel.Skip(i).Take(batchsize).ToList();
+					await _context.ProductionEntities.AddRangeAsync(batch);
+					await _context.SaveChangesAsync();
+
+					foreach (var rmod in batch)
+					{
+						_context.Entry(rmod).State = EntityState.Detached;
+					}
+				}
+			}
+		}
+
+		public async Task SaveProductionEntityTitlesToDatabase(List<ProductionEntity> prodents)
+		{
+
+			List<ProductionEntityTitleModel> prodentsModel = new List<ProductionEntityTitleModel>();
+
+			List<Dictionary<Dictionary<int, int>, string>> visited = new List<Dictionary<Dictionary<int, int>, string>>();
+
+			using (var _context = _dbContextFactory.CreateDbContext())
+			{
+
+				foreach (ProductionEntity prod in prodents)
+				{
+
+					var entity = _context.ProductionEntities.Find(prod.Mal_id);
+					if (entity == null) continue;
+
+					foreach (ProductionEntityTitle title in prod.Titles)
+					{
+						prodentsModel.Add(new ProductionEntityTitleModel
+						{
+							Type = title.Type,
+							Title = title.Title,
+							ParentId = prod.Mal_id
+
+						});
+					}
+
+				}
+		
+				for (int i = 0; i < prodentsModel.Count; i += batchsize)
+				{
+
+					var batch = prodentsModel.Skip(i).Take(batchsize).ToList();
+					await _context.ProductionEntityTitles.AddRangeAsync(batch);
+					await _context.SaveChangesAsync();
+
+					foreach (var rmod in batch)
+					{
+						_context.Entry(rmod).State = EntityState.Detached;
+					}
+				}
+			}
+		}
+
+
+		public async Task SaveAnimeProductionEntitiesToDatabase(List<Anime> animes)
+		{
+
+			List<AnimeProductionEntityModel> aniprodentsmodel = new List<AnimeProductionEntityModel>();
+
+			List<Dictionary<int, int>> visitedStudios = new List<Dictionary<int, int>>();
+			List<Dictionary<int, int>> visitedLicensors = new List<Dictionary<int, int>>();
+			List<Dictionary<int, int>> visitedProducers = new List<Dictionary<int, int>>();
+
+			using (var _context = _dbContextFactory.CreateDbContext())
+			{
+				foreach (Anime anime in animes)
+				{
+					foreach(Entry studio in anime.Studios)
+					{
+						Dictionary<int, int> visited = new Dictionary<int, int>{{ anime.Mal_id, studio.Mal_id }};
+
+						var entity = _context.ProductionEntities.Find(studio.Mal_id);
+						if (entity == null) continue;
+
+						var entity2 = _context.Animes.Find(anime.Mal_id);
+						if (entity2 == null) continue;
+
+						if (visitedStudios.Contains(visited)) continue;
+						visitedStudios.Add(visited);
+
+						aniprodentsmodel.Add(new AnimeProductionEntityModel
+						{
+							AnimeId = anime.Mal_id,
+							ProductionEntityId = studio.Mal_id,
+							Type = "S"
+						});
+					}
+
+
+					foreach (Entry licensor in anime.Licensors)
+					{
+						Dictionary<int, int> visited = new Dictionary<int, int> { { anime.Mal_id, licensor.Mal_id } };
+
+						var entity = _context.ProductionEntities.Find(licensor.Mal_id);
+						if (entity == null) continue;
+
+						var entity2 = _context.Animes.Find(anime.Mal_id);
+						if (entity2 == null) continue;
+
+						if (visitedLicensors.Contains(visited)) continue;
+						visitedLicensors.Add(visited);
+
+						aniprodentsmodel.Add(new AnimeProductionEntityModel
+						{
+							AnimeId = anime.Mal_id,
+							ProductionEntityId = licensor.Mal_id,
+							Type = "L"
+						});
+					}
+
+
+					foreach (Entry producer in anime.Producers)
+					{
+						Dictionary<int, int> visited = new Dictionary<int, int> { { anime.Mal_id, producer.Mal_id } };
+
+						var entity = _context.ProductionEntities.Find(producer.Mal_id);
+						if (entity == null) continue;
+
+						var entity2 = _context.Animes.Find(anime.Mal_id);
+						if (entity2 == null) continue;
+
+						if (visitedProducers.Contains(visited)) continue;
+						visitedProducers.Add(visited);
+
+						aniprodentsmodel.Add(new AnimeProductionEntityModel
+						{
+							AnimeId = anime.Mal_id,
+							ProductionEntityId = producer.Mal_id,
+							Type = "P"
+						});
+					}
+				}
+
+			
+				for (int i = 0; i < aniprodentsmodel.Count; i += batchsize)
+				{
+
+					var batch = aniprodentsmodel.Skip(i).Take(batchsize).ToList();
+					await _context.AnimeProductionEntities.AddRangeAsync(batch);
+					await _context.SaveChangesAsync();
+
+					foreach (var rmod in batch)
+					{
+						_context.Entry(rmod).State = EntityState.Detached;
+					}
+				}
+			}
+		}
+
+
+
+		public async Task SaveUserAccountsToDatabase()
+		{
+
+			List<UserAccountModel> userAccountsModel = new List<UserAccountModel>();
+
+
+			userAccountsModel.Add(new UserAccountModel
+			{
+				UserName = "admin",
+				Password = "admin",
+				Email = "admin@admin.com",
+				Role = "Admin"
+
+			});
+
+			userAccountsModel.Add(new UserAccountModel
+			{
+				UserName = "user",
+				Password = "user",
+				Email = "user@user.com",
+				Role = "User"
+
+			});
+			using (var _context = _dbContextFactory.CreateDbContext())
+			{
+				for (int i = 0; i < userAccountsModel.Count; i += batchsize)
+				{
+
+					var batch = userAccountsModel.Skip(i).Take(batchsize).ToList();
+					await _context.UserAccounts.AddRangeAsync(batch);
+					await _context.SaveChangesAsync();
+
+					foreach (var rmod in batch)
+					{
+						_context.Entry(rmod).State = EntityState.Detached;
+					}
+				}
+			}
+		}
+
+
+		public async Task SaveAnimeUsersToDatabase()
+		{
+
+			List<AnimeUserModel> animeUserModels = new List<AnimeUserModel>();
+
+			using (var _context = _dbContextFactory.CreateDbContext()) { 
+				UserAccountModel? user = _context.UserAccounts.FirstOrDefault(u => u.UserName == "user" && u.Email == "user@user.com");
+			UserAccountModel? admin = _context.UserAccounts.FirstOrDefault(u => u.UserName == "admin" && u.Email == "admin@admin.com");
+
+			if (user == null || admin == null) return;
+
+			animeUserModels.Add(new AnimeUserModel
+			{
+				AnimeId = 52299,
+				UserId = user.Id,
+				favorite = true,
+				Status = "completed",
+				Rating = 10,
+			});
+
+			animeUserModels.Add(new AnimeUserModel
+			{
+				AnimeId = 52299,
+				UserId = admin.Id,
+				favorite = false,
+				Status = "watching",
+				
+			});
+
+			for (int i = 0; i < animeUserModels.Count; i += batchsize)
+			{
+
+				var batch = animeUserModels.Skip(i).Take(batchsize).ToList();
+				await _context.AnimeUserModels.AddRangeAsync(batch);
+				await _context.SaveChangesAsync();
+
+				foreach (var rmod in batch)
+				{
+					_context.Entry(rmod).State = EntityState.Detached;
+				}
+			}
+			}
+		}
+
+
+
+		public async Task SaveGenresToDatabase(List<AnimeGenre> genres)
+		{
+
+			List<GenreModel> genreModels = new List<GenreModel>();
+
+			foreach(var genre in genres) {
+				genreModels.Add(new GenreModel
+				{
+					Mal_id = genre.Mal_id,
+					Url = genre.Url,
+					Name = genre.Name
+
+				});
+			}
+				
+			using (var _context = _dbContextFactory.CreateDbContext())
+			{
+				for (int i = 0; i < genreModels.Count; i += batchsize)
+				{
+
+					var batch = genreModels.Skip(i).Take(batchsize).ToList();
+					await _context.Genres.AddRangeAsync(batch);
+					await _context.SaveChangesAsync();
+
+					foreach (var rmod in batch)
+					{
+						_context.Entry(rmod).State = EntityState.Detached;
+					}
+				}
+			}
+		}
+
+
+		public async Task SaveAnimeGenresToDatabase(List<Anime> animes)
+		{
+
+			List<AnimeGenreModel> genreModels = new List<AnimeGenreModel>();
+
+			using (var _context = _dbContextFactory.CreateDbContext())
+			{
+				foreach (var anime in animes)
+				{
+					var entity2 = _context.Animes.Find(anime.Mal_id);
+					if (entity2 == null) continue;
+					foreach (var ang in anime.Genres) {
+
+
+						var entity = _context.Genres.Find(ang.Mal_id);
+						if (entity == null) continue;
+
+						genreModels.Add(new AnimeGenreModel
+						{
+							AnimeId = anime.Mal_id,
+							GenreId = ang.Mal_id,
+							IsTheme = false
+						});
+					}
+
+					foreach (var ang in anime.Themes)
+					{
+						var entity = _context.Genres.Find(ang.Mal_id);
+						if (entity == null) continue;
+
+						genreModels.Add(new AnimeGenreModel
+						{
+							AnimeId = anime.Mal_id,
+							GenreId = ang.Mal_id,
+							IsTheme = true
+						});
+					}
+				}
+
+			
+				for (int i = 0; i < genreModels.Count; i += batchsize)
+				{
+
+					var batch = genreModels.Skip(i).Take(batchsize).ToList();
+					await _context.AnimeGenres.AddRangeAsync(batch);
+					await _context.SaveChangesAsync();
+
+					foreach (var rmod in batch)
+					{
+						_context.Entry(rmod).State = EntityState.Detached;
+					}
+				}
+			}
+		}
 
 	}
 }
