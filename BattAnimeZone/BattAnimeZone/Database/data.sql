@@ -82,7 +82,7 @@ UNIQUE(anime_id, streaming_id)
 
 
 CREATE TABLE ProductionEntity(
-id integer NOT NULL PRIMARY KEY AUTOINCREMENT,
+id integer NOT NULL PRIMARY KEY,
 favorites integer NOT NULL DEFAULT -1,
 established TEXT DEFAULT "",
 about TEXT DEFAULT "",
@@ -117,26 +117,28 @@ CREATE Table UserAccount(
  id integer NOT NULL PRIMARY KEY AUTOINCREMENT,
  username  TEXT NOT NULL UNIQUE,
  "password" TEXT not null,
-  email  TEXT UNIQUE,
+  email  TEXT NOT NULL UNIQUE
   CHECK (
     email LIKE '%_@_%._%' AND
     LENGTH(email) - LENGTH(REPLACE(email, '@', '')) = 1 AND
     SUBSTR(LOWER(email), 1, INSTR(email, '.') - 1) NOT GLOB '*[^@0-9a-z]*' AND
     SUBSTR(LOWER(email), INSTR(email, '.') + 1) NOT GLOB '*[^a-z]*'
-  )
+  ),
+  
+   "role" TEXT CHECK( "role" IN ('Admin','User') )   NOT NULL
 );
 
 
 
 CREATE TABLE AnimeUser (
   id integer NOT NULL PRIMARY KEY AUTOINCREMENT,
-  anime_id NOT NULL,
-  user_id NOT NULL,
+  anime_id integer NOT NULL,
+  user_id integer NOT NULL,
+  rating integer CHECK(rating BETWEEN 0 AND 10) DEFAULT 0,
   favorite integer CHECK( favorite IN (0,1)) NOT NULL DEFAULT 0,
   "status" text CHECK ("status" IN ('watching', 'completed', 'on hold', 'dropped', 'planned')),
   FOREIGN KEY(anime_id) REFERENCES Anime(id),
-  FOREIGN KEY(user_id) REFERENCES UserAccount(id),
-  UNIQUE(anime_id, user_id)
+  FOREIGN KEY(user_id) REFERENCES UserAccount(id)
 );
 
 
