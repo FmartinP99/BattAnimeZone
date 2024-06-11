@@ -55,9 +55,6 @@ namespace BattAnimeZone.Services
             Console.WriteLine("AnimeService initialization has ended!");
         }
 
-
-	
-
 		private void FillAnimesAndMedia()
 		{
             using (var reader = new StreamReader("Files/mal_data_2022plus_subset.csv"))
@@ -192,8 +189,6 @@ namespace BattAnimeZone.Services
 				}
 			}
 		}
-
-
 
 		public void FillProductionEntities()
 		{
@@ -390,7 +385,15 @@ namespace BattAnimeZone.Services
             return new ProductionEntity();
         }
 
-        public Task<Dictionary<int, HashSet<int>>> GetAnimePerProducerIds()
+
+
+		public Task<Dictionary<int, ProductionEntity>> GetProductionEntities()
+		{
+			return Task.FromResult(this.productionEntities);
+		}
+
+
+		public Task<Dictionary<int, HashSet<int>>> GetAnimePerProducerIds()
         {
             return Task.FromResult(this.animesPerProducerIdHash);
         }

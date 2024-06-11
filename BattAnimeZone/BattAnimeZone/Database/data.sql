@@ -138,7 +138,23 @@ CREATE TABLE AnimeUser (
   favorite integer CHECK( favorite IN (0,1)) NOT NULL DEFAULT 0,
   "status" text CHECK ("status" IN ('watching', 'completed', 'on hold', 'dropped', 'planned')),
   FOREIGN KEY(anime_id) REFERENCES Anime(id),
-  FOREIGN KEY(user_id) REFERENCES UserAccount(id)
+  FOREIGN KEY(user_id) REFERENCES UserAccount(id),
+  UNIQUE(anime_id, user_id)
 );
 
+CREATE TABLE Genre (
+  id integer NOT NULL PRIMARY KEY,
+  "name" text NOT NULL DEFAULT "",
+  url text NOT NULL DEFAULT ""
+);
+
+CREATE TABLE AnimeGenre (
+  id integer NOT NULL PRIMARY KEY AUTOINCREMENT,
+  anime_id integer NOT NULL,
+  genre_id integer NOT NULL,
+  is_theme integer CHECK(is_theme BETWEEN 0 AND 1) DEFAULT 0,
+  FOREIGN KEY(anime_id) REFERENCES Anime(id),
+  FOREIGN KEY(genre_id) REFERENCES Genre(id),
+  UNIQUE(anime_id, genre_id)
+);
 

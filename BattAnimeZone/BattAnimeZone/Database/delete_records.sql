@@ -1,3 +1,7 @@
+delete from animegenre;
+
+delete from genre;
+
 delete from animeuser;
 
 delete from useraccount;
