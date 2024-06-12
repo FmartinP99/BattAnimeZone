@@ -28,5 +28,16 @@ namespace BattAnimeZone.Controllers
 			return Ok(result);
 		}
 
+		[HttpGet("GetAnime/{mal_id}")]
+		public async Task<IActionResult> GetAnimePageDTOByID(int mal_id)
+		{
+			var result = await _dataBaseService.GetAnimePageDTOByID(mal_id);
+			if (result.Mal_id == -1)
+			{
+				return NotFound();
+			}
+			return Ok(result);
+		}
+
 	}
 }

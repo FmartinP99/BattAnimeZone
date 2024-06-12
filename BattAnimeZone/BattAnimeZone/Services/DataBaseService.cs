@@ -21,10 +21,5 @@ namespace BattAnimeZone.Services
 			dataBaseMapper = config.CreateMapper();
 		}
 
-
-
-
-
-
 	}
 }
