@@ -48,6 +48,8 @@ namespace BattAnimeZone.DatabaseInitializer
 									 Genres = grp.Where(x => !x.ag.IsTheme).Select(x => x.g.Name).ToList(),
 									 Themes = grp.Where(x => x.ag.IsTheme).Select(x => x.g.Name).ToList()
 								 })
+								 .AsSplitQuery()
+								 .AsNoTracking()
 									.Take(3)
 									.ToList();
 
