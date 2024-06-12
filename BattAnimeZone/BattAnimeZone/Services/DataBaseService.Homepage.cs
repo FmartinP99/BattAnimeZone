@@ -12,7 +12,8 @@ namespace BattAnimeZone.Services
 			using (var _context = _dbContextFactory.CreateDbContext())
 			{
 				IEnumerable<AnimeModel> animes_by_year = _context.Animes.Where(anime => anime.Year == year).OrderBy(anime => anime.Popularity);
-				return Task.FromResult(dataBaseMapper.Map<IEnumerable<AnimeHomePageDTO>>(animes_by_year));
+			
+			return Task.FromResult(dataBaseMapper.Map<IEnumerable<AnimeHomePageDTO>>(animes_by_year));
 			}
 		}
 	}

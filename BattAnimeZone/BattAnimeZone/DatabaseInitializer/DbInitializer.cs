@@ -40,7 +40,7 @@ namespace BattAnimeZone.DatabaseInitializer
 					var query = (from ag in _context.AnimeGenres
 								 join a in _context.Animes on ag.AnimeId equals a.Mal_id
 								 join g in _context.Genres on ag.GenreId equals g.Mal_id
-								 group new { ag, a, g } by new { ag.AnimeId, a.Title } into grp
+                                 group new { ag, a, g } by new { ag.AnimeId, a.Title } into grp
 								 select new
 								 {
 									 AnimeId = grp.Key.AnimeId,
