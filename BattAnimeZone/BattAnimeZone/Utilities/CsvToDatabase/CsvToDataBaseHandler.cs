@@ -35,6 +35,7 @@ namespace BattAnimeZone.Utilities.CsvToDatabase
                 MediaType = anime.MediaType,
                 Source = anime.Source,
                 Episodes = anime.Episodes,
+                Status = anime.Status,
                 Duration = anime.Duration,
                 Rating = anime.Rating,
                 Score = anime.Score,
