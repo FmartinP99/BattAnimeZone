@@ -116,7 +116,7 @@
                         }
                         else
                         {
-                            await JSRuntime.InvokeVoidAsync("console.error", $"{response.StatusCode}\n {response.ReasonPhrase}");
+                            await JSRuntime.InvokeVoidAsync("console.error", $"{response2.StatusCode}\n {response2.ReasonPhrase}");
                             return;
                         }
                     }catch(Exception e)
