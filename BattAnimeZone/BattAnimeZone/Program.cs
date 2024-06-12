@@ -38,10 +38,12 @@ builder.Services.AddAuthentication(o =>
 builder.Services.AddSingleton<AnimeService>();
 builder.Services.AddSingleton<UserAccountService>();
 
+builder.Services.AddTransient<DataBaseService>();
+
 
 //databasecontexts
 //builder.Services.AddDbContext<AnimeDbContext>(options =>
-  //options.UseSqlite(builder.Configuration.GetConnectionString("AnimeDatabase")));
+//options.UseSqlite(builder.Configuration.GetConnectionString("AnimeDatabase")));
 builder.Services.AddDbContextFactory<AnimeDbContext>((DbContextOptionsBuilder options) => options.UseSqlite(builder.Configuration.GetConnectionString("Database")));
 
 builder.Services.AddTransient<DbInitializer>();

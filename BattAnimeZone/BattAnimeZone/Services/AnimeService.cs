@@ -10,6 +10,11 @@ using BattAnimeZone.DbContexts;
 
 namespace BattAnimeZone.Services
 {
+	/// <summary>
+	/// WILL BE DEPRECATED IN THE FUTURE!!
+	/// This service uses inmemory database and must be used with the AnimeServiceController. 
+	/// For SQLite DataBase use the DataBaseController and DataBaseService 
+	/// </summary>
 	public partial class AnimeService
 	{
 
