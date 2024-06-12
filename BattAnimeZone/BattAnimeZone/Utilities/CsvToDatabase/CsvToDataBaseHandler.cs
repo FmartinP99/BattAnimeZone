@@ -18,8 +18,6 @@ namespace BattAnimeZone.Utilities.CsvToDatabase
 		private readonly static int batchsize = 100;
 		private IDbContextFactory<AnimeDbContext> _dbContextFactory;
 
-		private bool disposedValue;
-
 		public CsvToDataBaseHandler(IDbContextFactory<AnimeDbContext> dbContextFactory)
         {
 			_dbContextFactory = dbContextFactory;

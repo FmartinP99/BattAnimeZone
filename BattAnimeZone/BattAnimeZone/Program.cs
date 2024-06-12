@@ -41,8 +41,8 @@ builder.Services.AddSingleton<UserAccountService>();
 
 //databasecontexts
 //builder.Services.AddDbContext<AnimeDbContext>(options =>
-  //  options.UseSqlite(builder.Configuration.GetConnectionString("AnimeDatabase")));
-  builder.Services.AddDbContextFactory<AnimeDbContext>((DbContextOptionsBuilder options) => options.UseSqlite(builder.Configuration.GetConnectionString("AnimeDatabase")));
+  //options.UseSqlite(builder.Configuration.GetConnectionString("AnimeDatabase")));
+builder.Services.AddDbContextFactory<AnimeDbContext>((DbContextOptionsBuilder options) => options.UseSqlite(builder.Configuration.GetConnectionString("Database")));
 
 builder.Services.AddTransient<DbInitializer>();
 
@@ -101,10 +101,10 @@ using (var serviceScope = app.Services.GetService<IServiceScopeFactory>().Create
 {
     if (serviceScope == null) return;
     var contextFactory = serviceScope.ServiceProvider.GetRequiredService<IDbContextFactory<AnimeDbContext>>();
-   
-    var dbInitializer = serviceScope.ServiceProvider.GetRequiredService<DbInitializer>();
-    dbInitializer.Initialize(contextFactory);
-    
+	var configuration = serviceScope.ServiceProvider.GetRequiredService<IConfiguration>();
+
+	var dbInitializer = serviceScope.ServiceProvider.GetRequiredService<DbInitializer>();
+    dbInitializer.Initialize(configuration, contextFactory);
 }
 
 
