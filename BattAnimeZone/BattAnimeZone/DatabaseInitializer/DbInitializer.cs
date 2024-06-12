@@ -8,19 +8,59 @@ using CsvHelper;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using System.Globalization;
+using System.Linq.Dynamic.Core;
 
 namespace BattAnimeZone.DatabaseInitializer
 {
 	public class DbInitializer
 	{
-		public void Initialize(IDbContextFactory<AnimeDbContext> _contextFactory)
+		private  IConfiguration _configuration;
+		public void Initialize(IConfiguration configuration, IDbContextFactory<AnimeDbContext> _contextFactory)
 		{
+			_configuration = configuration;
+
 			using (var _context = _contextFactory.CreateDbContext())
 			{
-				_context.Database.EnsureCreated();
-				if (_context.Animes.Any()) return;
-			}
+				bool db_exists = (File.Exists(_configuration.GetConnectionString("DatabasePath")));
 
+				if (!db_exists)
+				{
+					if (!File.Exists(_configuration.GetConnectionString("DatabaseInitFilePath")))
+					{
+                        Console.WriteLine("DB Initializer file does not exists!");
+						return;
+                    }
+					string sqlCommands = File.ReadAllText(_configuration.GetConnectionString("DatabaseInitFilePath"));
+					Console.WriteLine("Reading SQL initialization script!");
+					_context.Database.ExecuteSqlRaw(sqlCommands);
+                    Console.WriteLine("Database has been created!");
+                }
+
+				if (_context.Animes.Any()) {
+					Console.WriteLine("Database isn't empty! Writing some AnimeGenres for test.\n");
+					var query = (from ag in _context.AnimeGenres
+								 join a in _context.Animes on ag.AnimeId equals a.Mal_id
+								 join g in _context.Genres on ag.GenreId equals g.Mal_id
+								 group new { ag, a, g } by new { ag.AnimeId, a.Title } into grp
+								 select new
+								 {
+									 AnimeId = grp.Key.AnimeId,
+									 AnimeTitle = grp.Key.Title,
+									 Genres = grp.Where(x => !x.ag.IsTheme).Select(x => x.g.Name).ToList(),
+									 Themes = grp.Where(x => x.ag.IsTheme).Select(x => x.g.Name).ToList()
+								 })
+									.Take(3)
+									.ToList();
+
+					foreach(var item in query)
+					{
+						Console.WriteLine($"AnimeId: {item.AnimeId}, AnimeTitle: {item.AnimeTitle} \n" + "\tGenres: " + string.Join(", ", item.Genres) + "\n" + "\tThemes: " + string.Join(", ", item.Themes));
+					}
+                    Console.WriteLine("\n");
+                    return; 
+				}
+			}
+			Console.WriteLine("Database was empty! Now filling the database. This might take a while!\n");
 			Dictionary<int, Anime> animes = new Dictionary<int, Anime> { };
 			Dictionary<int, ProductionEntity> productionEntities = new Dictionary<int, ProductionEntity> { };
 			Dictionary<int, AnimeGenre> genres = new Dictionary<int, AnimeGenre> { };
