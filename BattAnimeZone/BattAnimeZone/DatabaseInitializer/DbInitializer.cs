@@ -3,7 +3,6 @@ using BattAnimeZone.Shared.Models.Anime;
 using BattAnimeZone.Shared.Models.Genre;
 using BattAnimeZone.Shared.Models.ProductionEntity;
 using BattAnimeZone.Utilities;
-using BattAnimeZone.Utilities.CsvToDatabase;
 using CsvHelper;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
@@ -12,7 +11,7 @@ using System.Linq.Dynamic.Core;
 
 namespace BattAnimeZone.DatabaseInitializer
 {
-	public class DbInitializer
+    public class DbInitializer
 	{
 		private  IConfiguration _configuration;
 		public void Initialize(IConfiguration configuration, IDbContextFactory<AnimeDbContext> _contextFactory)
