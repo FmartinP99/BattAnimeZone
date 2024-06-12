@@ -35,8 +35,10 @@ namespace BattAnimeZone.DatabaseModels
 
         [Column("episodes")]
         public int Episodes { get; set; } = 0;
+        [Column("status")]
+		public string Status { get; set; } = string.Empty;
 
-        [Column("duration")]
+		[Column("duration")]
         public string Duration { get; set; } = "";
 
         [Column("rating")]
