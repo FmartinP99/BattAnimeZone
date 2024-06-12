@@ -7,6 +7,7 @@ CREATE TABLE Anime (
   media_type text DEFAULT "",
   "source" text DEFAULT "",
   episodes integer DEFAULT 0,
+  "status" text DEFAULT "",
   duration text DEFAULT "",
   rating text DEFAULT "",
   score real DEFAULT -1,
