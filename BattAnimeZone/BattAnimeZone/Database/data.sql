@@ -42,6 +42,15 @@ CREATE TABLE Anime (
   aired_string text DEFAULT ""
 );
 
+
+CREATE TABLE DistinctMediaTypes AS
+SELECT DISTINCT media_type
+FROM Anime;
+
+
+
+
+
 CREATE TABLE Relation (
   id integer NOT NULL PRIMARY KEY AUTOINCREMENT,
   parent_id NOT NULL,

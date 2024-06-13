@@ -17,6 +17,7 @@ namespace BattAnimeZone.DbContexts
         public DbSet<AnimeUserModel> AnimeUserModels { get; set; }
         public DbSet<GenreModel> Genres { get; set; }
         public DbSet<AnimeGenreModel> AnimeGenres { get; set; }
+        public DbSet<DistinctMediaTypesModel> DistinctMediaTypes { get; set; }
 
         public AnimeDbContext(DbContextOptions<AnimeDbContext> options)
             : base(options)
