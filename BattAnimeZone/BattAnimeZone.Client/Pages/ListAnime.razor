@@ -104,7 +104,7 @@ else{
     bool searching = false;
     bool firstsearch = false;
 
-    Dictionary<int, int> animeCountPerGenre = new Dictionary<int, int>();
+    Dictionary<int, int>? animeCountPerGenre = new Dictionary<int, int>();
 
     JustifyContent justifyContent = JustifyContent.Center;
     Variant variant = Variant.Outlined;
@@ -161,7 +161,6 @@ else{
 
 
     Dictionary<int, AnimeGenre>? genres;
-    Dictionary<int, HashSet<int>>? animesPerGenreIDs;
     List<LiAnimeDTO> searched_animes = new List<LiAnimeDTO>();
 
     List<string>? media_types;
@@ -194,15 +193,9 @@ else{
         {
             loaded = true;
 
-            bool success = await LoadRequestsAsync();
+            bool success = await LoadRequestsAsync(); //sets media_types,  animeCountPerGenre, genres
             if (!success) return;
             SourceGenres = genres.Values.ToList();
-
-
-            animeCountPerGenre = animesPerGenreIDs.ToDictionary(
-                kvp => kvp.Key,
-                kvp => kvp.Value.Count
-            );
 
             SourceGenres = SourceGenres
                 .OrderByDescending(genre => animeCountPerGenre.ContainsKey(genre.Mal_id) ? animeCountPerGenre[genre.Mal_id] : 0)
@@ -239,14 +232,13 @@ else{
             await JSRuntime.InvokeVoidAsync("console.error", $"{ex.Message}"); ;
         }
 
-
         try
         {
-            var response = await httpClient.GetAsync($"{navManager.BaseUri}api/AnimeService/GetAnimesPerGenreIds");
+            var response = await httpClient.GetAsync($"{navManager.BaseUri}api/AnimeService/GetAnimesPerGenreIdCount");
 
             if (response.IsSuccessStatusCode)
             {
-                animesPerGenreIDs = await response.Content.ReadFromJsonAsync<Dictionary<int, HashSet<int>>>();
+                animeCountPerGenre = await response.Content.ReadFromJsonAsync<Dictionary<int, int>>();
             }
             else
             {
@@ -259,6 +251,7 @@ else{
             found_error = true;
             await JSRuntime.InvokeVoidAsync("console.error", $"{ex.Message}"); ;
         }
+       
 
         try
         {
