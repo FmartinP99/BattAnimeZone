@@ -89,5 +89,18 @@ namespace BattAnimeZone.Controllers
             return Ok(result);
         }
 
+
+        [HttpGet("GetAnimesForListGenreAnimes/{mal_id}")]
+        public async Task<IActionResult> GetAnimesForListGenreAnimes(int mal_id)
+        {
+            var result = await _dataBaseService.GetAnimesForListGenreAnimes(mal_id);
+
+            if (result == null)
+            {
+                return NotFound();
+            }
+            return Ok(result);
+        }
+
     }
 }
