@@ -63,6 +63,30 @@ else{
                     <div class="rowDiv"><span class="titleSpan">Score: </span>@currentAnime.Score</div>
                     <div class="rowDiv"><span class="titleSpan">Popularity: </span>@currentAnime.Popularity</div>
 
+                    @if (currentAnime.Genres.Count > 0)
+                    {
+                        <div class="rowDiv">
+                            <span class="titleSpan">Genres: </span>
+
+                            @foreach (var genre in currentAnime.Genres)
+                            {
+                                <span class="prodentSpan" @onclick="(args) => NavigateToGenre(genre.Mal_id)">@genre.Name, </span>
+                            }
+                        </div>
+                    }
+
+                    @if (currentAnime.Themes.Count > 0)
+                    {
+                        <div class="rowDiv">
+                            <span class="titleSpan">Themes: </span>
+
+                            @foreach (var theme in currentAnime.Themes)
+                            {
+                                <span class="prodentSpan" @onclick="(args) => NavigateToGenre(theme.Mal_id)">@theme.Name, </span>
+                            }
+                        </div>
+                    }
+
 
                     @if(currentAnime.Producers.Count > 0){
                         <div class="rowDiv">
