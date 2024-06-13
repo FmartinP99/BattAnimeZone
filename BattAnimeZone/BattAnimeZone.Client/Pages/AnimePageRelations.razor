@@ -60,17 +60,10 @@
             </Template>
         </RadzenDataList>
     }
-    else if (currentAnime != null && relational_animes != null && relational_animes.Count == 0)
-    {
-        <h1>Sorry, there are no relational animes for @currentAnime.TitleEnglish --- @currentAnime.TitleJapanese</h1>
-        <RadzenButton Click="NavigateBack">GO BACK!
-        </RadzenButton>
-    }
     else
     {
-        <h1>Sorry, the Anime does not exists!</h1>
-        <RadzenButton Click="NavigateBack">
-            GO BACK!
+        <h1>There are no related animes that are related this anime!</h1>
+        <RadzenButton Click="NavigateBack">GO BACK!
         </RadzenButton>
     }
 }
@@ -105,27 +98,27 @@
                     try
                     {
                         currentAnime = await response.Content.ReadFromJsonAsync<AnimeRelationsKeyDTO>();
-                        if (currentAnime == null) throw new NullReferenceException("The Current Anime is null!");
                         relational_animes = currentAnime.Relations;
                         relational_animes_per_page = relational_animes.Take(pageSize);
                         count = relational_animes.Count;
-                        
+
                     }catch(Exception e)
                     {
                         Console.WriteLine(e.Message);
-                        return;
                     }
                 }
                 else
                 {
                     await JSRuntime.InvokeVoidAsync("console.error", $"{response.StatusCode}\n {response.ReasonPhrase}");
-                    return;
                 }
-                StateHasChanged();
+
             }catch (Exception e)
             {
                 await JSRuntime.InvokeVoidAsync("console.error", $"{e.Message}");
-                return;
+            }
+            finally
+            {
+                StateHasChanged();
             }
         }
     }
