@@ -125,29 +125,6 @@ namespace BattAnimeZone.Controllers
             return Ok(result);
         }
 
-
-        [HttpGet("GetAnimesPerMediaTypeIds")]
-        public async Task<IActionResult> GetAnimesPerMediaTypeIds()
-        {
-            var result = await _animeService.GetAnimesPerMediaTypeIds();
-            if (result == null)
-            {
-                return NotFound();
-            }
-            return Ok(result);
-        }
-
-        [HttpPost("GetAnimesForListAnime")]
-        public async Task<IActionResult> GetAnimesPerMediaTypeIds([FromBody] HashSet<int> animeids)
-        {
-            var result = await _animeService.GetAnimesForListAnime(animeids);
-            if (!result.Any())
-            {
-                return NotFound();
-            }
-            return Ok(result);
-        }
-
         [HttpGet("GetAnimesForListGenreAnimes/{mal_id}")]
         public async Task<IActionResult> GetAnimesForListGenreAnimes(int mal_id)
         {
