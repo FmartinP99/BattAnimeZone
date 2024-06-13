@@ -53,14 +53,14 @@
                             <b class="bottom-p">Episodes: @(anime.Episodes)</b>
                         </RadzenColumn>
                         <RadzenColumn Size="7" Class="bottom-col">
-                            <b class="bottom-p">Relation Type: @(relation_types[anime.Mal_id])</b>
+                            <b class="bottom-p">Relation Type: @(anime.RelationType)</b>
                         </RadzenColumn>
                     </RadzenRow>
                 </RadzenCard>
             </Template>
         </RadzenDataList>
     }
-    else if (relational_animes != null && relational_animes.Count == 0)
+    else if (currentAnime != null && relational_animes != null && relational_animes.Count == 0)
     {
         <h1>Sorry, there are no relational animes for @currentAnime.TitleEnglish --- @currentAnime.TitleJapanese</h1>
         <RadzenButton Click="NavigateBack">GO BACK!
@@ -90,7 +90,6 @@
     string pagingSummaryFormat = "Displaying page {0} of {1} (total {2} records)";
     int pageSize = 9;
     int count;
-    Dictionary <int, string> relation_types = new Dictionary<int, string>();
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -100,25 +99,17 @@
 
             try
             {
-                var response = await httpClient.GetAsync($"{navManager.BaseUri}api/AnimeService/GetAnimeRelationsKeyByID/{mal_id}");
+                var response = await httpClient.GetAsync($"{navManager.BaseUri}api/DbController/GetRelations/{mal_id}");
                 if (response.IsSuccessStatusCode)
                 {
                     try
                     {
                         currentAnime = await response.Content.ReadFromJsonAsync<AnimeRelationsKeyDTO>();
-                        var response2 = await httpClient.GetAsync($"{navManager.BaseUri}api/AnimeService/GetRelations/{mal_id}");
-                        if (response2.IsSuccessStatusCode)
-                        {
-                            relational_animes = await response2.Content.ReadFromJsonAsync<List<AnimeRelationDTO>>();
-                            fillRelationTypes();
-                            relational_animes_per_page = relational_animes.Take(pageSize);
-                            count = relational_animes.Count;
-                        }
-                        else
-                        {
-                            await JSRuntime.InvokeVoidAsync("console.error", $"{response2.StatusCode}\n {response2.ReasonPhrase}");
-                            return;
-                        }
+                        if (currentAnime == null) throw new NullReferenceException("The Current Anime is null!");
+                        relational_animes = currentAnime.Relations;
+                        relational_animes_per_page = relational_animes.Take(pageSize);
+                        count = relational_animes.Count;
+                        
                     }catch(Exception e)
                     {
                         Console.WriteLine(e.Message);
@@ -139,22 +130,6 @@
         }
     }
 
-    protected void fillRelationTypes()
-    {
-        HashSet<int> rel_anim_ids = relational_animes.Select(an => an.Mal_id).ToHashSet();
-        foreach(Relations rel in currentAnime.Relations)
-        {
-            string rel_type = rel.Relation;
-            List<int> curr_rel_animeids = new List<int>();
-            foreach(Entry crid in rel.Entry){
-                if (rel_anim_ids.Contains(crid.Mal_id))
-                {
-                    rel_anim_ids.Remove(crid.Mal_id);
-                    relation_types.Add(crid.Mal_id, rel_type);
-                }
-            }
-        }
-    }
 
     void PageChanged(PagerEventArgs args)
     {
