@@ -30,8 +30,6 @@ namespace BattAnimeZone.Services
                                            }).ToList()
                                        }
                                    }).ToDictionaryAsync(x => x.Key, x => x.Value);
-
-                await Console.Out.WriteLineAsync("\n");
                 return query;
             }
             

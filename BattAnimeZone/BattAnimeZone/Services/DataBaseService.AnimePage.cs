@@ -114,7 +114,7 @@ namespace BattAnimeZone.Services
                                  .AsSplitQuery()
                                  .AsNoTracking()
                                  .FirstOrDefault();
-
+                if (q2 == null) return null;
                 AnimePageDTO returnDTO = new AnimePageDTO
                 {
                     Mal_id = q1.AnimeId,

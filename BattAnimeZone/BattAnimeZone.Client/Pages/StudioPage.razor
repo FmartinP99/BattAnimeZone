@@ -1,6 +1,7 @@
 ﻿@inject NavigationManager navManager
 @using BattAnimeZone.Shared.Models.AnimeDTOs
 @using BattAnimeZone.Shared.Models.ProductionEntity
+@using BattAnimeZone.Shared.Models.ProductionEntityDTOs
 @using BattAnimeZone.Client.Components
 @using Newtonsoft.Json
 @inject HttpClient httpClient
@@ -105,11 +106,11 @@ else{
     bool loaded = false;
     [Parameter]
     public int prodent_id { get; set; }
-    ProductionEntity currentProductionEntity {get; set;}
+    ProductionEntity? currentProductionEntity {get; set;}
 
-    List<AnimeStudioPageDTO> producerAnimes = new List<AnimeStudioPageDTO>();
-    List<AnimeStudioPageDTO> licensorAnimes = new List<AnimeStudioPageDTO>();
-    List<AnimeStudioPageDTO> studioAnimes = new List<AnimeStudioPageDTO>();
+    List<AnimeStudioPageDTO>? producerAnimes = new List<AnimeStudioPageDTO>();
+    List<AnimeStudioPageDTO>? licensorAnimes = new List<AnimeStudioPageDTO>();
+    List<AnimeStudioPageDTO>? studioAnimes = new List<AnimeStudioPageDTO>();
 
     List<AnimeStudioPageDTO> currentlySelectedAnimes;
     IEnumerable<AnimeStudioPageDTO> currentlyViewedAnimes;
@@ -129,18 +130,17 @@ else{
             loaded = true;
             try
             {
-                var response = await httpClient.GetAsync($"{navManager.BaseUri}api/AnimeService/GetAnimesForProdEnt/{prodent_id}");
+                //var response = await httpClient.GetAsync($"{navManager.BaseUri}api/AnimeService/GetAnimesForProdEnt/{prodent_id}");
+                var response = await httpClient.GetAsync($"{navManager.BaseUri}api/DbController/GetAnimesForProdEnt/{prodent_id}");
                 if (response.IsSuccessStatusCode)
                 {
-                    var content = await response.Content.ReadAsStringAsync();
+                    var result = await response.Content.ReadFromJsonAsync<ProductionEntityPageDTO>();
 
-                    var result = JsonConvert.DeserializeAnonymousType(content, new
-                    {
-                        ProdEnt = new ProductionEntity(),
-                        ProducedAnimes = new List<AnimeStudioPageDTO>(),
-                        LicensedAnimes = new List<AnimeStudioPageDTO>(),
-                        StudioAnimes = new List<AnimeStudioPageDTO>()
-                    });
+                   
+                    Console.WriteLine(result.ProdEnt);
+                    Console.WriteLine(result.ProducedAnimes);
+                    Console.WriteLine(result.LicensedAnimes);
+                    Console.WriteLine(result.StudioAnimes);
 
                     currentProductionEntity = result.ProdEnt;
                     producerAnimes = result.ProducedAnimes;

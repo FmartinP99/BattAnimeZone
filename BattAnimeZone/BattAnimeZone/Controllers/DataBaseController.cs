@@ -33,7 +33,7 @@ namespace BattAnimeZone.Controllers
 		public async Task<IActionResult> GetAnimePageDTOByID(int mal_id)
 		{
 			var result = await _dataBaseService.GetAnimePageDTOByID(mal_id);
-			if (result.Mal_id == -1)
+			if (result == null)
 			{
 				return NotFound();
 			}
@@ -120,6 +120,19 @@ namespace BattAnimeZone.Controllers
         public async Task<IActionResult> GetProductionEntities()
         {
             var result = await _dataBaseService.GetProductionEntitiesDTO();
+            if (result == null)
+            {
+                return NotFound();
+            }
+            return Ok(result);
+        }
+
+        [HttpGet("GetAnimesForProdEnt/{mal_id}")]
+        public async Task<IActionResult> GetAnimesForProdEnt(int mal_id)
+        {
+            var result = await _dataBaseService.GetAnimesForProdEnt(mal_id);
+
+
             if (result == null)
             {
                 return NotFound();
