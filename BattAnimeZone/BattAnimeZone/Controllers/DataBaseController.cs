@@ -116,5 +116,17 @@ namespace BattAnimeZone.Controllers
             return Ok(result);
         }
 
+        [HttpGet("GetProductionEntities")]
+        public async Task<IActionResult> GetProductionEntities()
+        {
+            var result = await _dataBaseService.GetProductionEntitiesDTO();
+            if (result == null)
+            {
+                return NotFound();
+            }
+            return Ok(result);
+        }
+
+
     }
 }
