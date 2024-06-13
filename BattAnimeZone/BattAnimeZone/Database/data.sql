@@ -93,6 +93,7 @@ UNIQUE(anime_id, streaming_id)
 
 CREATE TABLE ProductionEntity(
 id integer NOT NULL PRIMARY KEY,
+url TEXT DEFAULT "",
 favorites integer NOT NULL DEFAULT -1,
 established TEXT DEFAULT "",
 about TEXT DEFAULT "",
