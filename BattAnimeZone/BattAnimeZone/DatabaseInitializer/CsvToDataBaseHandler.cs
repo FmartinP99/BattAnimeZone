@@ -353,6 +353,7 @@ namespace BattAnimeZone.DatabaseInitializer
                 prodentsModel.Add(new ProductionEntityModel
                 {
                     Id = prod.Mal_id,
+                    Url = prod.Url,
                     Favorites = prod.Favorites,
                     Established = prod.Established,
                     About = prod.About,

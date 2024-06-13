@@ -15,6 +15,9 @@ namespace BattAnimeZone.DatabaseModels
         [Column("id")]
         public int Id { get; set; }
 
+        [Column("url")]
+        public string Url { get; set; }
+
         [Required]
         [Column("favorites")]
         public int Favorites { get; set; } = -1;
