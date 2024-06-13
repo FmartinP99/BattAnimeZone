@@ -51,5 +51,43 @@ namespace BattAnimeZone.Controllers
             return Ok(result);
         }
 
+
+        [HttpGet("GetMediaTypes")]
+        public async Task<IActionResult> GetMediaTypes()
+        {
+            var result = await _dataBaseService.GetDistinctMediaTypes();
+            if (result == null)
+            {
+                return NotFound();
+            }
+            return Ok(result);
+        }
+
+
+        [HttpGet("GetGenres")]
+        public async Task<IActionResult> GetGenres()
+        {
+            var result = await _dataBaseService.GetGenres();
+            if (result == null)
+            {
+                return NotFound();
+            }
+            return Ok(result);
+        }
+
+
+
+        [HttpGet("GetAnimesPerGenreIdCount")]
+        public async Task<IActionResult> GetAnimesPerGenreIdCount()
+        {
+            var result = await _dataBaseService.GetAnimesPerGenreIdCount();
+
+            if (result == null)
+            {
+                return NotFound();
+            }
+            return Ok(result);
+        }
+
     }
 }

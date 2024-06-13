@@ -17,7 +17,7 @@ namespace BattAnimeZone.Services
         public async Task<AnimePageDTO> GetAnimePageDTOByID(int mal_id)
         {
 
-            using (var _context = _dbContextFactory.CreateDbContext())
+            using (var _context = await _dbContextFactory.CreateDbContextAsync())
             {
 
                 var q1 = (from ag in _context.AnimeGenres

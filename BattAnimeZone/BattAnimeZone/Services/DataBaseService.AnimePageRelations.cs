@@ -9,7 +9,7 @@ namespace BattAnimeZone.Services
 
         public async Task<AnimeRelationsKeyDTO>? GetRelations(int mal_id)
         {
-            using (var _context = _dbContextFactory.CreateDbContext())
+            using (var _context = await _dbContextFactory.CreateDbContextAsync())
             {
 
                 var query =  await (from r in _context.Relations

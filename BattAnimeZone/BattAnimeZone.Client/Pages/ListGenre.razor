@@ -1,4 +1,4 @@
-@using BattAnimeZone.Shared.Models.Genre
+@using BattAnimeZone.Shared.Models.GenreDTOs
 @using BattAnimeZone.Client.Components
 @inject NavigationManager navManager
 <link rel="stylesheet" href="/ListGenre.css" />
@@ -33,7 +33,6 @@
                         </p>
                         </div>
                     </RadzenColumn>
-              
                 }
             }
        
@@ -43,8 +42,8 @@
 
 @code {
     bool loaded = false;
-    List<AnimeGenre> animeGenres;
-    Dictionary<int, int> animeCountPerGenre = new Dictionary<int, int>();
+    List<AnimeGenreDTO>? animeGenres;
+    Dictionary<int, int>? animeCountPerGenre = new Dictionary<int, int>();
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -54,15 +53,13 @@
 
             try
             {
-                var angResponse = await httpClient.GetAsync($"{navManager.BaseUri}api/AnimeService/GetGenres");
-                var tempGetAnimesPerGenreIdCountResponse = await httpClient.GetAsync($"{navManager.BaseUri}api/AnimeService/GetAnimesPerGenreIdCount");
+                var angResponse = await httpClient.GetAsync($"{navManager.BaseUri}api/DbController/GetGenres");
+                var tempGetAnimesPerGenreIdCountResponse = await httpClient.GetAsync($"{navManager.BaseUri}api/DbController/GetAnimesPerGenreIdCount");
 
                 if (angResponse.IsSuccessStatusCode && tempGetAnimesPerGenreIdCountResponse.IsSuccessStatusCode)
                 {
-                    var ang = await angResponse.Content.ReadFromJsonAsync<Dictionary<int, AnimeGenre>>();
+                    animeGenres = await angResponse.Content.ReadFromJsonAsync<List<AnimeGenreDTO>>();
                     animeCountPerGenre = await tempGetAnimesPerGenreIdCountResponse.Content.ReadFromJsonAsync<Dictionary<int, int>>();
-
-                    animeGenres = ang.Values.ToList();
 
                     animeGenres = animeGenres
                         .OrderByDescending(genre => animeCountPerGenre.ContainsKey(genre.Mal_id) ? animeCountPerGenre[genre.Mal_id] : 0)
