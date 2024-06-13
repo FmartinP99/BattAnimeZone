@@ -12,5 +12,6 @@
         public int Popularity { get; set; } = -1;
         public int Year { get; set; } = -1;
         public string ImageLargeWebpUrl { get; set; } = string.Empty;
+        public string RelationType { get; set; } = string.Empty;
     }
 }

@@ -39,5 +39,17 @@ namespace BattAnimeZone.Controllers
 			return Ok(result);
 		}
 
-	}
+
+        [HttpGet("GetRelations/{mal_id}")]
+        public async Task<IActionResult> GetRelations(int mal_id)
+        {
+            var result = await _dataBaseService.GetRelations(mal_id);
+            if (result == null)
+            {
+                return NotFound();
+            }
+            return Ok(result);
+        }
+
+    }
 }
