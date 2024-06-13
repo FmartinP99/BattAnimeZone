@@ -101,19 +101,13 @@
 
             try
             {
-                var response = await httpClient.GetAsync($"{navManager.BaseUri}api/AnimeService/GetAnimesForListGenreAnimes/{genreid}");
+                var response = await httpClient.GetAsync($"{navManager.BaseUri}api/DbController/GetAnimesForListGenreAnimes/{genreid}");
 
                 if (response.IsSuccessStatusCode)
                 {
-                    var content = await response.Content.ReadAsStringAsync();
-                    var result = JsonConvert.DeserializeAnonymousType(content, new
-                    {
-                        Animes = new List<LiGenreAnimeDTO>(),
-                        GenreName = string.Empty
-                    });
-
-                    animes = result.Animes;
-                    genrename = result.GenreName;
+                    LiGenreAnimeDTOContainer? container = await response.Content.ReadFromJsonAsync<LiGenreAnimeDTOContainer>();
+                    animes = container.Animes;
+                    genrename = container.GenreName;
 
                     pagingSummaryFormat = $"Displaying page {{0}} of {{1}} (total {{2}} records of {genrename} animes)";
 
