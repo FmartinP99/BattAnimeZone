@@ -40,6 +40,9 @@ builder.Services.AddSingleton<UserAccountService>();
 
 builder.Services.AddTransient<DataBaseService>();
 
+//this one is responsible for the string similarity searching. It stores all the anime titles in memory so theres no need to query it for every search
+builder.Services.AddSingleton<SingletonSearchService>();
+
 
 //databasecontexts
 //builder.Services.AddDbContext<AnimeDbContext>(options =>

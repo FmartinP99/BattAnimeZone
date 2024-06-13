@@ -141,10 +141,11 @@ namespace BattAnimeZone.Controllers
             return Ok(result);
         }
 
-        [HttpGet("GetProductionEntities")]
-        public async Task<IActionResult> GetProductionEntities()
+
+        [HttpGet("GetSimilarAnimesForSearchResult")]
+        public async Task<IActionResult> GetSimilarAnimesForSearchResult([FromQuery] int similar_number, [FromQuery] string searched_term)
         {
-            var result = await _animeService.GetProductionEntitiesDTO();
+            var result = await _animeService.GetSimilarAnimesForSearchResult(similar_number, searched_term);
             if (result == null)
             {
                 return NotFound();
@@ -152,10 +153,10 @@ namespace BattAnimeZone.Controllers
             return Ok(result);
         }
 
-        [HttpGet("GetSimilarAnimesForSearchResult")]
-        public async Task<IActionResult> GetSimilarAnimesForSearchResult([FromQuery] int similar_number, [FromQuery] string searched_term)
+        [HttpGet("GetProductionEntities")]
+        public async Task<IActionResult> GetProductionEntities()
         {
-            var result = await _animeService.GetSimilarAnimesForSearchResult(similar_number, searched_term);
+            var result = await _animeService.GetProductionEntitiesDTO();
             if (result == null)
             {
                 return NotFound();

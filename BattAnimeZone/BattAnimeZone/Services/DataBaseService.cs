@@ -17,13 +17,16 @@ namespace BattAnimeZone.Services
 
         private IDbContextFactory<AnimeDbContext> _dbContextFactory;
         private static IMapper dataBaseMapper;
+        private SingletonSearchService _ssService;
 
-        public DataBaseService(IDbContextFactory<AnimeDbContext> dbContextFactory)
+        public DataBaseService(IDbContextFactory<AnimeDbContext> dbContextFactory, SingletonSearchService ssService)
         {
             _dbContextFactory = dbContextFactory;
 
             MapperConfiguration config = new MapperConfiguration(cfg => cfg.AddProfile<MappringProfileDataBase>());
             dataBaseMapper = config.CreateMapper();
+
+            _ssService = ssService;
         }
 
 

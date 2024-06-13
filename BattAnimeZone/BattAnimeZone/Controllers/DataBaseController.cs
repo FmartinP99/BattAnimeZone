@@ -11,6 +11,7 @@ namespace BattAnimeZone.Controllers
 	{
 		private DataBaseService _dataBaseService;
 
+
 		public DataBaseController(DataBaseService dataBaseService)
 		{
 			_dataBaseService = dataBaseService;
@@ -95,6 +96,19 @@ namespace BattAnimeZone.Controllers
         {
             var result = await _dataBaseService.GetAnimesForListGenreAnimes(mal_id);
 
+            if (result == null)
+            {
+                return NotFound();
+            }
+            return Ok(result);
+        }
+
+
+
+        [HttpGet("GetSimilarAnimesForSearchResult")]
+        public async Task<IActionResult> GetSimilarAnimesForSearchResult([FromQuery] int similar_number, [FromQuery] string searched_term)
+        {
+            var result = await _dataBaseService.GetSimilarAnimesForSearchResult(similar_number, searched_term);
             if (result == null)
             {
                 return NotFound();
