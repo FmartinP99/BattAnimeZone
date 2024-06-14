@@ -2,6 +2,8 @@
 using BattAnimeZone.Shared.Models.AnimeDTOs;
 using BattAnimeZone.Shared.Models.Genre;
 
+
+#pragma warning disable CS1998
 namespace BattAnimeZone.Services
 {
     public partial class AnimeService
