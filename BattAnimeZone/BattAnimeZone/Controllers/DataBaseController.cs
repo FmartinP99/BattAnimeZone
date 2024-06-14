@@ -121,7 +121,11 @@ namespace BattAnimeZone.Controllers
         [HttpGet("GetSimilarAnimesForSearchResult")]
         public async Task<IActionResult> GetSimilarAnimesForSearchResult([FromQuery] int similar_number, [FromQuery] string searched_term)
         {
+            var watch = System.Diagnostics.Stopwatch.StartNew();
             var result = await _dataBaseService.GetSimilarAnimesForSearchResult(similar_number, searched_term);
+            watch.Stop();
+            var elapsedMs = watch.ElapsedMilliseconds;
+            await Console.Out.WriteLineAsync($"time it took in ms {elapsedMs}");
             if (result == null)
             {
                 return NotFound();
