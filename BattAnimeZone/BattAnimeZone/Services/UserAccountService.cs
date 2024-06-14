@@ -64,6 +64,7 @@ namespace BattAnimeZone.Services
 				return true;
             }catch (Exception e)
 			{
+                Console.WriteLine("Register user error: " + e.Message);
                 return false;
 			}
         }
