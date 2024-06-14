@@ -79,7 +79,7 @@ namespace BattAnimeZone.Services
             {
                 if (recently_searched_distances.Count >= recently_max_size)
                 {
-                    string key_to_Remove = recently_searched_distances.Keys.ElementAt(recently_searched_distances.Count - 10);
+                    string key_to_Remove = recently_searched_distances.Keys.ElementAt(0);
                     try
                     {
                         recently_searched_distances.Remove(key_to_Remove);
