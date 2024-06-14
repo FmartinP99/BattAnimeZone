@@ -24,15 +24,15 @@
 		public string Background {  get; set; } = string.Empty;
 		public string Season {  get; set; } = string.Empty;
 		public int Year { get; set; } = -1;
-		public List<Entry> Producers { get; set; }
-		public List<Entry> Licensors { get; set; }
-		public List<Entry> Studios { get; set; }
-		public List<Entry> Genres { get; set; }
-		public List<Entry> Themes { get; set; }
-		public List<Relations> Relations { get; set; }
+		public List<Entry>? Producers { get; set; }
+		public List<Entry>? Licensors { get; set; }
+		public List<Entry>? Studios { get; set; }
+		public List<Entry>? Genres { get; set; }
+		public List<Entry>? Themes { get; set; }
+		public List<Relations>? Relations { get; set; }
 
-		public List<External> Externals { get; set; }
-		public List<Streaming> Streamings { get; set; }
+		public List<External>? Externals { get; set; }
+		public List<Streaming>? Streamings { get; set; }
 		public string ImageJpgUrl { get; set; } = string.Empty;
 		public string ImageSmallJpgUrl { get; set; } = string.Empty;
 		public string ImageLargeJpgUrl { get; set; } = string.Empty;
