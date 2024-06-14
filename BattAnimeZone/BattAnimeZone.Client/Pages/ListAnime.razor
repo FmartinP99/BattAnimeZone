@@ -1,4 +1,5 @@
 @using BattAnimeZone.Shared.Models.Genre
+@using BattAnimeZone.Shared.Models.GenreDTOs
 @using BattAnimeZone.Shared.Models.Anime
 @using BattAnimeZone.Shared.Models.AnimeDTOs
 @using BattAnimeZone.Client.Components
@@ -19,7 +20,7 @@ else{
 
         <RadzenCard Style="background:transparent;">
             <RadzenPickList @bind-Source="@SourceGenres" @bind-Target="@TargetGenres" Style="height:300px; width:100%; background:transparent;" Orientation="@orientation"
-                            TextProperty="@nameof(AnimeGenre.Name)" AllowFiltering="@allowFilter" Multiple="@multiple" ShowHeader="@showHeader"
+                            TextProperty="@nameof(AnimeGenreDTO.Name)" AllowFiltering="@allowFilter" Multiple="@multiple" ShowHeader="@showHeader"
                             ButtonGap="@gap" ButtonJustifyContent="@justifyContent" ButtonStyle="@style" ButtonSize="@size" ButtonShade="@shade" ButtonVariant="@variant">
                 <SourceHeader>
                     Genres:
@@ -118,8 +119,8 @@ else{
     bool multiple = true;
     bool showHeader = true;
 
-    IEnumerable<AnimeGenre> _sourceGenres = new List<AnimeGenre>();
-    IEnumerable<AnimeGenre> SourceGenres
+    IEnumerable<AnimeGenreDTO> _sourceGenres = new List<AnimeGenreDTO>();
+    IEnumerable<AnimeGenreDTO> SourceGenres
     {
         get
         {
@@ -133,13 +134,13 @@ else{
             }
             else
             {
-                _sourceGenres = new List<AnimeGenre>();
+                _sourceGenres = new List<AnimeGenreDTO>();
             }
         }
     }
 
-    IEnumerable<AnimeGenre> _targetGenres = new List<AnimeGenre>();
-    IEnumerable<AnimeGenre> TargetGenres
+    IEnumerable<AnimeGenreDTO> _targetGenres = new List<AnimeGenreDTO>();
+    IEnumerable<AnimeGenreDTO> TargetGenres
     {
         get
         {
@@ -153,14 +154,14 @@ else{
             }
             else
             {
-                _targetGenres = new List<AnimeGenre>();
+                _targetGenres = new List<AnimeGenreDTO>();
             }
         }
     }
 
 
 
-    Dictionary<int, AnimeGenre>? genres;
+    List<AnimeGenreDTO>? genres;
     List<LiAnimeDTO> searched_animes = new List<LiAnimeDTO>();
 
     List<string>? media_types;
@@ -195,7 +196,7 @@ else{
 
             bool success = await LoadRequestsAsync(); //sets media_types,  animeCountPerGenre, genres
             if (!success) return;
-            SourceGenres = genres.Values.ToList();
+            SourceGenres = genres;
 
             SourceGenres = SourceGenres
                 .OrderByDescending(genre => animeCountPerGenre.ContainsKey(genre.Mal_id) ? animeCountPerGenre[genre.Mal_id] : 0)
@@ -214,7 +215,7 @@ else{
 
         try
         {
-            var response = await httpClient.GetAsync($"{navManager.BaseUri}api/AnimeService/GetMediaTypes");
+            var response = await httpClient.GetAsync($"{navManager.BaseUri}api/DbController/GetMediaTypes");
 
             if (response.IsSuccessStatusCode)
             {
@@ -234,7 +235,7 @@ else{
 
         try
         {
-            var response = await httpClient.GetAsync($"{navManager.BaseUri}api/AnimeService/GetAnimesPerGenreIdCount");
+            var response = await httpClient.GetAsync($"{navManager.BaseUri}api/DbController/GetAnimesPerGenreIdCount");
 
             if (response.IsSuccessStatusCode)
             {
@@ -255,11 +256,11 @@ else{
 
         try
         {
-            var response = await httpClient.GetAsync($"{navManager.BaseUri}api/AnimeService/GetGenres");
+            var response = await httpClient.GetAsync($"{navManager.BaseUri}api/DbController/GetGenres");
 
             if (response.IsSuccessStatusCode)
             {
-                genres = await response.Content.ReadFromJsonAsync<Dictionary<int, AnimeGenre>>();
+                genres = await response.Content.ReadFromJsonAsync<List<AnimeGenreDTO>>();
             }
             else
             {
@@ -288,7 +289,8 @@ else{
 
             string fullQuery = string.Join("&", new[] { genreQuery, mediaTypeQuery }.Where(q => !string.IsNullOrWhiteSpace(q)));
 
-            var response = await httpClient.GetAsync($"{navManager.BaseUri}api/AnimeService/GetFilteredAnimes?{fullQuery}");
+            var response = await httpClient.GetAsync($"{navManager.BaseUri}api/DbController/GetFilteredAnimes?{fullQuery}");
+
 
             if (response.IsSuccessStatusCode)
             {
