@@ -66,7 +66,7 @@ namespace BattAnimeZone.DatabaseInitializer
 			Dictionary<int, ProductionEntity> productionEntities = new Dictionary<int, ProductionEntity> { };
 			Dictionary<int, AnimeGenre> genres = new Dictionary<int, AnimeGenre> { };
 
-			FillAnimesAndMedia(animes);
+			FillAnimes(animes);
 			FillProductionEntities(productionEntities);
 			FillGenres(genres);
 			FillDatabase(_contextFactory, animes, productionEntities, genres);
@@ -74,7 +74,7 @@ namespace BattAnimeZone.DatabaseInitializer
 
 		}
 
-		private void FillAnimesAndMedia(Dictionary<int, Anime> animes)
+		private void FillAnimes(Dictionary<int, Anime> animes)
 		{
 			using (var reader = new StreamReader("Files/mal_data_2022plus_subset.csv"))
 			using (var csv = new CsvReader(reader, CultureInfo.InvariantCulture))
