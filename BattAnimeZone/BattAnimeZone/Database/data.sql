@@ -43,11 +43,6 @@ CREATE TABLE Anime (
 );
 
 
-CREATE TABLE DistinctMediaTypes AS
-SELECT DISTINCT media_type
-FROM Anime;
-
-
 
 
 
@@ -169,3 +164,8 @@ CREATE TABLE AnimeGenre (
   UNIQUE(anime_id, genre_id)
 );
 
+
+
+CREATE TABLE DistinctMediaTypes AS
+SELECT DISTINCT media_type
+FROM Anime;
