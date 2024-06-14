@@ -37,7 +37,7 @@ namespace BattAnimeZone.Services
             foreach (PropertyDescriptor descriptor in TypeDescriptor.GetProperties(obj))
             {
                 string name = descriptor.Name;
-                object value = descriptor.GetValue(obj);
+                object? value = descriptor.GetValue(obj);
                 if (value == null) continue;
 
                 if (value is ICollection list)
@@ -61,16 +61,16 @@ namespace BattAnimeZone.Services
         }
 
 
-        public async Task<List<String>>? GetDistinctMediaTypes()
+        public async Task<List<string?>> GetDistinctMediaTypes()
         {
             using (var _context = await _dbContextFactory.CreateDbContextAsync())
             {
-                List<String>? distinctMediaTypes = await _context.DistinctMediaTypes.Select(x => x.mediaType).ToListAsync();
+                List<string?> distinctMediaTypes = await _context.DistinctMediaTypes.Select(x => x.mediaType).ToListAsync();
                 return distinctMediaTypes;
             }
         }
 
-        public async Task<List<AnimeGenreDTO>>? GetGenres()
+        public async Task<List<AnimeGenreDTO>?> GetGenres()
         {
             using (var _context = await _dbContextFactory.CreateDbContextAsync())
             {
