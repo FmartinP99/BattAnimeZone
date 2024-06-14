@@ -1,6 +1,6 @@
 # BattAnimeZone (Work in Progress)
 
-### Blazor (Full Stack) Web App written in C# with .NET8
+### Blazor (Full Stack, web server & web assembly) Web App written in C# with .NET8
 
 This webapp is essentially a digital-library built on the [MyAnimeList](https://myanimelist.net)'s data capable of searching and displaying animes and studios with/based on their attributes,<br>
 The program uses string-similarity comparsion to find similar animes for the <br> searched-string so there's no need for an exact search term.<br>
