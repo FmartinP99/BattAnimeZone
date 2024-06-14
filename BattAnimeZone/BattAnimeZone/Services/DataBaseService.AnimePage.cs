@@ -9,6 +9,7 @@ using System.ComponentModel;
 using BattAnimeZone.Client.Pages;
 using Newtonsoft.Json.Linq;
 using System.Xml.Linq;
+using static System.Formats.Asn1.AsnWriter;
 
 namespace BattAnimeZone.Services
 {
@@ -114,8 +115,10 @@ namespace BattAnimeZone.Services
                                  .AsSplitQuery()
                                  .AsNoTracking()
                                  .FirstOrDefault();
-                if (q2 == null) return null;
-                AnimePageDTO returnDTO = new AnimePageDTO
+
+                if (q1 == null) return null;
+
+                var returnDTO = new AnimePageDTO
                 {
                     Mal_id = q1.AnimeId,
                     Title = q1.Title,
@@ -136,11 +139,10 @@ namespace BattAnimeZone.Services
                     AiredString = q1.AiredString,
                     Genres = q1.Genres,
                     Themes = q1.Themes,
-                    Studios = q2.Studios,
-                    Licensors = q2.Licensors,
-                    Producers = q2.Producers
+                    Studios = q2?.Studios,
+                    Licensors = q2?.Licensors,
+                    Producers = q2?.Producers
                 };
-
 
                 return returnDTO;
                 }

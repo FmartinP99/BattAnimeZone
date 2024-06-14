@@ -35,7 +35,7 @@ builder.Services.AddAuthentication(o =>
     };
 });
 //dont read/write from database, yet
-builder.Services.AddSingleton<AnimeService>();
+//builder.Services.AddSingleton<AnimeService>();
 builder.Services.AddSingleton<UserAccountService>();
 
 builder.Services.AddTransient<DataBaseService>();
@@ -113,8 +113,8 @@ using (var serviceScope = app.Services.GetService<IServiceScopeFactory>().Create
 }
 
 
-var animeService = app.Services.GetRequiredService<AnimeService>();
-await animeService.Initialize();
+//var animeService = app.Services.GetRequiredService<AnimeService>();
+//await animeService.Initialize();
 
 app.MapControllers();
 
