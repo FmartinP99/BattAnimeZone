@@ -5,7 +5,7 @@ namespace BattAnimeZone.Services
 {
     public partial class DataBaseService
     {
-        public async Task<List<AnimeSearchResultDTO>>? GetSimilarAnimesForSearchResult(int n, string name)
+        public async Task<List<AnimeSearchResultDTO>?> GetSimilarAnimesForSearchResult(int n, string name)
         {
             List<int> similar_anime_ids = _ssService.GetSimilarAnimesForSearchResult(n, name);
             using (var _context = await _dbContextFactory.CreateDbContextAsync())

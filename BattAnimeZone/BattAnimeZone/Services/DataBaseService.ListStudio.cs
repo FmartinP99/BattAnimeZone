@@ -7,7 +7,7 @@ namespace BattAnimeZone.Services
 {
     public partial class DataBaseService
     {
-        public async Task<Dictionary<int, LiProductionEntityDTO>>? GetProductionEntitiesDTO()
+        public async Task<Dictionary<int, LiProductionEntityDTO>?> GetProductionEntitiesDTO()
         {
             using(var _context = await _dbContextFactory.CreateDbContextAsync())
             {

@@ -6,7 +6,7 @@ namespace BattAnimeZone.Services
 {
     public partial class DataBaseService
     {
-        public async Task<LiGenreAnimeDTOContainer>? GetAnimesForListGenreAnimes(int genre_id)
+        public async Task<LiGenreAnimeDTOContainer?> GetAnimesForListGenreAnimes(int genre_id)
         {
             using (var _context = await _dbContextFactory.CreateDbContextAsync()) {
 

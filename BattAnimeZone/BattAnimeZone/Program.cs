@@ -102,7 +102,8 @@ app.MapRazorComponents<App>()
     .AddAdditionalAssemblies(typeof(BattAnimeZone.Client._Imports).Assembly);
 
 
-using (var serviceScope = app.Services.GetService<IServiceScopeFactory>().CreateScope())
+#pragma warning disable CS8602 // Dereference of a possibly null reference.
+using (IServiceScope? serviceScope = app.Services.GetService<IServiceScopeFactory>().CreateScope())
 {
     if (serviceScope == null) return;
     var contextFactory = serviceScope.ServiceProvider.GetRequiredService<IDbContextFactory<AnimeDbContext>>();
@@ -111,6 +112,7 @@ using (var serviceScope = app.Services.GetService<IServiceScopeFactory>().Create
 	var dbInitializer = serviceScope.ServiceProvider.GetRequiredService<DbInitializer>();
     dbInitializer.Initialize(configuration, contextFactory);
 }
+#pragma warning restore CS8602 // Dereference of a possibly null reference.
 
 
 //var animeService = app.Services.GetRequiredService<AnimeService>();

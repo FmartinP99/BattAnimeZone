@@ -37,7 +37,7 @@ namespace BattAnimeZone.Services
                 {
                     query = (from a in _context.Animes
                              join ag in _context.AnimeGenres on a.Mal_id equals ag.AnimeId
-                             where (mediaTypes.Contains(a.MediaType))
+                             where mediaTypes.Contains(a.MediaType)
                              select new LiAnimeDTO
                              {
                                  Mal_id = a.Mal_id,

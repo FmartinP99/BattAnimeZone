@@ -15,7 +15,7 @@ namespace BattAnimeZone.Services
 {
     public partial class DataBaseService
     {
-        public async Task<AnimePageDTO> GetAnimePageDTOByID(int mal_id)
+        public async Task<AnimePageDTO?> GetAnimePageDTOByID(int mal_id)
         {
 
             using (var _context = await _dbContextFactory.CreateDbContextAsync())
