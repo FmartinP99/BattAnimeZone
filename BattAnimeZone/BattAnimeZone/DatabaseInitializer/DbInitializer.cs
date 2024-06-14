@@ -211,6 +211,8 @@ namespace BattAnimeZone.DatabaseInitializer
 
 
 
+
+
 		public async void FillDatabase(IDbContextFactory<AnimeDbContext> _contextFactory, Dictionary<int, Anime> animes, Dictionary<int, ProductionEntity> productionEntities, Dictionary<int, AnimeGenre> genres)
 		{
 			Console.WriteLine("step filldatabase");
@@ -253,9 +255,9 @@ namespace BattAnimeZone.DatabaseInitializer
 			await _csvToDataBaseHandler.SaveAnimeProductionEntitiesToDatabase(animesData);
 			Console.WriteLine("saved animeproductionentities\n");
 
-			Console.WriteLine("queried useraccounts");
-			await _csvToDataBaseHandler.SaveUserAccountsToDatabase();
-			Console.WriteLine("saved useraccounts\n");
+			Console.WriteLine("creating user & admin accounts for testing purposes!");
+            await _csvToDataBaseHandler.CreateUsers();
+            Console.WriteLine("accounts have been created!\n");
 
 			Console.WriteLine("queried animeusers");
 			await _csvToDataBaseHandler.SaveAnimeUsersToDatabase();
@@ -268,6 +270,7 @@ namespace BattAnimeZone.DatabaseInitializer
 			Console.WriteLine("queried animegenres");
 			await _csvToDataBaseHandler.SaveAnimeGenresToDatabase(animesData);
 			Console.WriteLine("saved animegenres\n");
+
 
 
 

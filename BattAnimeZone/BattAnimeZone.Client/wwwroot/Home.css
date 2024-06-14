@@ -46,13 +46,13 @@ h1 {
 .scoreDiv {
     position: absolute;
     top: 6%;
-    left: 13%;
+    left: 9%;
     transform: translate(-50%, -50%);
     background-color: rgba(0,0,0,0.7);
     color: #fff;
     padding: 10px 20px;
     font-size: 20px;
-    text-align: center;
+    text-align: left;
 }
 
 .typeDiv {
@@ -90,7 +90,7 @@ h1 {
     padding: 10px 20px;
     font-size: 15px;
     text-align: center;
-    width: 100%;
+    width: 110%;
 }
 
 .headerDiv {

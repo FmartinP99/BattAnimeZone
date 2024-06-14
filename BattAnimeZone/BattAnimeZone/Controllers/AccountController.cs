@@ -21,9 +21,10 @@ namespace BattAnimeZone.Controllers
 		[HttpPost]
 		[Route("Login")]
 		[AllowAnonymous]
-		public ActionResult<UserSession> Login([FromBody] LoginRequest loginRequest)
+		public async Task<ActionResult<UserSession>> Login([FromBody] LoginRequest loginRequest)
 		{
-			var userSession = _userAccountService.Login(loginRequest);
+            await Console.Out.WriteLineAsync("LOGIN!!");
+            var userSession = await _userAccountService.Login(loginRequest);
 			if (userSession is null)
 				return Unauthorized();
 			else
@@ -33,9 +34,9 @@ namespace BattAnimeZone.Controllers
         [HttpPost]
         [Route("Register")]
         [AllowAnonymous]
-        public ActionResult<UserSession> Register([FromBody] RegisterRequest registerRequest)
+        public async Task<ActionResult<UserSession>> Register([FromBody] RegisterRequest registerRequest)
         {
-            bool response = _userAccountService.RegisterUser(registerRequest);
+            bool response = await _userAccountService.RegisterUser(registerRequest);
 
             if (response)
                 return Ok();
