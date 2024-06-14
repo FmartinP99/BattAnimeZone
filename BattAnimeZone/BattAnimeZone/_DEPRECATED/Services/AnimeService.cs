@@ -8,6 +8,10 @@ using BattAnimeZone.Utilities;
 using AutoMapper;
 using BattAnimeZone.DbContexts;
 
+#pragma warning disable CS1998
+#pragma warning disable CS8601
+#pragma warning disable CS8618
+#pragma warning disable CS8602
 namespace BattAnimeZone.Services
 {
 	/// <summary>

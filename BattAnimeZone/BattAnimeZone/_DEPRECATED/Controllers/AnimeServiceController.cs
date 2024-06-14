@@ -1,6 +1,8 @@
 ﻿using BattAnimeZone.Services;
 using Microsoft.AspNetCore.Mvc;
 
+#pragma warning disable CS1998
+#pragma warning disable CS8604
 namespace BattAnimeZone._DEPRECATED.Controllers
 {
     //[ApiController]
