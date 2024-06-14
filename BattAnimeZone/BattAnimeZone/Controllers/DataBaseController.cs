@@ -104,6 +104,19 @@ namespace BattAnimeZone.Controllers
         }
 
 
+        [HttpGet("GetFilteredAnimes")]
+        public async Task<IActionResult> GetFilteredAnimes([FromQuery] List<int>? genres, [FromQuery] List<string>? mediaTypes)
+        {
+
+            var result = await _dataBaseService.GetFilteredAnimes(genres, mediaTypes);
+            if (!result.Any())
+            {
+                return NotFound();
+            }
+            return Ok(result);
+        }
+
+
 
         [HttpGet("GetSimilarAnimesForSearchResult")]
         public async Task<IActionResult> GetSimilarAnimesForSearchResult([FromQuery] int similar_number, [FromQuery] string searched_term)
