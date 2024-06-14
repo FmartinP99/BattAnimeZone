@@ -6,6 +6,8 @@ using BattAnimeZone.DatabaseModels;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Internal;
 using BattAnimeZone.Shared.Models.AnimeDTOs;
+using BattAnimeZone.Shared.Models.User;
+using BattAnimeZone.Authentication.PasswordHasher;
 
 
 
@@ -520,49 +522,6 @@ namespace BattAnimeZone.DatabaseInitializer
             }
         }
 
-
-
-        public async Task SaveUserAccountsToDatabase()
-        {
-
-            List<UserAccountModel> userAccountsModel = new List<UserAccountModel>();
-
-
-            userAccountsModel.Add(new UserAccountModel
-            {
-                UserName = "admin",
-                Password = "admin",
-                Email = "admin@admin.com",
-                Role = "Admin"
-
-            });
-
-            userAccountsModel.Add(new UserAccountModel
-            {
-                UserName = "user",
-                Password = "user",
-                Email = "user@user.com",
-                Role = "User"
-
-            });
-            using (var _context = _dbContextFactory.CreateDbContext())
-            {
-                for (int i = 0; i < userAccountsModel.Count; i += batchsize)
-                {
-
-                    var batch = userAccountsModel.Skip(i).Take(batchsize).ToList();
-                    await _context.UserAccounts.AddRangeAsync(batch);
-                    await _context.SaveChangesAsync();
-
-                    foreach (var rmod in batch)
-                    {
-                        _context.Entry(rmod).State = EntityState.Detached;
-                    }
-                }
-            }
-        }
-
-
         public async Task SaveAnimeUsersToDatabase()
         {
 
@@ -699,6 +658,37 @@ namespace BattAnimeZone.DatabaseInitializer
                 }
             }
         }
+
+
+        public async Task CreateUsers()
+        {
+            IPasswordHasher hasher = new PasswordHasher();
+            string? passwordHashUser = hasher.Hash("user");
+            Console.WriteLine($"USER JELSZAVA: {passwordHashUser}");
+            RegisterRequest user = new RegisterRequest { UserName = "user", Password = passwordHashUser, Email = "user@user.com" };
+            string? passwordHashAdmin = hasher.Hash("admin");
+            Console.WriteLine($"ADMIN JELSZAVA: {passwordHashAdmin}");
+            RegisterRequest admin = new RegisterRequest { UserName = "admin", Password = passwordHashAdmin, Email = "admin@admin.com" };
+
+            await RegisterUser(user);
+            await RegisterUser(admin);
+        }
+
+        public async Task<bool> RegisterUser(RegisterRequest user)
+        {
+
+            using (var _context = await _dbContextFactory.CreateDbContextAsync())
+            {
+                Console.WriteLine($"registering: {user.Password}");
+
+                string role = user.UserName == "admin" ? "Admin" : "User";
+                _context.UserAccounts.Add(new UserAccountModel { UserName = user.UserName, Password = user.Password, Email = user.Email, Role = role });
+                await _context.SaveChangesAsync();
+                return true;
+            }
+        }
+
+
 
     }
 }

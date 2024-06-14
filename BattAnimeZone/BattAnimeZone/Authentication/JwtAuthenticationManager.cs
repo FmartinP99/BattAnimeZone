@@ -1,4 +1,5 @@
-﻿using BattAnimeZone.Services;
+﻿using BattAnimeZone.DatabaseModels;
+using BattAnimeZone.Services;
 using BattAnimeZone.Shared.Models.User;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
@@ -21,7 +22,7 @@ namespace BattAnimeZone.Authentication
 			_userAccountService = userAccountService;
 		}
 
-		public UserSession? GenerateJwtToken(UserAccount? userAccount)
+		public UserSession? GenerateJwtToken(UserAccountModel? userAccount)
 		{
 			/* Generating JWT Token */
 			var tokenExpiryTimeStamp = DateTime.Now.AddMinutes(JWT_TOKEN_VALIDITY_MINS);
