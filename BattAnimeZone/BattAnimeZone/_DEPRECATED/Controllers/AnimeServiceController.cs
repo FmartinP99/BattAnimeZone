@@ -1,44 +1,44 @@
 ﻿using BattAnimeZone.Services;
 using Microsoft.AspNetCore.Mvc;
 
-namespace BattAnimeZone.Controllers
+namespace BattAnimeZone._DEPRECATED.Controllers
 {
-	[ApiController]
-	[Route("api/AnimeService")]
-	public class AnimeServiceController : ControllerBase
-	{
+    //[ApiController]
+    //[Route("api/AnimeService")]
+    public class AnimeServiceController : ControllerBase
+    {
 
-		private readonly AnimeService _animeService;
+        private readonly AnimeService _animeService;
 
-		public AnimeServiceController(AnimeService animeService)
-		{
-			_animeService = animeService;
-		}
+        public AnimeServiceController(AnimeService animeService)
+        {
+            _animeService = animeService;
+        }
 
 
-		[HttpGet("GetAnimesByYear/{year}")]
-		public async Task<IActionResult> GetAnimesByYear(int year)
-		{
-			var result  =  await _animeService.GetAnimesForHomePageByYear(year);
-            if (result == null)  
+        [HttpGet("GetAnimesByYear/{year}")]
+        public async Task<IActionResult> GetAnimesByYear(int year)
+        {
+            var result = await _animeService.GetAnimesForHomePageByYear(year);
+            if (result == null)
             {
                 return NotFound();
             }
             return Ok(result);
-		}
+        }
 
 
 
-		[HttpGet("GetAnime/{mal_id}")]
-		public async Task<IActionResult> GetAnimePageDTOByID(int mal_id)
-		{
-			var result = await _animeService.GetAnimePageDTOByID(mal_id);
-			if (result.Mal_id == -1)
-			{
-				return NotFound();
-			}
-			return Ok(result);
-		}
+        [HttpGet("GetAnime/{mal_id}")]
+        public async Task<IActionResult> GetAnimePageDTOByID(int mal_id)
+        {
+            var result = await _animeService.GetAnimePageDTOByID(mal_id);
+            if (result.Mal_id == -1)
+            {
+                return NotFound();
+            }
+            return Ok(result);
+        }
 
 
         [HttpGet("GetAnimeRelationsKeyByID/{mal_id}")]
@@ -102,7 +102,7 @@ namespace BattAnimeZone.Controllers
         [HttpGet("GetFilteredAnimes")]
         public async Task<IActionResult> GetFilteredAnimes([FromQuery] List<int>? genres, [FromQuery] List<string>? mediaTypes)
         {
-           
+
             var result = await _animeService.GetFilteredAnimes(genres, mediaTypes);
             if (!result.Any())
             {
@@ -117,7 +117,7 @@ namespace BattAnimeZone.Controllers
         public async Task<IActionResult> GetAnimesPerGenreIdCount()
         {
             var result = await _animeService.GetAnimesPerGenreIdCount();
-            
+
             if (result == null)
             {
                 return NotFound();
