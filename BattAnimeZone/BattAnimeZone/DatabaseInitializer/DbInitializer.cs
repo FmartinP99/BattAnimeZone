@@ -1,4 +1,5 @@
-﻿using BattAnimeZone.DbContexts;
+﻿using BattAnimeZone.Client.Pages;
+using BattAnimeZone.DbContexts;
 using BattAnimeZone.Shared.Models.Anime;
 using BattAnimeZone.Shared.Models.Genre;
 using BattAnimeZone.Shared.Models.ProductionEntity;
@@ -6,6 +7,7 @@ using BattAnimeZone.Utilities;
 using CsvHelper;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
+using System.ComponentModel;
 using System.Globalization;
 using System.Linq.Dynamic.Core;
 
@@ -76,14 +78,14 @@ namespace BattAnimeZone.DatabaseInitializer
 
 		private void FillAnimes(Dictionary<int, Anime> animes)
 		{
-			using (var reader = new StreamReader("Files/mal_data_2022plus_subset.csv"))
+			using (var reader = new StreamReader("Files/mal_data_full_sfw_updated_20240615_2021plus_subset.csv"))
 			using (var csv = new CsvReader(reader, CultureInfo.InvariantCulture))
 			{
 				csv.Read();
 				csv.ReadHeader();
 				while (csv.Read())
 				{
-					List<string>? title_synonyms = JsonConvert.DeserializeObject<List<string>>(csv.GetField("title_synonyms"));
+                    List<string>? title_synonyms = JsonConvert.DeserializeObject<List<string>>(csv.GetField("title_synonyms"));
 					List<Entry>? producers = JsonConvert.DeserializeObject<List<Entry>>(csv.GetField("producers"));
 					List<Entry>? licensors = JsonConvert.DeserializeObject<List<Entry>>(csv.GetField("licensors"));
 					List<Entry>? studios = JsonConvert.DeserializeObject<List<Entry>>(csv.GetField("studios"));
@@ -99,7 +101,7 @@ namespace BattAnimeZone.DatabaseInitializer
 
 					Anime new_anime = new Anime
 					{
-						Mal_id = csv.GetField<int>("mal_id"),
+						Mal_id = (int)csv.GetField<float>("mal_id"),
 						Url = csv.GetField("url"),
 						Title = csv.GetField("title"),
 						TitleEnglish = csv.GetField("title_english"),
@@ -272,9 +274,11 @@ namespace BattAnimeZone.DatabaseInitializer
 			Console.WriteLine("saved animegenres\n");
 
 
+            Console.WriteLine("queried distinctmediatypes");
+            await _csvToDataBaseHandler.SaveDistinctMediaTypes();
+            Console.WriteLine("saved distinctmediatypes\n");
 
-
-		}
+        }
 
 	}
 }

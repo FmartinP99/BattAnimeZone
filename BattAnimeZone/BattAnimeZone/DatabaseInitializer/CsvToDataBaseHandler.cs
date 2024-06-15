@@ -215,6 +215,7 @@ namespace BattAnimeZone.DatabaseInitializer
                 {
                     var entity2 = _context.Animes.Find(an.Mal_id);
                     if (entity2 == null) continue;
+                    if (an.Externals == null) continue;
 
                     foreach (External ext in an.Externals)
                     {
@@ -255,7 +256,7 @@ namespace BattAnimeZone.DatabaseInitializer
 
             foreach (Anime an in animes)
             {
-
+                if (an.Streamings == null) continue;
                 foreach (Streaming st in an.Streamings)
                 {
                     string key = $"{st.Name}|!!|{st.Url}";
@@ -300,6 +301,7 @@ namespace BattAnimeZone.DatabaseInitializer
             {
                 foreach (Anime anime in animes)
                 {
+                    if (anime.Streamings == null) continue;
                     foreach (Streaming streaming in anime.Streamings)
                     {
                         StreamingModel? streamingModel = _context.Streamings.FirstOrDefault(s => s.Name == streaming.Name && s.Url == streaming.Url);
@@ -603,10 +605,39 @@ namespace BattAnimeZone.DatabaseInitializer
         }
 
 
+        public async Task SaveDistinctMediaTypes()
+        {
+
+           
+            using (var _context = _dbContextFactory.CreateDbContext())
+            {
+                var distinctMediaTypes = _context.Animes.Where(a => !string.IsNullOrEmpty(a.MediaType))
+                                     .Select(a => a.MediaType)
+                                     .Distinct()
+                                     .ToList();
+
+                var distinctMediaTypeEntities = distinctMediaTypes.Select(mt => new DistinctMediaTypesModel
+                {
+                    mediaType = mt
+                }).ToList();
+
+                await _context.DistinctMediaTypes.AddRangeAsync(distinctMediaTypeEntities);
+                await _context.SaveChangesAsync();
+
+                foreach (var rmod in _context.DistinctMediaTypes)
+                {
+                    _context.Entry(rmod).State = EntityState.Detached;
+                }
+            }
+        }
+
+
         public async Task SaveAnimeGenresToDatabase(List<Anime> animes)
         {
 
             List<AnimeGenreModel> genreModels = new List<AnimeGenreModel>();
+
+            Dictionary<int, int> visited = new Dictionary<int, int>();
 
             using (var _context = _dbContextFactory.CreateDbContext())
             {
@@ -616,8 +647,6 @@ namespace BattAnimeZone.DatabaseInitializer
                     if (entity2 == null) continue;
                     foreach (var ang in anime.Genres)
                     {
-
-
                         var entity = _context.Genres.Find(ang.Mal_id);
                         if (entity == null) continue;
 
@@ -646,7 +675,6 @@ namespace BattAnimeZone.DatabaseInitializer
 
                 for (int i = 0; i < genreModels.Count; i += batchsize)
                 {
-
                     var batch = genreModels.Skip(i).Take(batchsize).ToList();
                     await _context.AnimeGenres.AddRangeAsync(batch);
                     await _context.SaveChangesAsync();
@@ -664,10 +692,8 @@ namespace BattAnimeZone.DatabaseInitializer
         {
             IPasswordHasher hasher = new PasswordHasher();
             string? passwordHashUser = hasher.Hash("user");
-            Console.WriteLine($"USER JELSZAVA: {passwordHashUser}");
             RegisterRequest user = new RegisterRequest { UserName = "user", Password = passwordHashUser, Email = "user@user.com" };
             string? passwordHashAdmin = hasher.Hash("admin");
-            Console.WriteLine($"ADMIN JELSZAVA: {passwordHashAdmin}");
             RegisterRequest admin = new RegisterRequest { UserName = "admin", Password = passwordHashAdmin, Email = "admin@admin.com" };
 
             await RegisterUser(user);
