@@ -22,6 +22,7 @@ The program also features an Authentication & Authorization system. (various fur
 - .NET8 Required
 - Download repository
 - Open the .sln
+- Change the JWT_SECURITY_KEY in the Authentication/JwtAuthenticationManagaer.cs to whatever you want 
 - Run
 
 
