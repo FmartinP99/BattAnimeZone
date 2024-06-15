@@ -1,12 +1,13 @@
 ﻿@using BattAnimeZone.Client.Authentication
 @using System.Net
+@using BlazorBootstrap;
 @inject NavigationManager navManager
 @inject IJSRuntime JSRuntime
 @inject AuthenticationStateProvider authStateProvider
 <link rel="stylesheet" href="/AboutComponent.css" />
 
 
-<RadzenColumn class="gitButton" Style="min-width: 10vh; max-width: 10vh;" @onclick="NavigateToGit">GIT</RadzenColumn>
+<Button Color="ButtonColor.None" @onclick="NavigateToGit"><Icon Name="IconName.Github" /> Github </Button>
 
 @code {
 

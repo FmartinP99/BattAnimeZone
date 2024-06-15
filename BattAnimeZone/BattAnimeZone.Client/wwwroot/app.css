@@ -79,3 +79,26 @@ h1:focus {
 .darker-border-checkbox.form-check-input {
     border-color: #929292;
 }
+
+/* width */
+::-webkit-scrollbar {
+    width: 7px;
+
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.4);
+    border-radius:20px;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+    background-image: linear-gradient(to right, #5832dd,#5025ce,#5832dd,#5025ce,#5832dd);
+    border-radius: 20px;
+}
+
+/* Handle on hover */
+    ::-webkit-scrollbar-thumb:hover {
+        background-image: linear-gradient(to right, #7842ff,#7055ee,#7842ff,#7055ee,#7842ff);
+    }

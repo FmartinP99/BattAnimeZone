@@ -23,6 +23,7 @@
         public List<Entry>? Studios { get; set; }
         public List<Entry>? Genres { get; set; }
         public List<Entry>? Themes { get; set; }
+        public List<Streaming>? Streamings { get; set; }
         public string ImageLargeWebpUrl { get; set; } = string.Empty;
         public string AiredString { get; set; } = string.Empty;
     }
