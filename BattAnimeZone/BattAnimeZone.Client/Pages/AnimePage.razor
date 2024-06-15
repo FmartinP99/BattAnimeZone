@@ -5,7 +5,7 @@
 @inject IJSRuntime JSRuntime
 @rendermode InteractiveWebAssembly
 @page "/anime/{mal_id:int}"
-<link rel="stylesheet" href="/AnimePage.css" />
+<link rel="stylesheet" href="/AnimePage.css?version=0.1" />
 
 @if (!loaded)
 {
@@ -145,6 +145,22 @@ else{
 
 
         </RadzenRow>
+        <hr />
+        @if (currentAnime.Streamings != null)
+        {
+            <div class="streamingsDiv">
+                <div class="streamingTitleDiv">
+                <span class="streamingTitleSpan">Streamings: </span>
+                    </div>
+                        @foreach (var streaming in currentAnime.Streamings)
+                        {
+                        <div class="streamingsInnerDiv">
+                            <RadzenButton Click="() => NavigateToStreamingSite(streaming.Url)" Text=@streaming.Name Style=@($"width:100%; {GetButtonStyle(streaming.Name)}")></RadzenButton>
+                        </div>
+                        }
+                </div>
+        }
+
     </div>
     }
 }
@@ -190,11 +206,37 @@ else{
         }
     }
 
-    private string TruncateTitles(string title, int title_length)
+    string GetButtonStyle(string streamingName)
     {
-        if (title.Length <= title_length) return title;
-        return title.Substring(0, title_length - 3) + "...";
+        switch (streamingName.ToLower())
+        {
+            case "netflix":
+                return "background-color: #E50914;";
+            case "aniplus tv":
+                return "background-color: #FFA500; color:black"; 
+            case "bahamut anime crazy":
+                return "background-color: #59d3eb; color:#151515"; 
+            case "bilibili global":
+                return "background-color: #59d3eb; color:white";
+            case "catchplay":
+                return "background-color: #f26f21; color:white";
+            case "crunchyroll":
+                return "background-color: #FF4500; color:black";
+            case "ani-one asia":
+                return "background-color: #E50914;";
+            case "iqiyi":
+                return "background-color: rgb(0,194,52);";
+            case "muse asia":
+                return "background-color: #E50914;";
+            case "mewatch":
+                return "background-color: white; color:black";
+            case "funimation":
+                return "background-color: #231F20; color:white";
+            default:
+                return "background-color: #CCCCCC; color:black;"; 
+        }
     }
+
 
     protected void NavigateToIndex()
     {
@@ -223,5 +265,10 @@ else{
     protected void NavigateToGenre(int genre_id)
     {
         navManager.NavigateTo($"/genrelist/{genre_id}", forceLoad: true);
+    }
+
+    protected void NavigateToStreamingSite(string url)
+    {
+        JSRuntime.InvokeVoidAsync("open", $"{url}", "_blank");
     }
 }

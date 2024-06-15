@@ -21,7 +21,7 @@ namespace BattAnimeZone.Services
             using (var _context = await _dbContextFactory.CreateDbContextAsync())
             {
 
-                var q1 = (from ag in _context.AnimeGenres
+                var q1 = await (from ag in _context.AnimeGenres
                               join a in _context.Animes on ag.AnimeId equals a.Mal_id
                               join g in _context.Genres on ag.GenreId equals g.Mal_id
                               where a.Mal_id == mal_id
@@ -81,10 +81,11 @@ namespace BattAnimeZone.Services
                               })
                                .AsSplitQuery()
                                .AsNoTracking()
-                               .FirstOrDefault();
+                               .FirstOrDefaultAsync();
 
+                if (q1 == null) return null;
 
-                var q2 = (from ap in _context.AnimeProductionEntities
+                var q2 = await (from ap in _context.AnimeProductionEntities
                              join a in _context.Animes on ap.AnimeId equals a.Mal_id
                              join p in _context.ProductionEntities on ap.ProductionEntityId equals p.Id
                              join pt in _context.ProductionEntityTitles on p.Id equals pt.ParentId
@@ -114,9 +115,23 @@ namespace BattAnimeZone.Services
                              })
                                  .AsSplitQuery()
                                  .AsNoTracking()
-                                 .FirstOrDefault();
+                                 .FirstOrDefaultAsync();
 
-                if (q1 == null) return null;
+                var q3 =  await (from astr in _context.AnimeStreamings
+                                join streaming in _context.Streamings on astr.StreamingId equals streaming.Id
+                                where astr.AnimeId == mal_id
+                                group new { astr, streaming } by new { astr.AnimeId } into grp
+                                select new
+                                {
+                                    Streamings = grp.Where(x => x.astr.AnimeId == mal_id).Select(x => new Streaming
+                                    {
+                                        Name = x.streaming.Name,
+                                        Url = x.streaming.Url,
+                                    }).ToList(),
+                                }).AsSplitQuery()
+                                 .AsNoTracking()
+                                 .FirstOrDefaultAsync();
+
 
                 var returnDTO = new AnimePageDTO
                 {
@@ -141,7 +156,8 @@ namespace BattAnimeZone.Services
                     Themes = q1.Themes,
                     Studios = q2?.Studios,
                     Licensors = q2?.Licensors,
-                    Producers = q2?.Producers
+                    Producers = q2?.Producers,
+                    Streamings = q3?.Streamings
                 };
 
                 return returnDTO;

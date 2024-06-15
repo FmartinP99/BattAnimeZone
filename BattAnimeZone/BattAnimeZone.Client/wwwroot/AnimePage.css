@@ -96,3 +96,20 @@
     white-space: pre-wrap;
 
 }
+
+
+.streamingsInnerDiv{
+    width: 300px;
+    display: flex;
+    margin-bottom:10px;
+}
+
+.streamingTitleDiv {
+    margin-bottom: 15px;
+}
+.streamingTitleSpan {
+
+    font-weight: 700;
+    font-size: 25px;
+    display: inline;
+}
