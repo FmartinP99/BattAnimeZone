@@ -7,7 +7,7 @@ namespace BattAnimeZone.Services
     {
         public async Task<List<AnimeSearchResultDTO>?> GetSimilarAnimesForSearchResult(int n, string name)
         {
-            List<int> similar_anime_ids = _ssService.GetSimilarAnimesForSearchResult(n, name);
+			int[] similar_anime_ids = _ssService.GetSimilarAnimesForSearchResult(n, name);
             using (var _context = await _dbContextFactory.CreateDbContextAsync())
             {
                 List<AnimeSearchResultDTO>? animes = await _context.Animes
@@ -30,7 +30,7 @@ namespace BattAnimeZone.Services
                 if (animes != null)
                 {
                     animes = animes
-                        .OrderBy(a => similar_anime_ids.IndexOf(a.Mal_id))
+                        .OrderBy(a => Array.IndexOf(similar_anime_ids, a.Mal_id))
                         .ToList();
                 }
                 return animes;
