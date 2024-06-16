@@ -64,8 +64,19 @@ namespace BattAnimeZone.Controllers
             return Ok(result);
         }
 
+		[HttpGet("GetYears")]
+		public async Task<IActionResult> GetYears()
+		{
+			var result = await _dataBaseService.GetDistinctYears();
+			if (result == null)
+			{
+				return NotFound();
+			}
+			return Ok(result);
+		}
 
-        [HttpGet("GetGenres")]
+
+		[HttpGet("GetGenres")]
         public async Task<IActionResult> GetGenres()
         {
             var result = await _dataBaseService.GetGenres();

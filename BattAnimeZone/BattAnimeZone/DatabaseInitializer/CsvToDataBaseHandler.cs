@@ -631,8 +631,34 @@ namespace BattAnimeZone.DatabaseInitializer
             }
         }
 
+		public async Task SaveDistinctYears()
+		{
 
-        public async Task SaveAnimeGenresToDatabase(List<Anime> animes)
+
+			using (var _context = _dbContextFactory.CreateDbContext())
+			{
+				var distinctYears = _context.Animes.Where(a => a.Year != -1)
+									 .Select(a => a.Year)
+									 .Distinct()
+									 .ToList();
+
+				var distinctYearEntities = distinctYears.Select(y => new DistinctYearModel
+				{
+					Year = y
+				}).ToList();
+
+				await _context.DistinctYears.AddRangeAsync(distinctYearEntities);
+				await _context.SaveChangesAsync();
+
+				foreach (var rmod in _context.DistinctMediaTypes)
+				{
+					_context.Entry(rmod).State = EntityState.Detached;
+				}
+			}
+		}
+
+
+		public async Task SaveAnimeGenresToDatabase(List<Anime> animes)
         {
 
             List<AnimeGenreModel> genreModels = new List<AnimeGenreModel>();

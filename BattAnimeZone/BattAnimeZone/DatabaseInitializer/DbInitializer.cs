@@ -278,7 +278,11 @@ namespace BattAnimeZone.DatabaseInitializer
             await _csvToDataBaseHandler.SaveDistinctMediaTypes();
             Console.WriteLine("saved distinctmediatypes\n");
 
-        }
+			Console.WriteLine("queried distinctyears");
+			await _csvToDataBaseHandler.SaveDistinctYears();
+			Console.WriteLine("saved distinctyears\n");
+
+		}
 
 	}
 }

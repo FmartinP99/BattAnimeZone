@@ -21,8 +21,11 @@
 		<div class="headerDiv d-flex align-items-center">
 			<p class="subtitle">@info_str</p>
 			<div class="d-flex align-items-center headerInnerDiv">
+				<RadzenLabel Text="YEAR:" class="orderComponentText rz-text-align-end" Component="DropDownTextValueProperties" Style="margin-right: 8px; vertical-align: middle;" />
+				<RadzenDropDown Change="onChangedYear" class="rzdropdown" @bind-Value=@selected_year Data=@filter_by_year Style="width: 100%; max-width: 400px;" Name="DropDownTextValueProperties" />
+
 				<RadzenLabel Text="SEASON:" class="orderComponentText rz-text-align-end" Component="DropDownTextValueProperties" Style="margin-right: 8px; vertical-align: middle;" />
-				<RadzenDropDown Change="onChanged" class="rzdropdown" @bind-Value=@filter_str Data=@filter_bys Style="width: 100%; max-width: 400px;" Name="DropDownTextValueProperties" />
+				<RadzenDropDown Change="onChangedSeason" class="rzdropdown" @bind-Value=@filter_str Data=@filter_by_season Style="width: 100%; max-width: 400px;" Name="DropDownTextValueProperties" />
 			</div>
 		</div>
 
@@ -52,16 +55,20 @@
 @code{
 	bool loaded = false;
 
-	IEnumerable<AnimeHomePageDTO> winterAnimes;
-	IEnumerable<AnimeHomePageDTO> springAnimes;
-	IEnumerable<AnimeHomePageDTO> summerAnimes;
-	IEnumerable<AnimeHomePageDTO> fallAnimes;
-	IEnumerable<AnimeHomePageDTO> currentlySelectedAnimes;
+	Dictionary<int, Dictionary<string, IEnumerable<AnimeHomePageDTO>>> animes_per_year = new Dictionary<int, Dictionary<string, IEnumerable<AnimeHomePageDTO>>>();
+	IEnumerable<AnimeHomePageDTO>? winterAnimes;
+	IEnumerable<AnimeHomePageDTO>? springAnimes;
+	IEnumerable<AnimeHomePageDTO>? summerAnimes;
+	IEnumerable<AnimeHomePageDTO>? fallAnimes;
+	IEnumerable<AnimeHomePageDTO>? currentlySelectedAnimes;
 
 	string filter_str = "WINTER";
-	string info_str = "2024 Winter Animes";
-	IEnumerable<string> filter_bys = new List<string>() {"WINTER", "SPRING", "SUMMER", "FALL" };
+	IEnumerable<string> filter_by_season = new List<string>() {"WINTER", "SPRING", "SUMMER", "FALL" };
 
+	int selected_year = 2024;
+	IEnumerable<int>? filter_by_year = new List<int>() {2023, 2024};
+
+	string info_str = "2024 Winter Animes";
 
 	protected override async Task OnAfterRenderAsync(bool firstRender)
 	{
@@ -70,30 +77,79 @@
 			loaded = true;
 			try
 			{
-			
-				//var response = await httpClient.GetAsync($"{navManager.BaseUri}api/AnimeService/GetAnimesByYear/2024");
-				var response = await httpClient.GetAsync($"{navManager.BaseUri}api/DbController/GetAnimesByYear/2024");
+				var response = await httpClient.GetAsync($"{navManager.BaseUri}api/DbController/GetYears");
 				if (response.IsSuccessStatusCode)
 				{
-					IEnumerable<AnimeHomePageDTO>? animes = await response.Content.ReadFromJsonAsync<IEnumerable<AnimeHomePageDTO>>();
-					winterAnimes = animes.Where(anime => anime.Season == "winter");
-					springAnimes = animes.Where(anime => anime.Season == "spring");
-					summerAnimes = animes.Where(anime => anime.Season == "summer");
-					fallAnimes = animes.Where(anime => anime.Season == "fall");
-					currentlySelectedAnimes = winterAnimes;
+					filter_by_year = await response.Content.ReadFromJsonAsync<List<int>>();
 				}
 				else
 				{
 					await JSRuntime.InvokeVoidAsync("console.error", $"{response.StatusCode}\n {response.ReasonPhrase}");
 					return;
 				}
-
-				StateHasChanged();
-			}catch (Exception e)
+			}
+			catch (Exception e)
 			{
 				await JSRuntime.InvokeVoidAsync("console.error", $"{e.Message}");
 				return;
 			}
+
+
+			await queryAnimesByYear(2024);
+			StateHasChanged();
+		}
+	}
+
+
+	protected async Task queryAnimesByYear(int year)
+	{
+		try
+		{
+
+			//if the animes have been queried already
+			if (animes_per_year.ContainsKey(year))
+			{
+				info_str = year + info_str.Substring(4);
+				winterAnimes = animes_per_year[year]["winter"];
+				springAnimes = animes_per_year[year]["spring"];
+				summerAnimes = animes_per_year[year]["summer"];
+				fallAnimes = animes_per_year[year]["fall"];
+				currentlySelectedAnimes = winterAnimes ?? springAnimes ?? summerAnimes ?? fallAnimes;
+				return;
+			}
+
+
+			var response = await httpClient.GetAsync($"{navManager.BaseUri}api/DbController/GetAnimesByYear/{year}");
+			if (response.IsSuccessStatusCode)
+			{
+				IEnumerable<AnimeHomePageDTO>? animes = await response.Content.ReadFromJsonAsync<IEnumerable<AnimeHomePageDTO>>();
+				if (animes == null) throw new ArgumentNullException($"ERROR: Queried anime year={year} was null");
+				info_str = year + info_str.Substring(4);
+				var seasonsDictionary = new Dictionary<string, IEnumerable<AnimeHomePageDTO>>
+					{
+						{ "winter", animes.Where(anime => anime.Season == "winter") },
+						{ "spring", animes.Where(anime => anime.Season == "spring") },
+						{ "summer", animes.Where(anime => anime.Season == "summer") },
+						{ "fall", animes.Where(anime => anime.Season == "fall") }
+					};
+				animes_per_year.Add(year, seasonsDictionary);
+
+				winterAnimes = animes_per_year[year]["winter"];
+				springAnimes = animes_per_year[year]["spring"];
+				summerAnimes = animes_per_year[year]["summer"];
+				fallAnimes = animes_per_year[year]["fall"];
+				currentlySelectedAnimes = winterAnimes ?? springAnimes ?? summerAnimes ?? fallAnimes;
+			}
+			else
+			{
+				await JSRuntime.InvokeVoidAsync("console.error", $"{response.StatusCode}\n {response.ReasonPhrase}");
+				return;
+			}
+		}
+		catch (Exception e)
+		{
+			await JSRuntime.InvokeVoidAsync("console.error", $"{e.Message}");
+			return;
 		}
 	}
 
@@ -105,29 +161,48 @@
 	} 
 
 
-	protected async void onChanged()
+	protected async	Task onChangedSeason()
 	{
 		switch (filter_str)
 		{
 			case "WINTER":
-				currentlySelectedAnimes = winterAnimes;
-				info_str = "2024 Winter Animes";
+				if (winterAnimes != null)
+				{
+					currentlySelectedAnimes = winterAnimes;
+					info_str = $"{selected_year} Winter Animes";
+				}
 				break;
 			case "SPRING":
-				currentlySelectedAnimes = springAnimes;
-				info_str = "2024 Spring Animes";
+				if (springAnimes != null)
+				{
+					currentlySelectedAnimes = springAnimes;
+					info_str = $"{selected_year} Spring Animes";
+				}
 				break;
 			case "SUMMER":
-				currentlySelectedAnimes = summerAnimes;
-				info_str = "2024 Summer Animes";
+				if (summerAnimes != null)
+				{
+					currentlySelectedAnimes = summerAnimes;
+					info_str = $"{selected_year} Summer Animes";
+				}
 				break;
 			case "FALL":
-				currentlySelectedAnimes = fallAnimes;
-				info_str = "2024 Fall Animes";
+				if (fallAnimes != null)
+				{
+					currentlySelectedAnimes = fallAnimes;
+					info_str = $"{selected_year} Fall Animes";
+				}
 				break;
 			default:
 				break;
 		}
+	}
+
+
+	protected async Task onChangedYear()
+	{
+		await queryAnimesByYear(selected_year);
+		StateHasChanged();
 	}
 
 
