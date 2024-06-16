@@ -20,7 +20,7 @@ namespace BattAnimeZone.Services
 
         private Dictionary<int, AnimeTitleContainer> animes = new Dictionary<int, AnimeTitleContainer> { };
 
-        private Dictionary<string, List<int>> recently_searched_distances = new Dictionary<string, List<int>> { };
+        private Dictionary<string, int[]> recently_searched_distances = new Dictionary<string, int[]> { };
 
         int recently_max_size = 2000;
 
@@ -52,7 +52,7 @@ namespace BattAnimeZone.Services
             }
         }
 
-        public List<int> GetSimilarAnimesForSearchResult(int n, string name)
+        public int[] GetSimilarAnimesForSearchResult(int n, string name)
         {
             name = name.ToLower();
             Dictionary<int, double> distances = new Dictionary<int, double>();
@@ -83,7 +83,7 @@ namespace BattAnimeZone.Services
                     try
                     {
                         recently_searched_distances.Remove(key_to_Remove);
-                        recently_searched_distances.Add(name, top_n_ids);
+                        recently_searched_distances.Add(name, top_n_ids.ToArray());
                     }
                     catch (Exception ex)
                     {
@@ -93,11 +93,11 @@ namespace BattAnimeZone.Services
                 }
                 else
                 {
-                    recently_searched_distances.Add(name, top_n_ids);
+                    recently_searched_distances.Add(name, top_n_ids.ToArray());
                 }
             }
            
-            return top_n_ids;
+            return top_n_ids.ToArray();
         }
     }
 }
