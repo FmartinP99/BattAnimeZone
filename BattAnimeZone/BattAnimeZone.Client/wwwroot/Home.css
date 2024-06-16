@@ -101,6 +101,16 @@ h1 {
     margin-left:auto;
 }
 
+.yearDiv {
+    display:flex;
+    align-items:center;
+    margin-right: 25px;
+}
+
+.orderComponentText{
+    font-size:18px;
+}
+
 
 .rzdropdown {
     background-image: linear-gradient(to right, #5832dd,#5025ce,#5832dd,#5025ce,#5832dd);

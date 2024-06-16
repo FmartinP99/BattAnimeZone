@@ -7,7 +7,7 @@
 @inject IJSRuntime JSRuntime
 @rendermode InteractiveWebAssembly
 @page "/"
-<link rel="stylesheet" href="/Home.css" />
+<link rel="stylesheet" href="/Home.css?version=0.1" />
 <PageTitle>Home</PageTitle>
 <SearchBar></SearchBar>
 
@@ -21,9 +21,10 @@
 		<div class="headerDiv d-flex align-items-center">
 			<p class="subtitle">@info_str</p>
 			<div class="d-flex align-items-center headerInnerDiv">
+				<div class="yearDiv">
 				<RadzenLabel Text="YEAR:" class="orderComponentText rz-text-align-end" Component="DropDownTextValueProperties" Style="margin-right: 8px; vertical-align: middle;" />
 				<RadzenDropDown Change="onChangedYear" class="rzdropdown" @bind-Value=@selected_year Data=@filter_by_year Style="width: 100%; max-width: 400px;" Name="DropDownTextValueProperties" />
-
+				</div>
 				<RadzenLabel Text="SEASON:" class="orderComponentText rz-text-align-end" Component="DropDownTextValueProperties" Style="margin-right: 8px; vertical-align: middle;" />
 				<RadzenDropDown Change="onChangedSeason" class="rzdropdown" @bind-Value=@filter_str Data=@filter_by_season Style="width: 100%; max-width: 400px;" Name="DropDownTextValueProperties" />
 			</div>
