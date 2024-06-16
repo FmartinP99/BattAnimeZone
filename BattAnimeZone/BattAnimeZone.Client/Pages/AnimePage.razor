@@ -53,6 +53,7 @@ else{
           
 
                     <div class="rowDiv"><span class="titleSpan">Episodes: </span>@currentAnime.Episodes</div>
+                    <div class="rowDiv"><span class="titleSpan">Duration: </span>@currentAnime.Duration</div>
                     <div class="rowDiv"><span class="titleSpan">Type: </span>@currentAnime.MediaType</div>
 
                     <div class="rowDiv"><span class="titleSpan">Airing: </span>@currentAnime.Status</div>
@@ -63,7 +64,7 @@ else{
                     <div class="rowDiv"><span class="titleSpan">Score: </span>@currentAnime.Score</div>
                     <div class="rowDiv"><span class="titleSpan">Popularity: </span>@currentAnime.Popularity</div>
 
-                    @if (currentAnime.Genres != null)
+                    @if (currentAnime.Genres != null && currentAnime.Genres.Count > 0)
                     {
                         <div class="rowDiv">
                             <span class="titleSpan">Genres: </span>
@@ -75,7 +76,7 @@ else{
                         </div>
                     }
 
-                    @if (currentAnime.Themes != null)
+                    @if (currentAnime.Themes != null && currentAnime.Themes.Count > 0)
                     {
                         <div class="rowDiv">
                             <span class="titleSpan">Themes: </span>
@@ -88,7 +89,8 @@ else{
                     }
 
 
-                @if (currentAnime.Producers != null){
+                    @if (currentAnime.Producers != null && currentAnime.Producers.Count > 0)
+                    {
                         <div class="rowDiv">
                             <span class="titleSpan">Producers: </span>
                          
@@ -99,7 +101,7 @@ else{
                         </div>
                     }
 
-                    @if (currentAnime.Licensors != null)
+                    @if (currentAnime.Licensors != null && currentAnime.Licensors.Count > 0)
                     {
                         <div  class="rowDiv">
                             <span class="titleSpan">Licensors: </span>
@@ -110,7 +112,7 @@ else{
                         }</div>
                  }
 
-                    @if (currentAnime.Studios != null)
+                    @if (currentAnime.Studios != null && currentAnime.Studios.Count > 0)
                     {
 
                         <div class="rowDiv">
