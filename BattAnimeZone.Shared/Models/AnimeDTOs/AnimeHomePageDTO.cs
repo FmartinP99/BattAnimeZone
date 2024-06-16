@@ -11,6 +11,7 @@
 		public float Score { get; set; } = -1;
 		public string Season { get; set; } = string.Empty;
 		public string ImageLargeWebpUrl { get; set; } = string.Empty;
+		public string Synopsis { get; set; } = string.Empty;
 	
 	}
 }

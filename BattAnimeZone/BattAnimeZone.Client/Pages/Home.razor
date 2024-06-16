@@ -7,7 +7,7 @@
 @inject IJSRuntime JSRuntime
 @rendermode InteractiveWebAssembly
 @page "/"
-<link rel="stylesheet" href="/Home.css?version=0.1" />
+<link rel="stylesheet" href="/Home.css?version=0.2" />
 <PageTitle>Home</PageTitle>
 <SearchBar></SearchBar>
 
@@ -35,15 +35,27 @@
 			@foreach (AnimeHomePageDTO anime in this.currentlySelectedAnimes)
 			{
 				<div class="col-2">
-					<div class="card card-block card-1" @onclick="@(() => NavigateTo(anime.Mal_id))">
+						<div class="card card-block card-1" @onclick="@(() => NavigateTo(anime.Mal_id))" 
+							@onmouseenter="@(() => changeCardDivs(anime.Mal_id, true))" 
+							@onmouseleave="@(() => changeCardDivs(anime.Mal_id, false))">
+						@if(hoverDict[anime.Mal_id] == false ){
 							<img src="@anime.ImageLargeWebpUrl" class="img-fluid" alt="Anime image is missing!">
 							<div class="scoreDiv">@anime.Score</div>
 							<div class="typeDiv">@anime.MediaType</div>
 							<div class="titleDiv">@GetTitle(anime)</div>
 							@if(anime.Status != "Finished Airing")
 							{
-							<div class="statusDiv">@anime.Status</div>
+								<div class="statusDiv">@anime.Status</div>
 							}
+
+							}
+						else
+						{
+							<img src="@anime.ImageLargeWebpUrl" class="img-fluid" alt="Anime image is missing!">
+							<div class="scoreDiv">@anime.Score</div>
+							<div class="typeDiv">@anime.MediaType</div>
+							<div class="synopsisDiv">@anime.Synopsis</div>
+						}
 					</div>
 			</div>
 			
@@ -62,6 +74,9 @@
 	IEnumerable<AnimeHomePageDTO>? summerAnimes;
 	IEnumerable<AnimeHomePageDTO>? fallAnimes;
 	IEnumerable<AnimeHomePageDTO>? currentlySelectedAnimes;
+	Dictionary<int, bool> hoverDict = new Dictionary<int, bool>();
+
+	bool test = false;
 
 	string filter_str = "WINTER";
 	IEnumerable<string> filter_by_season = new List<string>() {"WINTER", "SPRING", "SUMMER", "FALL" };
@@ -101,7 +116,6 @@
 		}
 	}
 
-
 	protected async Task queryAnimesByYear(int year)
 	{
 		try
@@ -140,6 +154,11 @@
 				summerAnimes = animes_per_year[year]["summer"];
 				fallAnimes = animes_per_year[year]["fall"];
 				currentlySelectedAnimes = winterAnimes ?? springAnimes ?? summerAnimes ?? fallAnimes;
+
+				foreach (var anime in animes)
+				{
+					hoverDict[anime.Mal_id] = false;
+				}
 			}
 			else
 			{
@@ -210,6 +229,11 @@
 	protected void NavigateTo(int mal_id)
 	{
 		navManager.NavigateTo($"/anime/{mal_id}");
+	}
+
+	protected void changeCardDivs(int mal_id, bool val)
+	{
+		hoverDict[mal_id] = val;
 	}
 
 }
