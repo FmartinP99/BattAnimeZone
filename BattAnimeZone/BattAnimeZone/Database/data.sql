@@ -169,3 +169,7 @@ CREATE TABLE AnimeGenre (
 CREATE TABLE DistinctMediaTypes AS
 SELECT DISTINCT media_type
 FROM Anime;
+
+CREATE TABLE DistinctYears AS
+SELECT DISTINCT "Year"
+FROM Anime;

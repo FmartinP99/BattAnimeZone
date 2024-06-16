@@ -70,7 +70,16 @@ namespace BattAnimeZone.Services
             }
         }
 
-        public async Task<List<AnimeGenreDTO>?> GetGenres()
+		public async Task<List<int>> GetDistinctYears()
+		{
+			using (var _context = await _dbContextFactory.CreateDbContextAsync())
+			{
+				List<int> distinctYears = await _context.DistinctYears.Select(x => x.Year).ToListAsync();
+				return distinctYears;
+			}
+		}
+
+		public async Task<List<AnimeGenreDTO>?> GetGenres()
         {
             using (var _context = await _dbContextFactory.CreateDbContextAsync())
             {
