@@ -1,8 +1,13 @@
 @inject NavigationManager navManager
 @using BattAnimeZone.Client.Components
 @using BattAnimeZone.Shared.Models.AnimeDTOs
+@using BattAnimeZone.Shared.Models.User.SessionStorageModels
+@using BattAnimeZone.Client.Authentication
+@using BlazorBootstrap;
+@using System.Net.Http.Headers;
 @inject HttpClient httpClient
 @inject IJSRuntime JSRuntime
+@inject AuthenticationStateProvider authStateProvider
 @rendermode InteractiveWebAssembly
 @page "/anime/{mal_id:int}"
 <link rel="stylesheet" href="/AnimePage.css?version=0.1" />
@@ -19,13 +24,24 @@ else{
     @if (currentAnime != null){
     <div Style="padding-left: 20px; padding-right: 20px;">
 
+        
         <div  class="defaultTitleDiv">@currentAnime.Title</div>
         <hr />
-        <RadzenButton id="relation-button" Click="NavigateToRelationsPage" Text="RELATED ANIMES" Style="background-image: linear-gradient(to right, #5832dd,#5025ce,#5832dd,#5025ce,#5832dd);"></RadzenButton>
-        <RadzenButton id="relation-button" Click="NavigateToMALAnime" Text="MAL LINK" Style="background-image: linear-gradient(to right, #5832dd,#5025ce,#5832dd,#5025ce,#5832dd);"></RadzenButton>
- 
+        <div class="headerDiv">
+            <RadzenButton id="relation-button" Click="NavigateToRelationsPage" Text="RELATED ANIMES" Style="background-image: linear-gradient(to right, #5832dd,#5025ce,#5832dd,#5025ce,#5832dd);"></RadzenButton>
+            <RadzenButton id="relation-button" Click="NavigateToMALAnime" Text="MAL LINK" Style="background-image: linear-gradient(to right, #5832dd,#5025ce,#5832dd,#5025ce,#5832dd);"></RadzenButton>
+            <AuthorizeView>
+                <Authorized>
+             <Button id="modalButton" Color="ButtonColor.Primary" @onclick="OnShowModalClick" Style="background-image: linear-gradient(to right, #5832dd,#5025ce,#5832dd,#5025ce,#5832dd);">@modalDisplayText</Button>
+                    </Authorized>
+                <NotAuthorized>
+                        <Button id="modalNotAuthButton" Color="ButtonColor.Primary">Log in to rate this anime!</Button>
+                    </NotAuthorized>
+                </AuthorizeView>
+        </div>
+        
         <br />
-   
+        
         <RadzenRow Style="height:500px; flex:auto; margin-bottom:20px; justify-content: space-between;">
        
             <div class="imageDiv">
@@ -148,23 +164,58 @@ else{
 
         </RadzenRow>
         <hr />
-        @if (currentAnime.Streamings != null)
-        {
+
+        <div class="secondRow">
+       
             <div class="streamingsDiv">
                 <div class="streamingTitleDiv">
                 <span class="streamingTitleSpan">Streamings: </span>
                     </div>
+                    @if (currentAnime.Streamings != null)
+                    {
                         @foreach (var streaming in currentAnime.Streamings)
                         {
                         <div class="streamingsInnerDiv">
                             <RadzenButton Click="() => NavigateToStreamingSite(streaming.Url)" Text=@streaming.Name Style=@($"width:100%; {GetButtonStyle(streaming.Name)}")></RadzenButton>
                         </div>
                         }
+                    }
                 </div>
-        }
+        </div>
 
     </div>
     }
+
+
+
+
+
+    <Modal @ref="modal"  Class="customModalCssClass" IsVerticallyCentered="true" 
+        FooterCssClass="customModalFooterCssClass"
+           BodyCssClass="customModalBodyCssClass"
+           HeaderCssClass="customModalHeaderCssClass"
+              CloseIconColor=IconColor.White>
+        
+        <BodyTemplate >
+            <div class=ratingDiv>
+            <RadzenLabel Text="Rate:" class="rateComponentText" Style="vertical-align: middle;" />
+            <RadzenDropDown class="rzdropdownRating" @bind-Value=@rating Data=possibleRatings Style="width: 100%; max-width: 160px;" Name="DropDownTextValueProperties" />
+            </div>
+             <div class=statusDiv>
+            <RadzenLabel Text="Status:" class="statusComponentText" Style="vertical-align: middle;" />
+            <RadzenDropDown class="rzdropdownStatus" @bind-Value=@status Data=possibleStatuses Style="width: 100%; max-width: 160px;" Name="DropDownTextValueProperties" />
+                </div>
+            <div class=favoriteDiv>
+            <RadzenLabel Text="Favorite" Component="CheckBoxFavorite" Style="vertical-align: middle;" />
+            <RadzenCheckBox @bind-Value=@favorite Name="CheckBoxFavorite" Style="vertical-align:middle" />
+            </div>
+        </BodyTemplate>
+
+        <FooterTemplate>
+            <Button Color="ButtonColor.Secondary" @onclick="OnHideModalClick">Close</Button>
+            <Button Color="ButtonColor.Primary" @ref="modalSaveButton" @onclick="OnModalSaveClick" Style="background-image: linear-gradient(to right, #5832dd,#5025ce,#5832dd,#5025ce,#5832dd);">Save changes</Button>
+        </FooterTemplate>
+</Modal>
 }
 @code{
     bool loaded = false;
@@ -172,10 +223,30 @@ else{
     public int mal_id { get; set; }
     AnimePageDTO? currentAnime;
 
+    private string modalDisplayText = "I haven't rated yet!";
+    private string rating = "Not rated";
+    private string[] possibleRatings = new string[11] { "Not rated", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10" };
+
+    private string status = "Nothing";
+    private string[] possibleStatuses = new string[6] { "Nothing", "Completed", "Watching", "Planned", "On hold", "Dropped" };
+
+    private bool favorite = false;
+
+    CustomAuthenticationStateProvider customAuthStateProvider;
+
+    protected override async Task OnInitializedAsync()
+    {
+        customAuthStateProvider = (CustomAuthenticationStateProvider)authStateProvider;
+        await ChangeModalDisplayText();
+        await base.OnInitializedAsync();
+    }
+
+
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
+
             loaded = true;
 
             try
@@ -207,6 +278,20 @@ else{
             }
         }
     }
+
+    private async Task ChangeModalDisplayText()
+    {
+
+        InteractedAnime? curr_intr_anim = await customAuthStateProvider.GetInteractedAnimeById(mal_id);
+        if (curr_intr_anim == null || string.IsNullOrEmpty(curr_intr_anim.Status))
+        { 
+            modalDisplayText = "I haven't rated it yet!";
+            return;
+        }
+        string new_text = char.ToUpper(curr_intr_anim.Status[0]) + curr_intr_anim.Status.Substring(1) + " " + (curr_intr_anim.Rating != 0 ? $"({curr_intr_anim.Rating}/10)" : "");
+        modalDisplayText = new_text;
+
+    } 
 
     string GetButtonStyle(string streamingName)
     {
@@ -285,4 +370,87 @@ else{
     {
         JSRuntime.InvokeVoidAsync("open", $"{url}", "_blank");
     }
+
+
+
+    private Button modalSaveButton = default!;
+
+    private Modal modal = default!;
+
+    private async Task OnShowModalClick()
+    {
+
+        await modal.ShowAsync();
+    }
+
+    private async Task OnHideModalClick()
+    {
+        await modal.HideAsync();
+    }
+
+    private async Task OnModalSaveClick()
+    {
+
+        modalSaveButton.ShowLoading("Loading...");
+
+
+        var username = await customAuthStateProvider.GetUsername();
+        if (username == null) return;
+
+
+        bool successConversion = int.TryParse(this.rating, out int finalrating);
+        if (!successConversion) finalrating = 0;
+
+        string? finalStatus = this.status == "Nothing" ? null : this.status.ToLower();
+
+        var token = await customAuthStateProvider.GetToken();
+
+        AnimeActionTransfer aat = new AnimeActionTransfer
+            {
+                UserName = username,
+                AnimeId = currentAnime.Mal_id,
+                Rating = finalrating,
+                 Status = finalStatus,
+                Favorite = this.favorite
+            };
+
+
+        try
+        {
+            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            var response = await httpClient.PostAsJsonAsync<AnimeActionTransfer>($"{navManager.BaseUri}api/AccountController/AnimeRating", 
+            aat
+            );
+            if (response.IsSuccessStatusCode)
+            {
+                await Task.Delay(300); // API call
+                modalSaveButton.HideLoading();
+                await modal.HideAsync();
+                StateHasChanged();
+
+                InteractedAnime intanime = new InteractedAnime
+                    {
+                        MalId = currentAnime.Mal_id,
+                        Rating = finalrating,
+                        Status = finalStatus,
+                        Favorite = this.favorite
+                    };
+                await customAuthStateProvider.InsertOrUpdateInteractiveAnime(intanime);
+                await ChangeModalDisplayText();
+            }
+            else
+            {
+                modalSaveButton.HideLoading();
+            }
+
+        }
+        catch (Exception ex)
+        {
+            await JSRuntime.InvokeVoidAsync("console.error", $"{ex.Message}");
+            modalSaveButton.HideLoading();
+            return;
+        }
+        
+    }
+
 }

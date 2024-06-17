@@ -1,4 +1,5 @@
 ﻿@using BattAnimeZone.Shared.Models.User
+@using BattAnimeZone.Shared.Models.User.SessionStorageModels
 @using BattAnimeZone.Client.Authentication
 @using System.Net
 @using System.ComponentModel.DataAnnotations
@@ -89,7 +90,8 @@
             var userSession = await loginResponse.Content.ReadFromJsonAsync<UserSession>();
             var customAuthStateProvider = (CustomAuthenticationStateProvider)authenticationStateProvider;
             await customAuthStateProvider.UpdateAuthenticationState(userSession);
-            navManager.NavigateTo("/", true);
+            navManager.NavigateTo(navManager.Uri, forceLoad: true);
+          
         }
         else if (loginResponse.StatusCode == HttpStatusCode.Unauthorized)
         {

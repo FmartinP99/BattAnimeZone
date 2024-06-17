@@ -2,12 +2,14 @@
 using BattAnimeZone.Authentication.PasswordHasher;
 using BattAnimeZone.DatabaseModels;
 using BattAnimeZone.DbContexts;
+using BattAnimeZone.Shared.Models.Anime;
 using BattAnimeZone.Shared.Models.User;
+using BattAnimeZone.Shared.Models.User.SessionStorageModels;
 using Microsoft.EntityFrameworkCore;
 
 namespace BattAnimeZone.Services
 {
-	public class UserAccountService
+    public class UserAccountService
 	{
         private IDbContextFactory<AnimeDbContext> _dbContextFactory;
 		private readonly IPasswordHasher _passwordHasher;
@@ -30,7 +32,7 @@ namespace BattAnimeZone.Services
 			if (userAccount == null) return null;
 
 
-            await Console.Out.WriteLineAsync($"a jelszo: {loginRequest.Password}  db-ben userAccount jelszo: {userAccount.Password}");
+ 
 
             var jwtAuthenticationManager = new JwtAuthenticationManager(this);
             UserSession? userSession;
@@ -55,6 +57,89 @@ namespace BattAnimeZone.Services
                 await _context.SaveChangesAsync();
                 return true;
             }
+        }
+
+        public async Task<bool> RateAnime(AnimeActionTransfer aat)
+        {
+
+            using (var _context = await _dbContextFactory.CreateDbContextAsync())
+            {
+                UserAccountModel? db_User = await _context.UserAccounts.Where(x => x.UserName == aat.UserName).FirstOrDefaultAsync();
+                if (db_User == null) return false;
+
+                AnimeUserModel? db_animeUser = await _context.AnimeUserModels.Where(x => x.AnimeId == aat.AnimeId && x.UserId == db_User.Id).FirstOrDefaultAsync();
+
+                AnimeUserModel updated_entry;
+
+                if (db_animeUser != null && aat.Status == null)
+                {
+                    _context.AnimeUserModels.Remove(db_animeUser);
+                    await _context.SaveChangesAsync();
+                    return true;
+                }
+                else if (db_animeUser == null && aat.Status == null)
+                {
+                    return true;
+                }
+
+                if (db_animeUser == null)
+                {
+                    updated_entry = new AnimeUserModel
+                    {
+                        AnimeId = aat.AnimeId,
+                        UserId = db_User.Id,
+                        favorite = aat.Favorite,
+                        Status = aat.Status,
+                        Rating = aat.Rating
+                    };
+                    _context.AnimeUserModels.Add(updated_entry);
+                    await _context.SaveChangesAsync();
+                }
+                else
+                {
+                    db_animeUser.favorite = aat.Favorite;
+                    db_animeUser.Status = aat.Status;
+                    db_animeUser.Rating = aat.Rating;
+
+                    _context.AnimeUserModels.Update(db_animeUser);
+                    await _context.SaveChangesAsync();
+                }
+                return true;
+            }
+        }
+
+
+        public async Task<Dictionary<int, InteractedAnime>?> GetInteractedAnimes(string UserName)
+        {
+            using (var _context = await _dbContextFactory.CreateDbContextAsync())
+            {
+                bool db_UserExists = await _context.UserAccounts.AnyAsync(x => x.UserName == UserName);
+                if (db_UserExists == false) return null;
+
+                var query = await (from au in _context.AnimeUserModels
+                             join u in _context.UserAccounts on au.UserId equals u.Id
+                             join a in _context.Animes on au.AnimeId equals a.Mal_id
+                             where u.UserName == UserName
+                                   select new
+                                   {
+                                       a.Mal_id,
+                                       InteractedAnime = new InteractedAnime()
+                                       {
+                                           MalId = a.Mal_id,
+                                           Title = a.Title,
+                                           Rating = au.Rating,
+                                           Status = au.Status,
+                                           Favorite = au.favorite
+                                       }
+                                   }).ToListAsync();
+
+                Dictionary<int, InteractedAnime> interactedAnimesDictionary = query.ToDictionary(
+                x => x.Mal_id,
+                x => x.InteractedAnime
+                );
+                return interactedAnimesDictionary;
+            }
+
         }
 
     }
