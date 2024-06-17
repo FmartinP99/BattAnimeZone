@@ -21,7 +21,7 @@ builder.Services.AddAuthentication(o =>
 {
     o.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
     o.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-}).AddJwtBearer( o=>
+}).AddJwtBearer("Bearer", o=>
 {
     o.RequireHttpsMetadata = true;
     o.SaveToken = true;

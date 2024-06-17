@@ -9,14 +9,27 @@
 }
 
 #relation-button{
-    margin-bottom:20px;
+    margin-bottom:0px;
 }
 
 .defaultTitleDiv {
-
-  
     font-size: 30px;
 
+}
+
+.headerDiv {
+    displax: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+}
+#modalButton {
+    margin-left: 55px;
+}
+
+#modalNotAuthButton {
+    margin-left: 55px;
+    background-image: linear-gradient(to right, #8e90f7, #7c7ae7, #8e90f7, #7c7ae7, #8e90f7);
 }
 
 .imageDiv {
@@ -113,3 +126,58 @@
     font-size: 25px;
     display: inline;
 }
+
+
+
+.secondRow {
+    display: flex;
+}
+
+
+
+.customModalHeaderCssClass {
+    background-image: linear-gradient(to right, #5832dd,#5025ce,#5832dd,#5025ce,#5832dd);
+}
+
+.customModalHeaderCssClass > h5 {
+    color:white;
+}
+
+.customModalBodyCssClass {
+    display:flex;
+    color: black;
+}
+
+.ratingDiv, .statusDiv,
+.favoriteDiv {
+    display: flex;
+    flex-direction: column; 
+    align-items: flex-start;
+    margin-left: 30px;
+}
+
+.rzdropdown {
+    background-image: linear-gradient(to right, #5832dd,#5025ce,#5832dd,#5025ce,#5832dd);
+    color: white;
+}
+
+
+
+
+
+.rz-dropdown-items > li {
+
+    color: black;
+    &:hover
+
+{
+    background-image: linear-gradient(to right, #5832dd,#5025ce,#5832dd,#5025ce,#5832dd);
+    color: white;
+}
+}
+
+
+
+
+
+

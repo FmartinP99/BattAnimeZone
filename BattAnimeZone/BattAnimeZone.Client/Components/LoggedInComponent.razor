@@ -21,7 +21,7 @@
         {
             var customAuthStateProvider = (CustomAuthenticationStateProvider)authStateProvider;
             await customAuthStateProvider.UpdateAuthenticationState(null);
-            StateHasChanged();
+            navManager.NavigateTo(navManager.Uri, forceLoad: true);
         }
     }
 }
