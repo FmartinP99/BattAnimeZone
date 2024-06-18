@@ -337,41 +337,6 @@ else{
     }
 
 
-    protected void NavigateToIndex()
-    {
-        navManager.NavigateTo("./");
-    }
-
-    protected void NavigateToProdEnt(int prodent_id)
-    {
-        navManager.NavigateTo($"./studio/{prodent_id}");
-    }
-
-    protected void NavigateToMALAnime(MouseEventArgs e)
-    {
-        if (e.Button == 0)
-        {
-            JSRuntime.InvokeVoidAsync("open", $"https://myanimelist.net/anime/{mal_id}", "_blank");
-        }
-    }
-
-
-    protected void NavigateToRelationsPage()
-    {
-        navManager.NavigateTo($"/anime/{mal_id}/relations", forceLoad: true);
-    }
-
-    protected void NavigateToGenre(int genre_id)
-    {
-        navManager.NavigateTo($"/genrelist/{genre_id}", forceLoad: true);
-    }
-
-    protected void NavigateToStreamingSite(string url)
-    {
-        JSRuntime.InvokeVoidAsync("open", $"{url}", "_blank");
-    }
-
-
 
     private Button modalSaveButton = default!;
 
@@ -410,7 +375,7 @@ else{
                 UserName = username,
                 AnimeId = currentAnime.Mal_id,
                 Rating = finalrating,
-                 Status = finalStatus,
+                Status = finalStatus,
                 Favorite = this.favorite
             };
 
@@ -418,7 +383,7 @@ else{
         try
         {
             httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-            var response = await httpClient.PostAsJsonAsync<AnimeActionTransfer>($"{navManager.BaseUri}api/AccountController/AnimeRating", 
+            var response = await httpClient.PostAsJsonAsync<AnimeActionTransfer>($"{navManager.BaseUri}api/AccountController/AnimeRating",
             aat
             );
             if (response.IsSuccessStatusCode)
@@ -450,7 +415,44 @@ else{
             modalSaveButton.HideLoading();
             return;
         }
-        
+
+    }
+
+
+
+
+    protected void NavigateToIndex()
+    {
+        navManager.NavigateTo("./");
+    }
+
+    protected void NavigateToProdEnt(int prodent_id)
+    {
+        navManager.NavigateTo($"./studio/{prodent_id}");
+    }
+
+    protected void NavigateToMALAnime(MouseEventArgs e)
+    {
+        if (e.Button == 0)
+        {
+            JSRuntime.InvokeVoidAsync("open", $"https://myanimelist.net/anime/{mal_id}", "_blank");
+        }
+    }
+
+
+    protected void NavigateToRelationsPage()
+    {
+        navManager.NavigateTo($"/anime/{mal_id}/relations");
+    }
+
+    protected void NavigateToGenre(int genre_id)
+    {
+        navManager.NavigateTo($"/genrelist/{genre_id}");
+    }
+
+    protected void NavigateToStreamingSite(string url)
+    {
+        JSRuntime.InvokeVoidAsync("open", $"{url}", "_blank");
     }
 
 }

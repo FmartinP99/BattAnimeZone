@@ -65,26 +65,6 @@
     }
 
 
-    public void NavigateToIndex()
-    {
-        navManager.NavigateTo($"/", forceLoad: true);
-    }
-
-    public void NavigateToAnimes()
-    {
-        navManager.NavigateTo($"/animelist", forceLoad: true);
-    }
-
-    public void NavigateToGenres()
-    {
-        navManager.NavigateTo($"/genrelist", forceLoad: true);
-    }
-
-    public void NavigateToStudios()
-    {
-        navManager.NavigateTo($"/studiolist", forceLoad: true);
-    }
-
     public async Task GetUserName()
     {
         try
@@ -117,6 +97,26 @@
     {
 
         await offcanvasAbout.ShowAsync<AboutComponent>(title: "About");
+    }
+
+    public void NavigateToIndex()
+    {
+        navManager.NavigateTo($"/");
+    }
+
+    public void NavigateToAnimes()
+    {
+        navManager.NavigateTo($"/animelist");
+    }
+
+    public void NavigateToGenres()
+    {
+        navManager.NavigateTo($"/genrelist");
+    }
+
+    public void NavigateToStudios()
+    {
+        navManager.NavigateTo($"/studiolist");
     }
 
 }
