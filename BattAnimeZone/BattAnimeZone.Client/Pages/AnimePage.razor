@@ -282,7 +282,7 @@ else{
     private async Task ChangeModalDisplayText()
     {
 
-        InteractedAnime? curr_intr_anim = await customAuthStateProvider.GetInteractedAnimeById(mal_id);
+        InteractedAnime? curr_intr_anim = await customAuthStateProvider.GetInteractedAnimeByIdeSessionStorage(mal_id);
         if (curr_intr_anim == null || string.IsNullOrEmpty(curr_intr_anim.Status))
         { 
             modalDisplayText = "I haven't rated it yet!";
@@ -394,7 +394,7 @@ else{
         modalSaveButton.ShowLoading("Loading...");
 
 
-        var username = await customAuthStateProvider.GetUsername();
+        var username = await customAuthStateProvider.GetUsernameeSessionStorage();
         if (username == null) return;
 
 
@@ -403,7 +403,7 @@ else{
 
         string? finalStatus = this.status == "Nothing" ? null : this.status.ToLower();
 
-        var token = await customAuthStateProvider.GetToken();
+        var token = await customAuthStateProvider.GetTokeneSessionStorage();
 
         AnimeActionTransfer aat = new AnimeActionTransfer
             {
@@ -435,7 +435,7 @@ else{
                         Status = finalStatus,
                         Favorite = this.favorite
                     };
-                await customAuthStateProvider.InsertOrUpdateInteractiveAnime(intanime);
+                await customAuthStateProvider.InsertOrUpdateInteractiveAnimeSessionStorage(intanime);
                 await ChangeModalDisplayText();
             }
             else

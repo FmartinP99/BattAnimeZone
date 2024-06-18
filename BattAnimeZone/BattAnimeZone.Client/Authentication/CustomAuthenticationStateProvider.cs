@@ -14,7 +14,7 @@ using System.IdentityModel.Tokens.Jwt;
 
 namespace BattAnimeZone.Client.Authentication
 {
-    public class CustomAuthenticationStateProvider : AuthenticationStateProvider
+    public partial class CustomAuthenticationStateProvider : AuthenticationStateProvider
     {
 
         [Inject]
@@ -115,94 +115,6 @@ namespace BattAnimeZone.Client.Authentication
             NotifyAuthenticationStateChanged(Task.FromResult(new AuthenticationState(claimsPrincipal)));
         }
 
-        public async Task<string> GetToken()
-        {
-            var result = string.Empty;
-
-            try
-            {
-                var userSession = await _sessionStorage.ReadEncryptedItemAsync<UserSession>("UserSession");
-                if (userSession != null && DateTime.Now < userSession.ExpiryTimeStamp)
-                    result = userSession.Token;
-            }
-            catch { }
-
-            return result;
-        }
-
-        public async Task<string> GetUsername()
-        {
-            var result = string.Empty;
-
-            try
-            {
-                var userSession = await _sessionStorage.ReadEncryptedItemAsync<UserSession>("UserSession");
-                if (userSession != null && DateTime.Now < userSession.ExpiryTimeStamp)
-                    result = userSession.UserName;
-            }
-            catch { }
-
-            return result;
-        }
-
-        public async Task<Dictionary<int, InteractedAnime>?> GetInteractedAnimes()
-        {
-            Dictionary<int, InteractedAnime>? result = new Dictionary<int, InteractedAnime>();
-
-            try
-            {
-                var userSession = await _sessionStorage.ReadEncryptedItemAsync<UserSession>("UserSession");
-                if (userSession != null && DateTime.Now < userSession.ExpiryTimeStamp)
-
-                result = await _sessionStorage.ReadEncryptedItemAsync<Dictionary<int, InteractedAnime>>("InteractedAnimes");
-            }
-            catch { }
-
-            return result;
-        }
-
-        public async Task<InteractedAnime?> GetInteractedAnimeById(int id)
-        {
-            InteractedAnime? result = null;
-
-            try
-            {
-                var userSession = await _sessionStorage.ReadEncryptedItemAsync<UserSession>("UserSession");
-                if (userSession != null && DateTime.Now < userSession.ExpiryTimeStamp)
-                {
-                    Dictionary<int, InteractedAnime> interacted_animes = await _sessionStorage.ReadEncryptedItemAsync<Dictionary<int, InteractedAnime>>("InteractedAnimes");
-                    interacted_animes.TryGetValue(id, out result);
-                }
-            }
-            catch { }
-
-            return result;
-        }
-
-        public async Task InsertOrUpdateInteractiveAnime(InteractedAnime intanime)
-        {
-            try
-            {
-                var userSession = await _sessionStorage.ReadEncryptedItemAsync<UserSession>("UserSession");
-                if (userSession != null && DateTime.Now < userSession.ExpiryTimeStamp)
-                {
-                    Dictionary<int, InteractedAnime> interacted_animes = await _sessionStorage.ReadEncryptedItemAsync<Dictionary<int, InteractedAnime>>("InteractedAnimes");
-                    if(interacted_animes != null) 
-                    interacted_animes[intanime.MalId] = intanime;
-                    else
-                    {
-                        interacted_animes = new Dictionary<int, InteractedAnime>() {
-                            {
-                                intanime.MalId, intanime
-                            } 
-                        };
-                    }
-                    await _sessionStorage.SaveItemEncryptedAsync("InteractedAnimes", interacted_animes);
-
-                }
-            }
-            catch { }
-
-        }
+    
     }
 }
