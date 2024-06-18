@@ -5,10 +5,13 @@ using BattAnimeZone.DbContexts;
 using BattAnimeZone.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Internal;
 using Microsoft.IdentityModel.Tokens;
+using DotNetEnv;
 
 var builder = WebApplication.CreateBuilder(args);
+
+Env.Load();
+var jwtSecurityKey = Environment.GetEnvironmentVariable("JWT_SECURITY_KEY");
 
 // Add services to the container.
 builder.Services.AddRazorComponents()
@@ -28,7 +31,7 @@ builder.Services.AddAuthentication(o =>
     o.TokenValidationParameters = new TokenValidationParameters
     {
         ValidateIssuerSigningKey = true,
-        IssuerSigningKey = new SymmetricSecurityKey(System.Text.Encoding.ASCII.GetBytes(JwtAuthenticationManager.JWT_SECURITY_KEY)),
+        IssuerSigningKey = new SymmetricSecurityKey(System.Text.Encoding.ASCII.GetBytes(jwtSecurityKey)),
         ValidateIssuer = false,
         ValidateAudience = false,
 
