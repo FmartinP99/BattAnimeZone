@@ -10,20 +10,18 @@ namespace BattAnimeZone.Authentication
 {
     public class JwtAuthenticationManager
 	{
-		public const string JWT_SECURITY_KEY = "yPkCqn4kSWLtaJwXvN2jGzpQRyTZ3gdXkt7FeBJP";
-	
-
 		private const int JWT_TOKEN_VALIDITY_MINS = 60;
+		private string JWT_SECURITY_KEY;
 
 		public JwtAuthenticationManager()
 		{
-
-		}
+            JWT_SECURITY_KEY = Environment.GetEnvironmentVariable("JWT_SECURITY_KEY");
+        }
 
 		public UserSession? GenerateJwtToken(UserAccountModel? userAccount)
 		{
-			/* Generating JWT Token */
-			var tokenExpiryTimeStamp = DateTime.Now.ToUniversalTime().AddMinutes(JWT_TOKEN_VALIDITY_MINS);
+            /* Generating JWT Token */
+            var tokenExpiryTimeStamp = DateTime.Now.ToUniversalTime().AddMinutes(JWT_TOKEN_VALIDITY_MINS);
             var tokenKey = Encoding.ASCII.GetBytes(JWT_SECURITY_KEY);
 			var claimsIdentity = new ClaimsIdentity(new List<Claim>
 				{
