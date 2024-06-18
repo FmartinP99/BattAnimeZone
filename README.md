@@ -22,7 +22,7 @@ The program also features an Authentication & Authorization system. (various fur
 - .NET8 Required
 - Download repository
 - Open the .sln
-- Change the JWT_SECURITY_KEY in the Authentication/JwtAuthenticationManagaer.cs to whatever you want 
+- Create a `.env` file in the same folder where the `.env.example` file is located and put `JWT_SECURITY_KEY={your-string-whatever-you-want}` into the file. <br> For example `JWT_SECURITY_KEY=yPkCqn4kSWLtaJwXvN2jGzpQRyTZ3gdXkt7FeBJP` 
 - Run
 
 
