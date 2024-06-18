@@ -1,6 +1,6 @@
 ﻿
 
-namespace BattAnimeZone.Shared.Models.User.SessionStorageModels
+namespace BattAnimeZone.Shared.Models.User.BrowserStorageModels
 {
     public class InteractedAnime
     {

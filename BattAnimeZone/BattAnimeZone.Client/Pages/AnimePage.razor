@@ -1,7 +1,7 @@
 @inject NavigationManager navManager
 @using BattAnimeZone.Client.Components
 @using BattAnimeZone.Shared.Models.AnimeDTOs
-@using BattAnimeZone.Shared.Models.User.SessionStorageModels
+@using BattAnimeZone.Shared.Models.User.BrowserStorageModels
 @using BattAnimeZone.Client.Authentication
 @using BlazorBootstrap;
 @using System.Net.Http.Headers;
@@ -282,7 +282,7 @@ else{
     private async Task ChangeModalDisplayText()
     {
 
-        InteractedAnime? curr_intr_anim = await customAuthStateProvider.GetInteractedAnimeByIdeSessionStorage(mal_id);
+        InteractedAnime? curr_intr_anim = await customAuthStateProvider.GetInteractedAnimeByIdLocalStorage(mal_id);
         if (curr_intr_anim == null || string.IsNullOrEmpty(curr_intr_anim.Status))
         { 
             modalDisplayText = "I haven't rated it yet!";
@@ -394,7 +394,7 @@ else{
         modalSaveButton.ShowLoading("Loading...");
 
 
-        var username = await customAuthStateProvider.GetUsernameeSessionStorage();
+        var username = await customAuthStateProvider.GetUsernameLocalStorage();
         if (username == null) return;
 
 
@@ -403,7 +403,7 @@ else{
 
         string? finalStatus = this.status == "Nothing" ? null : this.status.ToLower();
 
-        var token = await customAuthStateProvider.GetTokeneSessionStorage();
+        var token = await customAuthStateProvider.GetTokenLocalStorage();
 
         AnimeActionTransfer aat = new AnimeActionTransfer
             {
@@ -435,7 +435,7 @@ else{
                         Status = finalStatus,
                         Favorite = this.favorite
                     };
-                await customAuthStateProvider.InsertOrUpdateInteractiveAnimeSessionStorage(intanime);
+                await customAuthStateProvider.InsertOrUpdateInteractiveAnimeLocalStorage(intanime);
                 await ChangeModalDisplayText();
             }
             else

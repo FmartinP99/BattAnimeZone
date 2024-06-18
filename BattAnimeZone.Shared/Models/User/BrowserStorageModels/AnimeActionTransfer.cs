@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BattAnimeZone.Shared.Models.User.SessionStorageModels
+namespace BattAnimeZone.Shared.Models.User.BrowserStorageModels
 {
     public class AnimeActionTransfer
     {
