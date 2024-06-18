@@ -46,10 +46,7 @@ namespace BattAnimeZone.Client.Authentication
             {
                 var userSession = await _localStorage.GetItemAsync<UserSession>("UserSession");
                 if (userSession == null)
-                    return await Task.FromResult(new AuthenticationState(_anonymous));
-
-                await Console.Out.WriteLineAsync($"usersession expirytimesttamp {userSession.ExpiryTimeStamp}");
-                await Console.Out.WriteLineAsync($"nowtime  {DateTime.Now.ToUniversalTime()}");
+                    return await Task.FromResult(new AuthenticationState(_anonymous))
 
                 if (DateTime.Now.ToUniversalTime() > userSession.ExpiryTimeStamp)
                 {
