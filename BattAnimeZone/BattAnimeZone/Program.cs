@@ -45,8 +45,6 @@ builder.Services.AddSingleton<SingletonSearchService>();
 
 
 //databasecontexts
-//builder.Services.AddDbContext<AnimeDbContext>(options =>
-//options.UseSqlite(builder.Configuration.GetConnectionString("AnimeDatabase")));
 builder.Services.AddDbContextFactory<AnimeDbContext>((DbContextOptionsBuilder options) => options.UseSqlite(builder.Configuration.GetConnectionString("Database")));
 
 builder.Services.AddTransient<DbInitializer>();

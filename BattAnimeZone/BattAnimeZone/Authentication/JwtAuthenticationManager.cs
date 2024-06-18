@@ -13,20 +13,18 @@ namespace BattAnimeZone.Authentication
 		public const string JWT_SECURITY_KEY = "yPkCqn4kSWLtaJwXvN2jGzpQRyTZ3gdXkt7FeBJP";
 	
 
-		private const int JWT_TOKEN_VALIDITY_MINS = 60;
+		private const int JWT_TOKEN_VALIDITY_MINS = 1;
 
-		private UserAccountService _userAccountService;
-
-		public JwtAuthenticationManager(UserAccountService userAccountService)
+		public JwtAuthenticationManager()
 		{
-			_userAccountService = userAccountService;
+
 		}
 
 		public UserSession? GenerateJwtToken(UserAccountModel? userAccount)
 		{
 			/* Generating JWT Token */
-			var tokenExpiryTimeStamp = DateTime.Now.AddMinutes(JWT_TOKEN_VALIDITY_MINS);
-			var tokenKey = Encoding.ASCII.GetBytes(JWT_SECURITY_KEY);
+			var tokenExpiryTimeStamp = DateTime.Now.ToUniversalTime().AddMinutes(JWT_TOKEN_VALIDITY_MINS);
+            var tokenKey = Encoding.ASCII.GetBytes(JWT_SECURITY_KEY);
 			var claimsIdentity = new ClaimsIdentity(new List<Claim>
 				{
 					new Claim(ClaimTypes.Name, userAccount.UserName),
@@ -52,9 +50,10 @@ namespace BattAnimeZone.Authentication
 				UserName = userAccount.UserName,
 				Role = userAccount.Role,
 				Token = token,
-				ExpiresIn = (int)tokenExpiryTimeStamp.Subtract(DateTime.Now).TotalSeconds
+				ExpiresIn = (int)tokenExpiryTimeStamp.Subtract(DateTime.Now.ToUniversalTime()).TotalSeconds
 			};
-			return userSession;
+
+            return userSession;
 		}
 	}
 }

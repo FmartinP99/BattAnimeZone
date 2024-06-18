@@ -9,6 +9,7 @@ using System.Net.Http.Headers;
 using Microsoft.JSInterop;
 using BattAnimeZone.Shared.Models.AnimeDTOs;
 using System.Net.Http.Json;
+using System.IdentityModel.Tokens.Jwt;
 
 
 namespace BattAnimeZone.Client.Authentication
@@ -42,12 +43,22 @@ namespace BattAnimeZone.Client.Authentication
                 var userSession = await _sessionStorage.ReadEncryptedItemAsync<UserSession>("UserSession");
                 if (userSession == null)
                     return await Task.FromResult(new AuthenticationState(_anonymous));
+                if(DateTime.Now.ToUniversalTime() > userSession.ExpiryTimeStamp)
+                    return await Task.FromResult(new AuthenticationState(_anonymous));
+
+                /*
+                string jwtTokenString = userSession.Token;
+                JwtSecurityTokenHandler tokenHandler = new JwtSecurityTokenHandler();
+                JwtSecurityToken jwtToken = tokenHandler.ReadJwtToken(jwtTokenString);
+                IEnumerable<Claim> claims = jwtToken.Claims;
+                var claimsDictionary = claims.ToDictionary(claim => claim.Type, claim => claim.Value);
+                */
+
                 var claimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity(new List<Claim>
                 {
                     new Claim(ClaimTypes.Name, userSession.UserName),
                     new Claim(ClaimTypes.Role, userSession.Role)
                 }, "JwtAuth"));
-
                 return await Task.FromResult(new AuthenticationState(claimsPrincipal));
             }
             catch
@@ -67,7 +78,8 @@ namespace BattAnimeZone.Client.Authentication
                     new Claim(ClaimTypes.Name, userSession.UserName),
                     new Claim(ClaimTypes.Role, userSession.Role)
                 }));
-                userSession.ExpiryTimeStamp = DateTime.Now.AddSeconds(userSession.ExpiresIn);
+                userSession.ExpiryTimeStamp = DateTime.Now.ToUniversalTime().AddSeconds(userSession.ExpiresIn);
+                await Task.Delay(5000);
                 await _sessionStorage.SaveItemEncryptedAsync("UserSession", userSession);
                 httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", userSession.Token);
 
