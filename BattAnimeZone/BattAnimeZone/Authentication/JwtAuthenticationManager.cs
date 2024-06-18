@@ -1,6 +1,6 @@
 ﻿using BattAnimeZone.DatabaseModels;
 using BattAnimeZone.Services;
-using BattAnimeZone.Shared.Models.User.SessionStorageModels;
+using BattAnimeZone.Shared.Models.User.BrowserStorageModels;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -13,7 +13,7 @@ namespace BattAnimeZone.Authentication
 		public const string JWT_SECURITY_KEY = "yPkCqn4kSWLtaJwXvN2jGzpQRyTZ3gdXkt7FeBJP";
 	
 
-		private const int JWT_TOKEN_VALIDITY_MINS = 1;
+		private const int JWT_TOKEN_VALIDITY_MINS = 60;
 
 		public JwtAuthenticationManager()
 		{

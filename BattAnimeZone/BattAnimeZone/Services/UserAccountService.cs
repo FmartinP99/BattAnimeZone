@@ -4,7 +4,7 @@ using BattAnimeZone.DatabaseModels;
 using BattAnimeZone.DbContexts;
 using BattAnimeZone.Shared.Models.Anime;
 using BattAnimeZone.Shared.Models.User;
-using BattAnimeZone.Shared.Models.User.SessionStorageModels;
+using BattAnimeZone.Shared.Models.User.BrowserStorageModels;
 using Microsoft.EntityFrameworkCore;
 
 namespace BattAnimeZone.Services

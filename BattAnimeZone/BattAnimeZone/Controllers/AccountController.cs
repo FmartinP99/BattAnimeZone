@@ -1,6 +1,6 @@
 ﻿using BattAnimeZone.Services;
 using BattAnimeZone.Shared.Models.User;
-using BattAnimeZone.Shared.Models.User.SessionStorageModels;
+using BattAnimeZone.Shared.Models.User.BrowserStorageModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;

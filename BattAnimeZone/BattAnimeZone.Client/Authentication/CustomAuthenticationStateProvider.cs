@@ -1,8 +1,9 @@
 ﻿using BattAnimeZone.Client.Extensions;
+using Blazored.LocalStorage;
 using Blazored.SessionStorage;
 using Microsoft.AspNetCore.Components.Authorization;
 using System.Security.Claims;
-using BattAnimeZone.Shared.Models.User.SessionStorageModels;
+using BattAnimeZone.Shared.Models.User.BrowserStorageModels;
 using Microsoft.AspNetCore.Components;
 using System.Linq.Dynamic.Core.Tokenizer;
 using System.Net.Http.Headers;
@@ -25,11 +26,14 @@ namespace BattAnimeZone.Client.Authentication
         [Inject]
         private IJSRuntime JSRuntime { get; set; }
 
+        private readonly ILocalStorageService _localStorage;
         private readonly ISessionStorageService _sessionStorage;
         private ClaimsPrincipal _anonymous = new ClaimsPrincipal(new ClaimsIdentity());
 
-        public CustomAuthenticationStateProvider(ISessionStorageService sessionStorage, HttpClient _httpClient, NavigationManager _navManager, IJSRuntime _JSRuntime)
+        public CustomAuthenticationStateProvider( ILocalStorageService localStorage,
+            ISessionStorageService sessionStorage, HttpClient _httpClient, NavigationManager _navManager, IJSRuntime _JSRuntime)
         {
+            _localStorage = localStorage;
             _sessionStorage = sessionStorage;
             httpClient = _httpClient;
             JSRuntime = _JSRuntime;
@@ -40,11 +44,19 @@ namespace BattAnimeZone.Client.Authentication
         {
             try
             {
-                var userSession = await _sessionStorage.ReadEncryptedItemAsync<UserSession>("UserSession");
+                var userSession = await _localStorage.GetItemAsync<UserSession>("UserSession");
                 if (userSession == null)
                     return await Task.FromResult(new AuthenticationState(_anonymous));
-                if(DateTime.Now.ToUniversalTime() > userSession.ExpiryTimeStamp)
+
+                await Console.Out.WriteLineAsync($"usersession expirytimesttamp {userSession.ExpiryTimeStamp}");
+                await Console.Out.WriteLineAsync($"nowtime  {DateTime.Now.ToUniversalTime()}");
+
+                if (DateTime.Now.ToUniversalTime() > userSession.ExpiryTimeStamp)
+                {
+                    await _localStorage.RemoveItemAsync("UserSession");
+                    await _localStorage.RemoveItemAsync("InteractedAnimes");
                     return await Task.FromResult(new AuthenticationState(_anonymous));
+                }
 
                 /*
                 string jwtTokenString = userSession.Token;
@@ -79,8 +91,7 @@ namespace BattAnimeZone.Client.Authentication
                     new Claim(ClaimTypes.Role, userSession.Role)
                 }));
                 userSession.ExpiryTimeStamp = DateTime.Now.ToUniversalTime().AddSeconds(userSession.ExpiresIn);
-                await Task.Delay(5000);
-                await _sessionStorage.SaveItemEncryptedAsync("UserSession", userSession);
+                await _localStorage.SetItemAsync("UserSession", userSession);
                 httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", userSession.Token);
 
                 try
@@ -90,7 +101,7 @@ namespace BattAnimeZone.Client.Authentication
                     {
                         var content = await response.Content.ReadAsStringAsync();
                         var interactedAnimes = await response.Content.ReadFromJsonAsync<Dictionary<int, InteractedAnime>>();
-                        await _sessionStorage.SaveItemEncryptedAsync("InteractedAnimes", interactedAnimes);
+                        await _localStorage.SetItemAsync("InteractedAnimes", interactedAnimes);
                     }
                     else
                     {
@@ -107,8 +118,8 @@ namespace BattAnimeZone.Client.Authentication
             else
             {
                 claimsPrincipal = _anonymous;
-                await _sessionStorage.RemoveItemAsync("UserSession");
-                await _sessionStorage.RemoveItemAsync("InteractedAnimes");
+                await _localStorage.RemoveItemAsync("UserSession");
+                await _localStorage.RemoveItemAsync("InteractedAnimes");
            
             }
 
