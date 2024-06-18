@@ -34,7 +34,7 @@ namespace BattAnimeZone.Services
 
  
 
-            var jwtAuthenticationManager = new JwtAuthenticationManager(this);
+            var jwtAuthenticationManager = new JwtAuthenticationManager();
             UserSession? userSession;
 			bool isMatching = _passwordHasher.Verify(userAccount.Password, loginRequest.Password);
 			if (!isMatching) return null;

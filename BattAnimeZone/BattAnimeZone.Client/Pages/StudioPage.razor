@@ -136,12 +136,6 @@ else{
                 {
                     var result = await response.Content.ReadFromJsonAsync<ProductionEntityPageDTO>();
 
-                   
-                    Console.WriteLine(result.ProdEnt);
-                    Console.WriteLine(result.ProducedAnimes);
-                    Console.WriteLine(result.LicensedAnimes);
-                    Console.WriteLine(result.StudioAnimes);
-
                     currentProductionEntity = result.ProdEnt;
                     producerAnimes = result.ProducedAnimes;
                     licensorAnimes = result.LicensedAnimes;
