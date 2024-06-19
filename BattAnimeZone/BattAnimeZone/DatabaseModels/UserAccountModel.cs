@@ -32,5 +32,14 @@ namespace BattAnimeZone.DatabaseModels
         [Column("role")]
         public string Role { get; set; }
 
+        [Column("token")]
+        public string? Token { get; set; } = null;
+
+        [Column("refreshToken")]
+        public string? RefreshToken { get; set; } = null;
+
+        [Column("refreshTokenExpiryTime")]
+        public string? RefreshTokenExpiryTime { get; set; } = null;
+
     }
 }

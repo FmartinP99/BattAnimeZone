@@ -4,7 +4,7 @@
 @using BattAnimeZone.Shared.Models.AnimeDTOs
 @using BattAnimeZone.Client.Components
 @inject NavigationManager navManager
-@inject HttpClient httpClient
+@inject IHttpClientFactory HttpClientFactory
 @inject IJSRuntime JSRuntime
 @rendermode InteractiveWebAssembly
 <link rel="stylesheet" href="/ListAnime.css" />
@@ -101,6 +101,9 @@ else{
 
 
 @code {
+
+    HttpClient httpClient;
+
     bool loaded = false;
     bool searching = false;
     bool firstsearch = false;
@@ -192,6 +195,7 @@ else{
     {
         if (firstRender)
         {
+            httpClient = HttpClientFactory.CreateClient("AuthenticatedClient");
             loaded = true;
 
             bool success = await LoadRequestsAsync(); //sets media_types,  animeCountPerGenre, genres

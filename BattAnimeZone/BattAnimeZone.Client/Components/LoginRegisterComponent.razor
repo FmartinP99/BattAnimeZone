@@ -4,7 +4,7 @@
 @using System.Net
 @using System.ComponentModel.DataAnnotations
 @inject NavigationManager navManager
-@inject HttpClient httpClient
+@inject IHttpClientFactory HttpClientFactory
 @inject IJSRuntime JSRuntime
 @inject AuthenticationStateProvider authenticationStateProvider
 <link rel="stylesheet" href="/LoginRegisterComponent.css" />
@@ -75,11 +75,21 @@
 </div>
 
 @code {
+
+    HttpClient httpClient;
+
     private LoginRequest loginRequest = new LoginRequest();
     private RegisterRequest registerRequest = new RegisterRequest();
     private string confirmPassword = "";
     private string passwordMatchMessage = "";
 
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            httpClient = HttpClientFactory.CreateClient("AuthenticatedClient");
+        }
+    }
 
     private async Task Authenticate()
     {

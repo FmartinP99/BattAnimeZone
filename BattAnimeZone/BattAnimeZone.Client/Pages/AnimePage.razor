@@ -5,7 +5,7 @@
 @using BattAnimeZone.Client.Authentication
 @using BlazorBootstrap;
 @using System.Net.Http.Headers;
-@inject HttpClient httpClient
+@inject IHttpClientFactory HttpClientFactory
 @inject IJSRuntime JSRuntime
 @inject AuthenticationStateProvider authStateProvider
 @rendermode InteractiveWebAssembly
@@ -23,6 +23,15 @@ else{
 
     @if (currentAnime != null){
     <div Style="padding-left: 20px; padding-right: 20px;">
+
+            <AuthorizeView Roles="Administrator, User">
+                <Authorized>
+                    <h1> AUTHORIZED</h1>
+                </Authorized>
+                <NotAuthorized>
+                    <h1>NOT AUTHORIZED</h1>
+                </NotAuthorized>
+            </AuthorizeView>
 
         
         <div  class="defaultTitleDiv">@currentAnime.Title</div>
@@ -184,6 +193,7 @@ else{
         </div>
 
     </div>
+
     }
 
 
@@ -232,6 +242,8 @@ else{
 
     private bool favorite = false;
 
+    HttpClient httpClient;
+
     CustomAuthenticationStateProvider customAuthStateProvider;
 
     protected override async Task OnInitializedAsync()
@@ -246,6 +258,7 @@ else{
     {
         if (firstRender)
         {
+            httpClient = HttpClientFactory.CreateClient("AuthenticatedClient");
 
             loaded = true;
 

@@ -34,6 +34,20 @@ namespace BattAnimeZone.Controllers
 		}
 
         [HttpPost]
+        [Route("Refresh")]
+        [AllowAnonymous]
+        public async Task<ActionResult<RefreshTokenDTO>> Refresh([FromBody] RefreshTokenDTO refreshTokenDTO)
+        {
+            await Console.Out.WriteLineAsync("belepett refreshbe!");
+
+            var userSession = await _userAccountService.Refresh(refreshTokenDTO);
+            if (userSession is null)
+                return Unauthorized();
+            else
+                return userSession;
+        }
+
+        [HttpPost]
         [Route("Register")]
         [AllowAnonymous]
         public async Task<ActionResult<UserSession>> Register([FromBody] RegisterRequest registerRequest)
@@ -50,6 +64,7 @@ namespace BattAnimeZone.Controllers
         [Route("AnimeRating")]
         public async Task<ActionResult<UserSession>> AnimeRating([FromBody] AnimeActionTransfer aat)
         {
+            await Console.Out.WriteLineAsync("belepett animerating");
             bool response = await _userAccountService.RateAnime(aat);
             if (response)
                 return Ok();

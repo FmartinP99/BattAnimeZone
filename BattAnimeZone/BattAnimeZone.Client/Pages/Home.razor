@@ -3,7 +3,7 @@
 @using BattAnimeZone.Client.Components
 @using BlazorBootstrap;
 @inject NavigationManager navManager
-@inject HttpClient httpClient
+@inject IHttpClientFactory HttpClientFactory
 @inject IJSRuntime JSRuntime
 @rendermode InteractiveWebAssembly
 @page "/"
@@ -66,6 +66,9 @@
 
 }
 @code{
+
+	HttpClient httpClient;
+
 	bool loaded = false;
 
 	Dictionary<int, Dictionary<string, IEnumerable<AnimeHomePageDTO>>> animes_per_year = new Dictionary<int, Dictionary<string, IEnumerable<AnimeHomePageDTO>>>();
@@ -90,6 +93,7 @@
 	{
 		if (firstRender)
 		{
+			httpClient = HttpClientFactory.CreateClient("AuthenticatedClient");
 			loaded = true;
 			try
 			{

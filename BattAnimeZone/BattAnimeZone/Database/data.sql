@@ -130,8 +130,10 @@ CREATE Table UserAccount(
     SUBSTR(LOWER(email), 1, INSTR(email, '.') - 1) NOT GLOB '*[^@0-9a-z]*' AND
     SUBSTR(LOWER(email), INSTR(email, '.') + 1) NOT GLOB '*[^a-z]*'
   ),
-  
-   "role" TEXT CHECK( "role" IN ('Admin','User') )   NOT NULL
+   "role" TEXT CHECK( "role" IN ('Admin','User') )   NOT NULL,
+   token TEXT DEFAULT NULL,
+   refreshToken TEXT DEFAULT NULL,
+   refreshTokenExpiryTime TEXT DEFAULT NULL
 );
 
 

@@ -21,7 +21,6 @@ namespace BattAnimeZone.Controllers
 		[HttpGet("GetAnimesByYear/{year}")]
 		public async Task<IActionResult> GetAnimesByYear(int year)
 		{
-            await Console.Out.WriteLineAsync("calling animes by year");
             var result = await _dataBaseService.GetAnimesForHomePageByYear(year);
 			if (result == null)
 			{

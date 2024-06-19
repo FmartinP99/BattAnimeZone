@@ -2,7 +2,7 @@
 @using BattAnimeZone.Client.Authentication
 @using System.Net
 @inject NavigationManager navManager
-@inject HttpClient httpClient
+@inject IHttpClientFactory HttpClientFactory
 @inject IJSRuntime JSRuntime
 @inject AuthenticationStateProvider authStateProvider
 <link rel="stylesheet" href="/LoggedInComponent.css" />
@@ -14,6 +14,15 @@
 
     [CascadingParameter] private Task<AuthenticationState>? authenticationState { get; set; }
 
+    HttpClient httpClient;
+
+     protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            httpClient = HttpClientFactory.CreateClient("AuthenticatedClient");
+        }
+    }
     public async Task Logout()
     {
         bool confirmed = await JSRuntime.InvokeAsync<bool>("confirm", "Do you want to logout?");
