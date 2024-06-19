@@ -110,6 +110,7 @@ namespace BattAnimeZone.Client.Authentication
                 catch (Exception ex)
                 {
                     await JSRuntime.InvokeVoidAsync("console.error", $"{ex.Message}");
+                    httpClient.DefaultRequestHeaders.Authorization = null;
                 }
             }
             else
@@ -117,7 +118,8 @@ namespace BattAnimeZone.Client.Authentication
                 claimsPrincipal = _anonymous;
                 await _localStorage.RemoveItemAsync("UserSession");
                 await _localStorage.RemoveItemAsync("InteractedAnimes");
-           
+                httpClient.DefaultRequestHeaders.Authorization = null;
+
             }
 
             NotifyAuthenticationStateChanged(Task.FromResult(new AuthenticationState(claimsPrincipal)));
