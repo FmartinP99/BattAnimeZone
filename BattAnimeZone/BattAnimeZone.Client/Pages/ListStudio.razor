@@ -1,7 +1,7 @@
 ﻿@using BattAnimeZone.Shared.Models.ProductionEntityDTOs
 @using BattAnimeZone.Client.Components
 @inject NavigationManager navManager
-@inject HttpClient httpClient
+@inject IHttpClientFactory HttpClientFactory
 @inject IJSRuntime JSRuntime
 @rendermode InteractiveWebAssembly
 <link rel="stylesheet" href="/ListStudio.css" />
@@ -44,6 +44,9 @@ else{
 }
 
 @code {
+
+    HttpClient httpClient;
+
     bool loaded = false;
     List<LiProductionEntityDTO> productionEntities;
     IEnumerable<LiProductionEntityDTO> prodents_per_page;
@@ -56,6 +59,7 @@ else{
     {
         if (firstRender)
         {
+            httpClient = HttpClientFactory.CreateClient("AuthenticatedClient");
             loaded = true;
             try
             {

@@ -3,7 +3,7 @@
 @using BattAnimeZone.Client.Components
 @using Newtonsoft.Json
 @inject NavigationManager navManager
-@inject HttpClient httpClient
+@inject IHttpClientFactory HttpClientFactory
 @inject IJSRuntime JSRuntime
 @rendermode InteractiveWebAssembly
 <link rel="stylesheet" href="/ListGenreAnimes.css" />
@@ -73,6 +73,9 @@
 }
 
 @code {
+
+    HttpClient httpClient;
+
     bool loaded = false;
     bool found = true;
     [Parameter]
@@ -97,6 +100,7 @@
     {
         if (firstRender)
         {
+            httpClient = HttpClientFactory.CreateClient("AuthenticatedClient");
             loaded = true;
 
             try

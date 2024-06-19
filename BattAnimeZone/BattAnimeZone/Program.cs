@@ -12,6 +12,8 @@ var builder = WebApplication.CreateBuilder(args);
 
 Env.Load();
 var jwtSecurityKey = Environment.GetEnvironmentVariable("JWT_SECURITY_KEY");
+var validIssuer = Environment.GetEnvironmentVariable("ValidIssuer");
+var validAudience = Environment.GetEnvironmentVariable("ValidAudience");
 
 // Add services to the container.
 builder.Services.AddRazorComponents()
@@ -32,8 +34,10 @@ builder.Services.AddAuthentication(o =>
     {
         ValidateIssuerSigningKey = true,
         IssuerSigningKey = new SymmetricSecurityKey(System.Text.Encoding.ASCII.GetBytes(jwtSecurityKey)),
-        ValidateIssuer = false,
-        ValidateAudience = false,
+        ValidateIssuer = true,
+        ValidIssuer = validIssuer,
+        ValidateAudience = true,
+        ValidAudience = validAudience
 
     };
 });

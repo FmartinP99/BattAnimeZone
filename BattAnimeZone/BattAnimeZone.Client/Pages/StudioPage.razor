@@ -4,7 +4,7 @@
 @using BattAnimeZone.Shared.Models.ProductionEntityDTOs
 @using BattAnimeZone.Client.Components
 @using Newtonsoft.Json
-@inject HttpClient httpClient
+@inject IHttpClientFactory HttpClientFactory
 @inject IJSRuntime JSRuntime
 @rendermode InteractiveWebAssembly
 @using System.Globalization
@@ -103,6 +103,9 @@ else{
 }
 
 @code {
+
+    HttpClient httpClient;
+
     bool loaded = false;
     [Parameter]
     public int prodent_id { get; set; }
@@ -127,6 +130,7 @@ else{
     {
         if (firstRender)
         {
+            httpClient = HttpClientFactory.CreateClient("AuthenticatedClient");
             loaded = true;
             try
             {

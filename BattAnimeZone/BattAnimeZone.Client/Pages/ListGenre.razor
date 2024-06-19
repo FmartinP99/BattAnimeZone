@@ -2,7 +2,7 @@
 @using BattAnimeZone.Client.Components
 @inject NavigationManager navManager
 <link rel="stylesheet" href="/ListGenre.css" />
-@inject HttpClient httpClient
+@inject IHttpClientFactory HttpClientFactory
 @inject IJSRuntime JSRuntime
 @rendermode InteractiveWebAssembly
 @page "/genrelist"
@@ -41,6 +41,9 @@
 }
 
 @code {
+
+    HttpClient httpClient;
+
     bool loaded = false;
     List<AnimeGenreDTO>? animeGenres;
     Dictionary<int, int>? animeCountPerGenre = new Dictionary<int, int>();
@@ -49,6 +52,7 @@
     {
         if (firstRender)
         {
+            httpClient = HttpClientFactory.CreateClient("AuthenticatedClient");
             loaded = true;
 
             try

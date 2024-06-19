@@ -2,7 +2,7 @@
 @using BattAnimeZone.Client.Components
 @using BattAnimeZone.Shared.Models.AnimeDTOs
 @using BattAnimeZone.Shared.Models.Anime
-@inject HttpClient httpClient
+@inject IHttpClientFactory HttpClientFactory
 @inject IJSRuntime JSRuntime
 @rendermode InteractiveWebAssembly
 @page "/anime/{mal_id:int}/relations"
@@ -74,6 +74,9 @@
 
 
 @code {
+
+    HttpClient httpClient;
+
     bool loaded = false;
     [Parameter]
     public int mal_id { get; set; }
@@ -88,6 +91,7 @@
     {
         if (firstRender)
         {
+            httpClient = HttpClientFactory.CreateClient("AuthenticatedClient");
             loaded = true;
 
             try

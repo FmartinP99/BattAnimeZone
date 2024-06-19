@@ -1,7 +1,7 @@
 @inject NavigationManager navManager
 @using BattAnimeZone.Shared.Models.AnimeDTOs
 @using BattAnimeZone.Client.Components
-@inject HttpClient httpClient
+@inject IHttpClientFactory HttpClientFactory
 @inject IJSRuntime JSRuntime
 @rendermode InteractiveWebAssembly
 @page "/search/"
@@ -62,6 +62,9 @@ else{
 
 
 @code {
+
+    HttpClient httpClient;
+
     bool loaded = false;
     [Parameter]
     public string name { get; set; } = "";
@@ -72,6 +75,7 @@ else{
     {
         if (firstRender)
         {
+            httpClient = HttpClientFactory.CreateClient("AuthenticatedClient");
             loaded = true;
             await GetSimilarAnimes();
             StateHasChanged();
