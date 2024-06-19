@@ -42,8 +42,8 @@ namespace BattAnimeZone.Authentication
 			var securityToken = jwtSecurityTokenHandler.CreateToken(securityTokenDescriptor);
 			var token = jwtSecurityTokenHandler.WriteToken(securityToken);
 
-			/* Returning the User Session object */
-			var userSession = new UserSession
+            /* Returning the User Session object */
+            var userSession = new UserSession
 			{
 				UserName = userAccount.UserName,
 				Role = userAccount.Role,
