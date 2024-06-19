@@ -11,7 +11,7 @@ namespace BattAnimeZone.Client.Authentication
 
             try
             {
-                var userSession = await _localStorage.GetItemAsync<UserSession>("UserSession");
+                var userSession = await _localStorage.ReadEncryptedItemAsync<UserSession>("UserSession");
                 if (userSession != null && DateTime.Now.ToUniversalTime() < userSession.ExpiryTimeStamp)
                     result = userSession.Token;
             }
@@ -26,7 +26,7 @@ namespace BattAnimeZone.Client.Authentication
 
             try
             {
-                var userSession = await _localStorage.GetItemAsync<UserSession>("UserSession");
+                var userSession = await _localStorage.ReadEncryptedItemAsync<UserSession>("UserSession");
                 if (userSession != null && DateTime.Now.ToUniversalTime() < userSession.ExpiryTimeStamp)
                     result = userSession.UserName;
             }
@@ -41,10 +41,10 @@ namespace BattAnimeZone.Client.Authentication
 
             try
             {
-                var userSession = await _localStorage.GetItemAsync<UserSession>("UserSession");
+                var userSession = await _localStorage.ReadEncryptedItemAsync<UserSession>("UserSession");
                 if (userSession != null && DateTime.Now.ToUniversalTime() < userSession.ExpiryTimeStamp)
 
-                    result = await _localStorage.GetItemAsync<Dictionary<int, InteractedAnime>>("InteractedAnimes");
+                    result = await _localStorage.ReadEncryptedItemAsync<Dictionary<int, InteractedAnime>>("InteractedAnimes");
             }
             catch { }
 
@@ -57,10 +57,10 @@ namespace BattAnimeZone.Client.Authentication
 
             try
             {
-                var userSession = await _localStorage.GetItemAsync<UserSession>("UserSession");
+                var userSession = await _localStorage.ReadEncryptedItemAsync<UserSession>("UserSession");
                 if (userSession != null && DateTime.Now.ToUniversalTime() < userSession.ExpiryTimeStamp)
                 {
-                    Dictionary<int, InteractedAnime> interacted_animes = await _localStorage.GetItemAsync<Dictionary<int, InteractedAnime>>("InteractedAnimes");
+                    Dictionary<int, InteractedAnime> interacted_animes = await _localStorage.ReadEncryptedItemAsync<Dictionary<int, InteractedAnime>>("InteractedAnimes");
                     interacted_animes.TryGetValue(id, out result);
                 }
             }
@@ -73,10 +73,10 @@ namespace BattAnimeZone.Client.Authentication
         {
             try
             {
-                var userSession = await _localStorage.GetItemAsync<UserSession>("UserSession");
+                var userSession = await _localStorage.ReadEncryptedItemAsync<UserSession>("UserSession");
                 if (userSession != null && DateTime.Now.ToUniversalTime() < userSession.ExpiryTimeStamp)
                 {
-                    Dictionary<int, InteractedAnime> interacted_animes = await _localStorage.GetItemAsync<Dictionary<int, InteractedAnime>>("InteractedAnimes");
+                    Dictionary<int, InteractedAnime> interacted_animes = await _localStorage.ReadEncryptedItemAsync<Dictionary<int, InteractedAnime>>("InteractedAnimes");
                     if (interacted_animes != null)
                         interacted_animes[intanime.MalId] = intanime;
                     else
@@ -87,7 +87,7 @@ namespace BattAnimeZone.Client.Authentication
                             }
                         };
                     }
-                    await _localStorage.SetItemAsync("InteractedAnimes", interacted_animes);
+                    await _localStorage.SaveItemEncryptedAsync("InteractedAnimes", interacted_animes);
 
                 }
             }

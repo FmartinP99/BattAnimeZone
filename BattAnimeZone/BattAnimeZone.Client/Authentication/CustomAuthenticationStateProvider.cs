@@ -44,7 +44,7 @@ namespace BattAnimeZone.Client.Authentication
         {
             try
             {
-                var userSession = await _localStorage.GetItemAsync<UserSession>("UserSession");
+                var userSession = await _localStorage.ReadEncryptedItemAsync<UserSession>("UserSession");
                 if (userSession == null)
                     return await Task.FromResult(new AuthenticationState(_anonymous));
 
@@ -88,7 +88,7 @@ namespace BattAnimeZone.Client.Authentication
                     new Claim(ClaimTypes.Role, userSession.Role)
                 }));
                 userSession.ExpiryTimeStamp = DateTime.Now.ToUniversalTime().AddSeconds(userSession.ExpiresIn);
-                await _localStorage.SetItemAsync("UserSession", userSession);
+                await _localStorage.SaveItemEncryptedAsync("UserSession", userSession);
                 httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", userSession.Token);
 
                 try
@@ -98,7 +98,7 @@ namespace BattAnimeZone.Client.Authentication
                     {
                         var content = await response.Content.ReadAsStringAsync();
                         var interactedAnimes = await response.Content.ReadFromJsonAsync<Dictionary<int, InteractedAnime>>();
-                        await _localStorage.SetItemAsync("InteractedAnimes", interactedAnimes);
+                        await _localStorage.SaveItemEncryptedAsync("InteractedAnimes", interactedAnimes);
                     }
                     else
                     {
