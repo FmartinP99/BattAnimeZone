@@ -107,7 +107,7 @@ namespace BattAnimeZone.Client.Authentication
                 }
                 if (DateTime.Now.ToUniversalTime() > userSession.TokenExpiryTimeStamp)
                 {
-                    if (DateTime.Now.ToUniversalTime() < userSession.RefreshTokenExpiryTimestamp)
+                    if (DateTime.Now.ToUniversalTime() > userSession.RefreshTokenExpiryTimestamp)
                     {
                         await _localStorage.RemoveItemAsync("UserSession");
                         await _localStorage.RemoveItemAsync("InteractedAnimes");
