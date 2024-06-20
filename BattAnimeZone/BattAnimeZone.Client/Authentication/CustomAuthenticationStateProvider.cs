@@ -2,10 +2,10 @@
 using Blazored.LocalStorage;
 using Blazored.SessionStorage;
 using Microsoft.AspNetCore.Components.Authorization;
+using System.Net.Http.Headers;
 using System.Security.Claims;
 using BattAnimeZone.Shared.Models.User.BrowserStorageModels;
 using Microsoft.AspNetCore.Components;
-using System.Net.Http.Headers;
 using Microsoft.JSInterop;
 using System.Net.Http.Json;
 using BattAnimeZone.Shared.Models.User;

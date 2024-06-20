@@ -22,6 +22,8 @@ builder.Services.AddRazorComponents()
 
 builder.Services.AddControllersWithViews();
 
+builder.Services.AddSingleton<ITokenBlacklistingService, TokenBlacklistingService>();
+
 builder.Services.AddAuthentication(o => 
 {
     o.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -40,10 +42,32 @@ builder.Services.AddAuthentication(o =>
         ValidAudience = validAudience
 
     };
+
+    o.Events = new JwtBearerEvents
+    {
+        OnMessageReceived = context =>
+        {
+            // Extract token from the request
+            var token = context.Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
+            if (token != null)
+            {
+                var tokenBlacklistService = context.HttpContext.RequestServices.GetRequiredService<ITokenBlacklistingService>();
+                if (tokenBlacklistService.IsTokenBlacklisted(token))
+                {
+                    context.Fail("This token is blacklisted.");
+                }
+            }
+            return Task.CompletedTask;
+        }
+    };
+
+
 });
+
+
 //dont read/write from database, yet
 //builder.Services.AddSingleton<AnimeService>();
-builder.Services.AddSingleton<UserAccountService>();
+builder.Services.AddTransient<UserAccountService>();
 
 builder.Services.AddTransient<DataBaseService>();
 
@@ -55,8 +79,6 @@ builder.Services.AddSingleton<SingletonSearchService>();
 builder.Services.AddDbContextFactory<AnimeDbContext>((DbContextOptionsBuilder options) => options.UseSqlite(builder.Configuration.GetConnectionString("Database")));
 
 builder.Services.AddTransient<DbInitializer>();
-
-
 builder.Services.AddScoped<Radzen.DialogService>();
 builder.Services.AddScoped<Radzen.TooltipService>();
 builder.Services.AddScoped<Radzen.ContextMenuService>();

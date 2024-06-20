@@ -1,6 +1,8 @@
 ﻿@using BattAnimeZone.Shared.Models.User
 @using BattAnimeZone.Client.Authentication
+@using BattAnimeZone.Shared.Models.User.BrowserStorageModels
 @using System.Net
+@using System.Net.Http.Headers;
 @inject NavigationManager navManager
 @inject IHttpClientFactory HttpClientFactory
 @inject IJSRuntime JSRuntime
@@ -12,11 +14,11 @@
 
 @code {
 
-    
+
 
     HttpClient httpClient;
 
-     protected override async Task OnAfterRenderAsync(bool firstRender)
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
@@ -29,8 +31,21 @@
         if (confirmed)
         {
             var customAuthStateProvider = (CustomAuthenticationStateProvider)authStateProvider;
-            await customAuthStateProvider.UpdateAuthenticationState(null);
-            navManager.NavigateTo(navManager.Uri, forceLoad: true);
+            UserSession userSession = await customAuthStateProvider.GetUserSession();
+
+            try
+            {
+                httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", userSession.Token);
+                await httpClient.PostAsJsonAsync<UserSession>($"{navManager.BaseUri}api/AccountController/Logout", userSession);
+            }catch {}
+            finally
+            {
+               await customAuthStateProvider.UpdateAuthenticationState(null);
+               navManager.NavigateTo(navManager.Uri, forceLoad: true);
+            }
+
+
+            
         }
     }
 }
