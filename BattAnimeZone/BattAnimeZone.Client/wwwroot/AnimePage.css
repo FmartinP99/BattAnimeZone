@@ -32,6 +32,16 @@
     background-image: linear-gradient(to right, #8e90f7, #7c7ae7, #8e90f7, #7c7ae7, #8e90f7);
 }
 
+
+.firstRow {
+    min-height: 500px;
+    flex: auto;
+    margin-bottom: 20px;
+    justify-content: space-between;
+}
+
+
+
 .imageDiv {
     overflow-y: hidden;
     height: 500px;

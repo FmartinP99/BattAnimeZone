@@ -21,16 +21,24 @@ html, body {
     height: 100vh !important;
     width: 100% !important;
     overflow: auto !important;
+
 }
 
-.mainclass {
+
+
+main {
+    display: flex;
+    justify-content: center;
     background-image: linear-gradient(to right, #151515,#202020,#252525,#202020,#151515) !important;
     color: white;
- 
+    overflow-x: auto !important;
 }
 
-.articleClass{
 
+.articleClass {
+    max-width: 1910px;
+    min-width: 1910px;
+    display: table;
 }
 
 

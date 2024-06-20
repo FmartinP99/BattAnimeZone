@@ -7,7 +7,7 @@
 @inject IHttpClientFactory HttpClientFactory
 @inject IJSRuntime JSRuntime
 @rendermode InteractiveWebAssembly
-<link rel="stylesheet" href="/ListAnime.css" />
+<link rel="stylesheet" href="/ListAnime.css?version=0.2" />
 @page "/animelist"
 
 <SearchBar></SearchBar>
@@ -50,7 +50,7 @@ else{
     }else{
         @if (searched_animes.Count > 0)
         {
-            <RadzenColumn class="rz-text-align-end">
+            <RadzenColumn class="rz-text-align-end orderByCol">
             <OrderComponent T="LiAnimeDTO" animes="searched_animes" AnimesChanged="OnAnimesChanged"></OrderComponent>
             </RadzenColumn>
 
