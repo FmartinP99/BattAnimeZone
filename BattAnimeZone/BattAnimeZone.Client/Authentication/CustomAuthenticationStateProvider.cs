@@ -5,14 +5,9 @@ using Microsoft.AspNetCore.Components.Authorization;
 using System.Security.Claims;
 using BattAnimeZone.Shared.Models.User.BrowserStorageModels;
 using Microsoft.AspNetCore.Components;
-using System.Linq.Dynamic.Core.Tokenizer;
 using System.Net.Http.Headers;
 using Microsoft.JSInterop;
-using BattAnimeZone.Shared.Models.AnimeDTOs;
 using System.Net.Http.Json;
-using System.IdentityModel.Tokens.Jwt;
-using BlazorBootstrap;
-using Newtonsoft.Json.Linq;
 using BattAnimeZone.Shared.Models.User;
 
 
@@ -33,7 +28,11 @@ namespace BattAnimeZone.Client.Authentication
         private readonly ISessionStorageService _sessionStorage;
         private ClaimsPrincipal _anonymous = new ClaimsPrincipal(new ClaimsIdentity());
 
-        private readonly Timer _timer;
+        
+
+        private  static Timer _timer;
+
+        private AuthenticationState previousState = new AuthenticationState(new ClaimsPrincipal(new ClaimsIdentity()));
 
         public CustomAuthenticationStateProvider( ILocalStorageService localStorage,
             ISessionStorageService sessionStorage, HttpClient _httpClient, NavigationManager _navManager, IJSRuntime _JSRuntime)
@@ -44,12 +43,16 @@ namespace BattAnimeZone.Client.Authentication
             JSRuntime = _JSRuntime;
             navManager = _navManager;
 
-            _timer = new Timer(CheckAuthenticationState, null, TimeSpan.Zero, TimeSpan.FromSeconds(10));
+            
+            //timer hack to check if the authentication state changed, and if it did it'd force-refresh the current page to update the UI
+            if(_timer == null)
+            _timer = new Timer(CheckAuthenticationState, null, TimeSpan.Zero, TimeSpan.FromSeconds(5));
+            
         }
 
         private async void CheckAuthenticationState(object state)
         {
-            await GetAuthenticationStateAsync();
+            await AuthenticationStateChecker();
         }
 
 
@@ -198,8 +201,53 @@ namespace BattAnimeZone.Client.Authentication
 
         public async Task AuthenticationStateChecker()
         {
+         
+
             var newState = await GetAuthenticationStateAsync();
             NotifyAuthenticationStateChanged(Task.FromResult(newState));
+
+            previousState = newState;
+            bool areEqual = await AreClaimsEqual(previousState.User, newState.User);
+            if (!areEqual)
+            {
+                await Console.Out.WriteLineAsync("NEM VOLTAK EGYENLŐEK EZÉRT ÁTIRTAM");
+                await Task.Delay(10000);
+                navManager.NavigateTo("anime/52701", forceLoad: true);
+                previousState = newState;
+            }
+            else
+            {
+                await Console.Out.WriteLineAsync("EGYENLŐEK VOLTAK");
+                
+            }
+
+        }
+
+        private async Task<bool> AreClaimsEqual (ClaimsPrincipal previousState, ClaimsPrincipal newState) {
+            
+            if (previousState.Claims.Count() != newState.Claims.Count()) {
+                return false;
+            }
+
+            var orderedPreviousClaims = previousState.Claims.OrderBy(c => c.Type).ThenBy(c => c.Value).ToList();
+            var orderedNewClaims = newState.Claims.OrderBy(c => c.Type).ThenBy(c => c.Value).ToList();
+
+            for (int i = 0; i < orderedPreviousClaims.Count; i++)
+            {
+                var previousClaim = orderedPreviousClaims[i];
+                var newClaim = orderedNewClaims[i];
+                
+                await Console.Out.WriteLineAsync($"{previousClaim.Type} - {previousClaim.Value} - {previousClaim.Issuer}");
+                await Console.Out.WriteLineAsync($"{newClaim.Type} - {newClaim.Value} - {newClaim.Issuer}");
+
+                if (previousClaim.Type != newClaim.Type || previousClaim.Value != newClaim.Value || previousClaim.Issuer != newClaim.Issuer)
+                {
+                    return false;
+                }
+            }
+            return true;
+
+            
         }
 
     }
