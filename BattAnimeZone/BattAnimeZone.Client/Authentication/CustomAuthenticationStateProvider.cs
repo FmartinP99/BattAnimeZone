@@ -210,16 +210,10 @@ namespace BattAnimeZone.Client.Authentication
             bool areEqual = await AreClaimsEqual(previousState.User, newState.User);
             if (!areEqual)
             {
-                await Console.Out.WriteLineAsync("NEM VOLTAK EGYENLŐEK EZÉRT ÁTIRTAM");
-                await Task.Delay(10000);
                 navManager.NavigateTo("anime/52701", forceLoad: true);
                 previousState = newState;
             }
-            else
-            {
-                await Console.Out.WriteLineAsync("EGYENLŐEK VOLTAK");
-                
-            }
+
 
         }
 
@@ -236,9 +230,7 @@ namespace BattAnimeZone.Client.Authentication
             {
                 var previousClaim = orderedPreviousClaims[i];
                 var newClaim = orderedNewClaims[i];
-                
-                await Console.Out.WriteLineAsync($"{previousClaim.Type} - {previousClaim.Value} - {previousClaim.Issuer}");
-                await Console.Out.WriteLineAsync($"{newClaim.Type} - {newClaim.Value} - {newClaim.Issuer}");
+               
 
                 if (previousClaim.Type != newClaim.Type || previousClaim.Value != newClaim.Value || previousClaim.Issuer != newClaim.Issuer)
                 {
