@@ -1,7 +1,12 @@
 ﻿body {
 }
 
-
+.firstRow {
+    display: flex;
+    min-height: 500px;
+    flex: auto;
+    Margin-bottom: 30px;
+}
 
 .titleSpan {
     font-weight: 700;

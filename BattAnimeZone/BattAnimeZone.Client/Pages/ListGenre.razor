@@ -1,11 +1,11 @@
 @using BattAnimeZone.Shared.Models.GenreDTOs
 @using BattAnimeZone.Client.Components
 @inject NavigationManager navManager
-<link rel="stylesheet" href="/ListGenre.css" />
 @inject IHttpClientFactory HttpClientFactory
 @inject IJSRuntime JSRuntime
 @rendermode InteractiveWebAssembly
 @page "/genrelist"
+<link rel="stylesheet" href="/ListGenre.css?version=0.1" />
 
 <SearchBar></SearchBar>
 
@@ -13,32 +13,26 @@
 {
     <LoadingComponent></LoadingComponent>
 }else{
-    @for (int rowindex = 0; rowindex < (int)Math.Ceiling((double)animeGenres.Count / 4); rowindex++)
-    {
-        //must copy the variable due to how c# lambda functions work -> has access to a variable and not to the value of the variable.
-        var localRow = rowindex;
-        int item_index = localRow * 4;
+     
         <RadzenRow class="genreListRow">
-            @for (int colindex = 0; colindex < 4; colindex++)
+            @for (int i = 0; i < animeGenres.Count; i++)
             {
-                    var localCol = colindex;
-                @if (item_index + localCol < animeGenres.Count)
-                {
-            
-                    <RadzenColumn class="genreListColumn" @onclick="() => NavigateTo(animeGenres[item_index + localCol].Mal_id)">
-                        <div>
-                        <p class="centered-text">@animeGenres[item_index + localCol].Name  </p>
-                    
-                        <p Style="font-size:25px;" class="centered-text">( @animeCountPerGenre[animeGenres[item_index + localCol].Mal_id] )
-                        </p>
-                        </div>
-                    </RadzenColumn>
-                }
+                var localindex = i;
+
+            <RadzenColumn class="genreListColumn" @onclick="() => NavigateTo(animeGenres[localindex].Mal_id)">
+                    <div class="textContainerDiv">
+                    <p class="centered-text">@animeGenres[localindex].Name  </p>
+
+                    <p class="centered-text">
+                        ( @animeCountPerGenre[animeGenres[localindex].Mal_id] )
+                    </p>
+                    </div>
+                </RadzenColumn>
+                
             }
        
         </RadzenRow>
     }
-}
 
 @code {
 
