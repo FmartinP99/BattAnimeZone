@@ -20,6 +20,14 @@ namespace BattAnimeZone.Client.Authentication
             return result;
         }
 
+        public async Task<UserSession> GetUserSession()
+        {
+
+            var userSession = await _localStorage.ReadEncryptedItemAsync<UserSession>("UserSession");
+            return userSession;
+          
+        }
+
         public async Task<string> GetUsernameLocalStorage()
         {
             var result = string.Empty;

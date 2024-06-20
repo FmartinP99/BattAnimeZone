@@ -18,11 +18,13 @@ namespace BattAnimeZone.Services
 	{
         private IDbContextFactory<AnimeDbContext> _dbContextFactory;
 		private readonly IPasswordHasher _passwordHasher;
+        private readonly ITokenBlacklistingService _tokenBlacklistingService;
 
-		public UserAccountService(IDbContextFactory<AnimeDbContext> dbContextFactory)
+        public UserAccountService(IDbContextFactory<AnimeDbContext> dbContextFactory, ITokenBlacklistingService tokenBlacklistingService)
 		{
 			_dbContextFactory = dbContextFactory;
 			_passwordHasher = new PasswordHasher();
+            _tokenBlacklistingService = tokenBlacklistingService;
 		}
 
 
@@ -58,7 +60,28 @@ namespace BattAnimeZone.Services
             return userSession;
         }
 
-        
+
+
+        public async Task<bool> Logout(UserSession uSession)
+        {
+
+            UserAccountModel? userAccount = null;
+            using (var _context = await _dbContextFactory.CreateDbContextAsync())
+            {
+                userAccount = await _context.UserAccounts.Where(x => x.UserName == uSession.UserName).FirstOrDefaultAsync();
+                if (userAccount == null) return false;
+                userAccount.RefreshToken = null;
+                userAccount.Token = null;
+                userAccount.RefreshTokenExpiryTime = null;
+                _tokenBlacklistingService.BlacklistToken(uSession.Token);
+                _context.UserAccounts.Update(userAccount);
+                await _context.SaveChangesAsync();
+            }
+            return true;
+
+        }
+
+
         public async Task<RefreshTokenDTO?> Refresh(RefreshTokenDTO refreshTokenDTO)
         {
             var jwtAuthenticationManager = new JwtAuthenticationManager();

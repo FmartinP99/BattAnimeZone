@@ -33,6 +33,18 @@ namespace BattAnimeZone.Controllers
 				return userSession;
 		}
 
+
+        [HttpPost]
+        [Route("Logout")]
+        public async Task<ActionResult<UserSession>> Logout([FromBody] UserSession userSession)
+        {
+            var response = await _userAccountService.Logout(userSession);
+            if (!response)
+                return BadRequest();
+            else
+                return Ok();
+        }
+
         [HttpPost]
         [Route("Refresh")]
         [AllowAnonymous]
