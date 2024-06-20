@@ -205,8 +205,6 @@ namespace BattAnimeZone.Services
                                        a.Mal_id,
                                        InteractedAnime = new InteractedAnime()
                                        {
-                                           MalId = a.Mal_id,
-                                           Title = a.Title,
                                            Rating = au.Rating,
                                            Status = au.Status,
                                            Favorite = au.favorite
