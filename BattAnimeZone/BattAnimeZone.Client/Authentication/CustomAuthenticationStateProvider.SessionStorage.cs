@@ -70,7 +70,7 @@ namespace BattAnimeZone.Client.Authentication
             return result;
         }
 
-        public async Task InsertOrUpdateInteractiveAnimeSessionStorage(InteractedAnime intanime)
+        public async Task InsertOrUpdateInteractiveAnimeSessionStorage(int id, InteractedAnime intanime)
         {
             try
             {
@@ -79,12 +79,12 @@ namespace BattAnimeZone.Client.Authentication
                 {
                     Dictionary<int, InteractedAnime> interacted_animes = await _sessionStorage.ReadEncryptedItemAsync<Dictionary<int, InteractedAnime>>("InteractedAnimes");
                     if (interacted_animes != null)
-                        interacted_animes[intanime.MalId] = intanime;
+                        interacted_animes[id] = intanime;
                     else
                     {
                         interacted_animes = new Dictionary<int, InteractedAnime>() {
                             {
-                                intanime.MalId, intanime
+                                id, intanime
                             }
                         };
                     }

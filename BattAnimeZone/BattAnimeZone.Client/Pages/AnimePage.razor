@@ -408,12 +408,11 @@ else{
 
                 InteractedAnime intanime = new InteractedAnime
                     {
-                        MalId = currentAnime.Mal_id,
                         Rating = finalrating,
                         Status = finalStatus,
                         Favorite = this.favorite
                     };
-                await customAuthStateProvider.InsertOrUpdateInteractiveAnimeLocalStorage(intanime);
+                await customAuthStateProvider.InsertOrUpdateInteractiveAnimeLocalStorage(currentAnime.Mal_id,intanime);
                 await ChangeModalDisplayText();
             }
             else
