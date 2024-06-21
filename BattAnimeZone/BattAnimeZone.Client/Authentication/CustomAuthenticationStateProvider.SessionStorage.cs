@@ -95,5 +95,30 @@ namespace BattAnimeZone.Client.Authentication
             catch { }
 
         }
-    }
+
+
+
+        public async Task SaveToSessionStorage<T>(string key, T value)
+        {
+            try
+            {
+                await _sessionStorage.SaveItemEncryptedAsync(key, value);
+            }
+            catch { }
+
+        }
+
+        public async Task<T?> GetFromSessionStorage<T>(string key)
+		{
+			try
+			{
+				return await _sessionStorage.ReadEncryptedItemAsync<T>(key);
+			}
+			catch {
+                return default(T?);
+            }
+
+		}
+
+	}
 }

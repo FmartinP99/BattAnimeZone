@@ -3,6 +3,8 @@
 @using BattAnimeZone.Shared.Models.Anime
 @using BattAnimeZone.Shared.Models.AnimeDTOs
 @using BattAnimeZone.Client.Components
+@using BattAnimeZone.Client.Authentication
+@inject AuthenticationStateProvider authStateProvider
 @inject NavigationManager navManager
 @inject IHttpClientFactory HttpClientFactory
 @inject IJSRuntime JSRuntime
@@ -104,6 +106,8 @@ else{
 
     HttpClient httpClient;
 
+    CustomAuthenticationStateProvider customAuthStateProvider; 
+
     bool loaded = false;
     bool searching = false;
     bool firstsearch = false;
@@ -186,7 +190,7 @@ else{
     protected override async Task OnInitializedAsync()
     {
 
-
+        customAuthStateProvider = (CustomAuthenticationStateProvider)authStateProvider;
         await base.OnInitializedAsync();
 
     }
@@ -217,65 +221,83 @@ else{
 
         bool found_error = false;
 
-        try
-        {
-            var response = await httpClient.GetAsync($"{navManager.BaseUri}api/DbController/GetMediaTypes");
+        media_types = await customAuthStateProvider.GetFromSessionStorage<List<string>?>("media_types");
 
-            if (response.IsSuccessStatusCode)
+        if (media_types == null)
+        {
+            try
             {
-                media_types = await response.Content.ReadFromJsonAsync<List<string>>();
+                var response = await httpClient.GetAsync($"{navManager.BaseUri}api/DbController/GetMediaTypes");
+
+                if (response.IsSuccessStatusCode)
+                {
+                    media_types = await response.Content.ReadFromJsonAsync<List<string>>();
+                   
+                }
+                else
+                {
+                    await JSRuntime.InvokeVoidAsync("console.error", $"{response.StatusCode}\n {response.ReasonPhrase}");
+                    found_error = true;
+                }
             }
-            else
+            catch (Exception ex)
             {
-                await JSRuntime.InvokeVoidAsync("console.error", $"{response.StatusCode}\n {response.ReasonPhrase}");
                 found_error = true;
+                await JSRuntime.InvokeVoidAsync("console.error", $"{ex.Message}"); ;
             }
         }
-        catch (Exception ex)
-        {
-            found_error = true;
-            await JSRuntime.InvokeVoidAsync("console.error", $"{ex.Message}"); ;
-        }
 
-        try
-        {
-            var response = await httpClient.GetAsync($"{navManager.BaseUri}api/DbController/GetAnimesPerGenreIdCount");
 
-            if (response.IsSuccessStatusCode)
+        animeCountPerGenre = await customAuthStateProvider.GetFromSessionStorage<Dictionary<int, int>?>("anime_counts_per_genre");
+
+        if (animeCountPerGenre == null)
+        {
+            try
             {
-                animeCountPerGenre = await response.Content.ReadFromJsonAsync<Dictionary<int, int>>();
+                var response = await httpClient.GetAsync($"{navManager.BaseUri}api/DbController/GetAnimesPerGenreIdCount");
+
+                if (response.IsSuccessStatusCode)
+                {
+                    animeCountPerGenre = await response.Content.ReadFromJsonAsync<Dictionary<int, int>>();
+                    await customAuthStateProvider.SaveToSessionStorage("anime_counts_per_genre", animeCountPerGenre);
+                }
+                else
+                {
+                    await JSRuntime.InvokeVoidAsync("console.error", $"{response.StatusCode}\n {response.ReasonPhrase}");
+                    found_error = true;
+                }
             }
-            else
+            catch (Exception ex)
             {
-                await JSRuntime.InvokeVoidAsync("console.error", $"{response.StatusCode}\n {response.ReasonPhrase}");
                 found_error = true;
+                await JSRuntime.InvokeVoidAsync("console.error", $"{ex.Message}"); ;
             }
         }
-        catch (Exception ex)
-        {
-            found_error = true;
-            await JSRuntime.InvokeVoidAsync("console.error", $"{ex.Message}"); ;
-        }
-       
 
-        try
-        {
-            var response = await httpClient.GetAsync($"{navManager.BaseUri}api/DbController/GetGenres");
+        genres = await customAuthStateProvider.GetFromSessionStorage<List<AnimeGenreDTO>?>("genres");
 
-            if (response.IsSuccessStatusCode)
+        if (genres == null)
+        {
+            try
             {
-                genres = await response.Content.ReadFromJsonAsync<List<AnimeGenreDTO>>();
+                var response = await httpClient.GetAsync($"{navManager.BaseUri}api/DbController/GetGenres");
+
+                if (response.IsSuccessStatusCode)
+                {
+                    genres = await response.Content.ReadFromJsonAsync<List<AnimeGenreDTO>>();
+                    await customAuthStateProvider.SaveToSessionStorage("genres", genres);
+                }
+                else
+                {
+                    await JSRuntime.InvokeVoidAsync("console.error", $"{response.StatusCode}\n {response.ReasonPhrase}");
+                    found_error = true;
+                }
             }
-            else
+            catch (Exception ex)
             {
-                await JSRuntime.InvokeVoidAsync("console.error", $"{response.StatusCode}\n {response.ReasonPhrase}");
                 found_error = true;
+                await JSRuntime.InvokeVoidAsync("console.error", $"{ex.Message}"); ;
             }
-        }
-        catch (Exception ex)
-        {
-            found_error = true;
-            await JSRuntime.InvokeVoidAsync("console.error", $"{ex.Message}"); ;
         }
 
         return !found_error;

@@ -12,7 +12,7 @@ namespace BattAnimeZone.Authentication
 {
     public class JwtAuthenticationManager
 	{
-		internal readonly int JWT_TOKEN_VALIDITY_MINS = 10;
+        internal readonly int JWT_TOKEN_VALIDITY_MINS = 10;
 		internal readonly  int JWT_REFRESH_TOKEN_VALIDITY_MINS = 60 * 24;
 		private string JWT_SECURITY_KEY;
 		private string VALID_ISSUER;
