@@ -1,6 +1,7 @@
 ﻿using BattAnimeZone.Services;
 using BattAnimeZone.Shared.Models.User;
 using BattAnimeZone.Shared.Models.User.BrowserStorageModels;
+using BattAnimeZone.Shared.Policies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -9,7 +10,7 @@ using System.Text.Json;
 
 namespace BattAnimeZone.Controllers
 {
-    [Authorize]
+    [Authorize(Policy = Policies.IsAuthenticated)]
 	[Route("api/AccountController")]
 	[ApiController]
 	public class AccountController : ControllerBase
@@ -26,9 +27,8 @@ namespace BattAnimeZone.Controllers
 		[AllowAnonymous]
 		public async Task<ActionResult<UserSession>> Login([FromBody] LoginRequest loginRequest)
 		{
-           
             var userSession = await _userAccountService.Login(loginRequest);
-			if (userSession is null)
+            if (userSession is null)
 				return Unauthorized();
 			else
 				return userSession;
