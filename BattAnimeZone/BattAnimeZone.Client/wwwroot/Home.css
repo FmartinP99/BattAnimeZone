@@ -18,8 +18,30 @@ h1 {
     opacity: 0.65;
 }
 
+
+.filterDiv{
+    margin-left:15px;
+    margin-right:10px;
+    width:283.3px;
+}
+
+.orderComponentText {
+    margin-right: 8px;
+    vertical-align: middle;
+    font-size: 18px;
+}
+
+
+.rzdropdown {
+    width: 100%;
+   
+    background-image: linear-gradient(to right, #5832dd,#5025ce,#5832dd,#5025ce,#5832dd);
+    color: white;
+}
+
+
 .card-block {
-    overflow-y:hidden;
+    overflow-y: hidden;
     height: 400px;
     background-color: #fff;
     border: none;
@@ -41,7 +63,6 @@ h1 {
 .card-1 {
     background-color: transparent;
     overflow: hidden;
-   
 }
 
 
@@ -151,6 +172,7 @@ h1 {
 
 .headerInnerDiv{
     margin-left:auto;
+    margin-bottom:10px;
 }
 
 .yearDiv {
@@ -159,15 +181,10 @@ h1 {
     margin-right: 25px;
 }
 
-.orderComponentText{
-    font-size:18px;
-}
 
 
-.rzdropdown {
-    background-image: linear-gradient(to right, #5832dd,#5025ce,#5832dd,#5025ce,#5832dd);
-    color: white;
-}
+
+
 
 .rz-dropdown-panel {
     background-color: rgba(0,0,0,0.6);
@@ -189,3 +206,15 @@ h1 {
     background-image: linear-gradient(to right, #5832dd,#5025ce,#5832dd,#5025ce,#5832dd);
 }
 }
+
+.col-2{
+    margin-bottom:13px;
+    margin-top:13px;
+}
+
+.ownWrapper {
+    max-height: 850px;
+}
+
+
+
