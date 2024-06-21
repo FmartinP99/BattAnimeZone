@@ -1,11 +1,13 @@
 ﻿@using BattAnimeZone.Shared.Models.User
 @using BattAnimeZone.Client.Authentication
+@using BattAnimeZone.Client.Services
 @using BattAnimeZone.Shared.Models.User.BrowserStorageModels
 @using System.Net
 @using System.Net.Http.Headers;
 @inject NavigationManager navManager
 @inject IHttpClientFactory HttpClientFactory
 @inject IJSRuntime JSRuntime
+@inject StorageService storageService
 @inject AuthenticationStateProvider authStateProvider
 <link rel="stylesheet" href="/LoggedInComponent.css" />
 
@@ -31,7 +33,7 @@
         if (confirmed)
         {
             var customAuthStateProvider = (CustomAuthenticationStateProvider)authStateProvider;
-            UserSession userSession = await customAuthStateProvider.GetUserSession();
+            UserSession userSession = await storageService.GetUserSession();
 
             try
             {

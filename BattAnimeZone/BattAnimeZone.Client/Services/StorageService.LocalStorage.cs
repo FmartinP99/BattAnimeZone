@@ -1,10 +1,33 @@
 ﻿using BattAnimeZone.Client.Extensions;
 using BattAnimeZone.Shared.Models.User.BrowserStorageModels;
 
-namespace BattAnimeZone.Client.Authentication
+namespace BattAnimeZone.Client.Services
 {
-    public partial class CustomAuthenticationStateProvider
+    public partial class StorageService
     {
+
+        public async Task SaveToLocalStorage<T>(string key, T value)
+        {
+            try
+            {
+                await _localStorage.SaveItemEncryptedAsync(key, value);
+            }
+            catch { }
+
+        }
+
+        public async Task<T?> GetFromLocalStorage<T>(string key)
+        {
+            try
+            {
+                return await _localStorage.ReadEncryptedItemAsync<T>(key);
+            }
+            catch
+            {
+                return default(T?);
+            }
+        }
+
         public async Task<string> GetTokenLocalStorage()
         {
             var result = string.Empty;
@@ -22,10 +45,8 @@ namespace BattAnimeZone.Client.Authentication
 
         public async Task<UserSession> GetUserSession()
         {
-
             var userSession = await _localStorage.ReadEncryptedItemAsync<UserSession>("UserSession");
             return userSession;
-          
         }
 
         public async Task<string> GetUsernameLocalStorage()
@@ -102,5 +123,6 @@ namespace BattAnimeZone.Client.Authentication
             catch { }
 
         }
+
     }
 }

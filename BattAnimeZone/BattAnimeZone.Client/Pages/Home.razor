@@ -3,6 +3,8 @@
 @using BattAnimeZone.Client.Components
 @using BlazorBootstrap;
 @using BattAnimeZone.Client.Authentication
+@using BattAnimeZone.Client.Services
+@inject StorageService storageService
 @inject AuthenticationStateProvider authStateProvider
 @inject NavigationManager navManager
 @inject IHttpClientFactory HttpClientFactory
@@ -199,7 +201,7 @@
 
 	protected async Task FillMediaTypes()
 	{
-		media_types = await customAuthStateProvider.GetFromSessionStorage<List<string>?>("media_types");
+		media_types = await storageService.GetFromSessionStorage<List<string>?>("media_types");
 
 		if (media_types == null)
 		{
@@ -210,7 +212,7 @@
 				if (response.IsSuccessStatusCode)
 				{
 					media_types = await response.Content.ReadFromJsonAsync<List<string>>();
-					await customAuthStateProvider.SaveToSessionStorage("media_types", media_types);
+					await storageService.SaveToSessionStorage("media_types", media_types);
 				}
 				else
 				{

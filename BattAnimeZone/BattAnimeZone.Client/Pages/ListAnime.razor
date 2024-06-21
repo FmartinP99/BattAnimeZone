@@ -4,7 +4,9 @@
 @using BattAnimeZone.Shared.Models.AnimeDTOs
 @using BattAnimeZone.Client.Components
 @using BattAnimeZone.Client.Authentication
+@using BattAnimeZone.Client.Services
 @inject AuthenticationStateProvider authStateProvider
+@inject StorageService storageService
 @inject NavigationManager navManager
 @inject IHttpClientFactory HttpClientFactory
 @inject IJSRuntime JSRuntime
@@ -221,7 +223,7 @@ else{
 
         bool found_error = false;
 
-        media_types = await customAuthStateProvider.GetFromSessionStorage<List<string>?>("media_types");
+        media_types = await storageService.GetFromSessionStorage<List<string>?>("media_types");
 
         if (media_types == null)
         {
@@ -232,7 +234,7 @@ else{
                 if (response.IsSuccessStatusCode)
                 {
                     media_types = await response.Content.ReadFromJsonAsync<List<string>>();
-                    await customAuthStateProvider.SaveToSessionStorage("media_types", media_types);
+                    await storageService.SaveToSessionStorage("media_types", media_types);
                 }
                 else
                 {
@@ -248,7 +250,7 @@ else{
         }
 
 
-        animeCountPerGenre = await customAuthStateProvider.GetFromSessionStorage<Dictionary<int, int>?>("anime_counts_per_genre");
+        animeCountPerGenre = await storageService.GetFromSessionStorage<Dictionary<int, int>?>("anime_counts_per_genre");
 
         if (animeCountPerGenre == null)
         {
@@ -259,7 +261,7 @@ else{
                 if (response.IsSuccessStatusCode)
                 {
                     animeCountPerGenre = await response.Content.ReadFromJsonAsync<Dictionary<int, int>>();
-                    await customAuthStateProvider.SaveToSessionStorage("anime_counts_per_genre", animeCountPerGenre);
+                    await storageService.SaveToSessionStorage("anime_counts_per_genre", animeCountPerGenre);
                 }
                 else
                 {
@@ -274,7 +276,7 @@ else{
             }
         }
 
-        genres = await customAuthStateProvider.GetFromSessionStorage<List<AnimeGenreDTO>?>("genres");
+        genres = await storageService.GetFromSessionStorage<List<AnimeGenreDTO>?>("genres");
 
         if (genres == null)
         {
@@ -285,7 +287,7 @@ else{
                 if (response.IsSuccessStatusCode)
                 {
                     genres = await response.Content.ReadFromJsonAsync<List<AnimeGenreDTO>>();
-                    await customAuthStateProvider.SaveToSessionStorage("genres", genres);
+                    await storageService.SaveToSessionStorage("genres", genres);
                 }
                 else
                 {
