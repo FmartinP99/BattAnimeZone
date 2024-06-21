@@ -24,8 +24,8 @@ namespace BattAnimeZone.Client.Authentication
         [Inject]
         private IJSRuntime JSRuntime { get; set; }
 
+
         private readonly ILocalStorageService _localStorage;
-        private readonly ISessionStorageService _sessionStorage;
         private ClaimsPrincipal _anonymous = new ClaimsPrincipal(new ClaimsIdentity());
 
         
@@ -34,13 +34,10 @@ namespace BattAnimeZone.Client.Authentication
 
         private AuthenticationState previousState = new AuthenticationState(new ClaimsPrincipal(new ClaimsIdentity()));
 
-        public CustomAuthenticationStateProvider( ILocalStorageService localStorage,
-            ISessionStorageService sessionStorage, HttpClient _httpClient, NavigationManager _navManager, IJSRuntime _JSRuntime)
+        public CustomAuthenticationStateProvider( ILocalStorageService localStorage,HttpClient _httpClient, NavigationManager _navManager)
         {
             _localStorage = localStorage;
-            _sessionStorage = sessionStorage;
             httpClient = _httpClient;
-            JSRuntime = _JSRuntime;
             navManager = _navManager;
 
             

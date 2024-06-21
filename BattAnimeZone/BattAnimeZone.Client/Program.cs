@@ -1,4 +1,5 @@
 ﻿using BattAnimeZone.Client.Authentication;
+using BattAnimeZone.Client.Services;
 using BattAnimeZone.Shared.Policies;
 using Blazored.LocalStorage;
 using Blazored.SessionStorage;
@@ -15,6 +16,7 @@ builder.Services.AddBlazoredSessionStorage();
 builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthenticationStateProvider>();
 
 builder.Services.AddScoped<AuthenticationMessageHandler>();
+builder.Services.AddScoped<StorageService>();
 
 
 builder.Services.AddBlazorBootstrap();

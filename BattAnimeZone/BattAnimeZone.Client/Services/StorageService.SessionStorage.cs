@@ -1,11 +1,33 @@
 ﻿using BattAnimeZone.Client.Extensions;
 using BattAnimeZone.Shared.Models.User.BrowserStorageModels;
-using Microsoft.AspNetCore.Components.Authorization;
 
-namespace BattAnimeZone.Client.Authentication
+namespace BattAnimeZone.Client.Services
 {
-    public partial class CustomAuthenticationStateProvider
+    public partial class StorageService
     {
+
+        public async Task SaveToSessionStorage<T>(string key, T value)
+        {
+            try
+            {
+                await _sessionStorage.SaveItemEncryptedAsync(key, value);
+            }
+            catch { }
+
+        }
+
+        public async Task<T?> GetFromSessionStorage<T>(string key)
+        {
+            try
+            {
+                return await _sessionStorage.ReadEncryptedItemAsync<T>(key);
+            }
+            catch
+            {
+                return default(T?);
+            }
+        }
+
         public async Task<string> GetTokenSessionStorage()
         {
             var result = string.Empty;
@@ -96,29 +118,5 @@ namespace BattAnimeZone.Client.Authentication
 
         }
 
-
-
-        public async Task SaveToSessionStorage<T>(string key, T value)
-        {
-            try
-            {
-                await _sessionStorage.SaveItemEncryptedAsync(key, value);
-            }
-            catch { }
-
-        }
-
-        public async Task<T?> GetFromSessionStorage<T>(string key)
-		{
-			try
-			{
-				return await _sessionStorage.ReadEncryptedItemAsync<T>(key);
-			}
-			catch {
-                return default(T?);
-            }
-
-		}
-
-	}
+    }
 }
