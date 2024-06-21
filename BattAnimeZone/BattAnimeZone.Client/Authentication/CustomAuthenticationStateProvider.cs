@@ -143,6 +143,7 @@ namespace BattAnimeZone.Client.Authentication
             }
             catch
             {
+                await _localStorage.RemoveItemAsync("InteractedAnimes");
                 return await Task.FromResult(new AuthenticationState(_anonymous));
             }
         }

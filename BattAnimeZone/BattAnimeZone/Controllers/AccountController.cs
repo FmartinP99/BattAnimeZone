@@ -51,7 +51,6 @@ namespace BattAnimeZone.Controllers
         [AllowAnonymous]
         public async Task<ActionResult<RefreshTokenDTO>> Refresh([FromBody] RefreshTokenDTO refreshTokenDTO)
         {
-            await Console.Out.WriteLineAsync("belepett refreshbe!");
 
             var userSession = await _userAccountService.Refresh(refreshTokenDTO);
             if (userSession is null)
@@ -65,6 +64,7 @@ namespace BattAnimeZone.Controllers
         [AllowAnonymous]
         public async Task<ActionResult<UserSession>> Register([FromBody] RegisterRequest registerRequest)
         {
+
             bool response = await _userAccountService.RegisterUser(registerRequest);
 
             if (response)
@@ -100,5 +100,22 @@ namespace BattAnimeZone.Controllers
             else
                 return BadRequest();
         }
+
+
+        [HttpGet]
+        [Route("GetProfile/{username}")]
+        [AllowAnonymous]
+        public async Task<ActionResult<Dictionary<string, string?>>> GetProfile(string username)
+        {
+
+            await Console.Out.WriteLineAsync($"searchign term: {username}");
+            var userName = await _userAccountService.GetProfileByUserName(username);
+            await Console.Out.WriteLineAsync($"searched term: {userName}");
+            if (userName is null)
+                return NotFound();
+            else
+                return userName;
+        }
+
     }
 }

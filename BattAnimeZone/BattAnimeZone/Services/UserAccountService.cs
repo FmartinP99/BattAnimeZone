@@ -14,7 +14,7 @@ using RegisterRequest = BattAnimeZone.Shared.Models.User.RegisterRequest;
 
 namespace BattAnimeZone.Services
 {
-    public class UserAccountService
+    public partial class UserAccountService
 	{
         private IDbContextFactory<AnimeDbContext> _dbContextFactory;
 		private readonly IPasswordHasher _passwordHasher;
@@ -133,7 +133,7 @@ namespace BattAnimeZone.Services
                 bool db_EmailExists = await _context.UserAccounts.AnyAsync(x => x.Email == user.Email);
                 if (db_EmailExists) return false;
                 string? passwordHash = _passwordHasher.Hash(user.Password);
-				_context.UserAccounts.Add(new UserAccountModel { UserName = user.UserName, Password = passwordHash, Email = user.Email, Role = "User" });
+				_context.UserAccounts.Add(new UserAccountModel { UserName = user.UserName, Password = passwordHash, Email = user.Email.ToLower(), Role = "User" });
                 await _context.SaveChangesAsync();
                 return true;
             }
