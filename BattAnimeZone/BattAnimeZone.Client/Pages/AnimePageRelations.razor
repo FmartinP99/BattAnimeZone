@@ -26,12 +26,14 @@
                 <RadzenCard class="lga-card" @onclick="@(() => NavigateTo(anime.Mal_id))">
                     <RadzenStack Style="height:70%" Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center">
                         <RadzenImage Path="@anime.ImageLargeWebpUrl" Style="width: 100px; height: 100px; border-radius: 15%" AlternateText="no image" />
+                       
                         <RadzenStack Gap="0">
                             <RadzenText TextStyle="TextStyle.Overline" Style="color:White" class=" rz-display-flex rz-mt-2 rz-my-0">English Name</RadzenText>
                             <RadzenText TextStyle="TextStyle.Body1" Style="color:White"><b>@(anime.TitleEnglish)</b></RadzenText>
                             <RadzenText TextStyle="TextStyle.Overline" Style="color:White" class="rz-display-flex rz-mt-4 rz-mb-0">Japanese Name</RadzenText>
                             <RadzenText TextStyle="TextStyle.Body1" Style="color:White"><b>@(anime.TitleJapanese)</b></RadzenText>
                         </RadzenStack>
+
                         <RadzenStack Gap="0">
                             <RadzenText TextStyle="TextStyle.Overline" Style="color:White" class=" rz-display-flex rz-mt-2 rz-my-0">Score</RadzenText>
                             <RadzenText TextStyle="TextStyle.Body1" Style="color:White"><b>@(anime.Score)</b></RadzenText>
@@ -62,7 +64,7 @@
     }
     else
     {
-        <h1>There are no related animes that are related this anime!</h1>
+        <h1>There are no animes that are related to this anime!</h1>
         <RadzenButton Click="NavigateBack">GO BACK!
         </RadzenButton>
     }

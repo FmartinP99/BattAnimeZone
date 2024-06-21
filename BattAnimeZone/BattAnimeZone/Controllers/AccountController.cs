@@ -2,6 +2,7 @@
 using BattAnimeZone.Shared.Models.User;
 using BattAnimeZone.Shared.Models.User.BrowserStorageModels;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using System.Text.Json;
@@ -76,8 +77,9 @@ namespace BattAnimeZone.Controllers
         [Route("AnimeRating")]
         public async Task<ActionResult<UserSession>> AnimeRating([FromBody] AnimeActionTransfer aat)
         {
-            await Console.Out.WriteLineAsync("belepett animerating");
-            bool response = await _userAccountService.RateAnime(aat);
+			var authorizationHeader = HttpContext.Request.Headers["Authorization"].FirstOrDefault();
+			var token = authorizationHeader.Substring("Bearer ".Length).Trim();
+            bool response = await _userAccountService.RateAnime(aat, token);
             if (response)
                 return Ok();
             else
@@ -88,7 +90,9 @@ namespace BattAnimeZone.Controllers
         [Route("GetInteractedAnimes/{username}")]
         public async Task<ActionResult<UserSession>> GetInteractedAnimes(string username)
         {
-            var response = await _userAccountService.GetInteractedAnimes(username);
+			var authorizationHeader = HttpContext.Request.Headers["Authorization"].FirstOrDefault();
+			var token = authorizationHeader.Substring("Bearer ".Length).Trim();
+			var response = await _userAccountService.GetInteractedAnimes(username, token);
             if (response != null)
             {
                 return Ok(response);

@@ -139,12 +139,12 @@ namespace BattAnimeZone.Services
             }
         }
 
-        public async Task<bool> RateAnime(AnimeActionTransfer aat)
+        public async Task<bool> RateAnime(AnimeActionTransfer aat, string? token)
         {
 
             using (var _context = await _dbContextFactory.CreateDbContextAsync())
             {
-                UserAccountModel? db_User = await _context.UserAccounts.Where(x => x.UserName == aat.UserName).FirstOrDefaultAsync();
+                UserAccountModel? db_User = await _context.UserAccounts.Where(x => x.UserName == aat.UserName && x.Token == token).FirstOrDefaultAsync();
                 if (db_User == null) return false;
 
                 AnimeUserModel? db_animeUser = await _context.AnimeUserModels.Where(x => x.AnimeId == aat.AnimeId && x.UserId == db_User.Id).FirstOrDefaultAsync();
@@ -189,11 +189,11 @@ namespace BattAnimeZone.Services
         }
 
 
-        public async Task<Dictionary<int, InteractedAnime>?> GetInteractedAnimes(string UserName)
+        public async Task<Dictionary<int, InteractedAnime>?> GetInteractedAnimes(string UserName, string? token)
         {
             using (var _context = await _dbContextFactory.CreateDbContextAsync())
             {
-                bool db_UserExists = await _context.UserAccounts.AnyAsync(x => x.UserName == UserName);
+                bool db_UserExists = await _context.UserAccounts.AnyAsync(x => x.UserName == UserName && x.Token == token);
                 if (db_UserExists == false) return null;
 
                 var query = await (from au in _context.AnimeUserModels
