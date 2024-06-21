@@ -7,23 +7,23 @@ import os
 example_data = dict()
 
 
-def main(BASE_URL, IDS):
+def main(BASE_URL, IDS, outfile):
 
     for ix, id in enumerate(IDS):
         if ix % 10 == 0:
             # do a backup at every 10 fetch. If for some reason it can't (i.e the file is opened or something) it makes another copy
             try:
-                shutil.copy2("mal_data.csv", "mal_data_backup.csv")
+                shutil.copy2(f"{outfile}.csv", f"{outfile}_backup.csv")
             except Exception:
                 try:
-                    shutil.copy2("mal_data.csv", "mal_data_backup_2.csv")
+                    shutil.copy2(f"{outfile}.csv", f"{outfile}_backup_2.csv")
                 except Exception:
                     pass
         print(f"{ix+1}/{len(IDS)}")
-        fetch_mal(BASE_URL, id)
+        fetch_mal(BASE_URL, id, outfile)
         time.sleep(1)
 
-def fetch_mal(BASE_URL, id):
+def fetch_mal(BASE_URL, id, outfile):
     global example_data
 
     request_url = BASE_URL + "/" + str(id) + "/full"
@@ -35,14 +35,14 @@ def fetch_mal(BASE_URL, id):
     loaded = json.loads(anime_data)
     loaded = loaded["data"]
 
-    if id == 1:
+    if id == ids_to_request[0]:
         example_data = loaded
     if example_data.keys() == loaded.keys():
         flattened = pd.json_normalize(loaded)
-        if not os.path.isfile('mal_data.csv'):
-            flattened.to_csv('mal_data.csv', index=False)
+        if not os.path.isfile(f'{outfile}.csv'):
+            flattened.to_csv(f'{outfile}.csv', index=False)
         else:  # else it exists so append without writing the header
-            flattened.to_csv('mal_data.csv', mode='a', header=False, index=False)
+            flattened.to_csv(f'{outfile}.csv', mode='a', header=False, index=False)
     else:
         print(f"{id}'s request doesn't have the same keys as the id==1 data. Therefore skipping it!")
 
@@ -105,8 +105,22 @@ def get_producers():
 
 
 
+
+def get_season(month):
+    if month in [12, 1, 2]:
+        return 'winter'
+    elif month in [3, 4, 5]:
+        return 'spring'
+    elif month in [6, 7, 8]:
+        return 'summer'
+    elif month in [9, 10, 11]:
+        return 'fall'
+    return ''
+
+
+"""this function is for filling empty values"""
 def check_and_fill_empty_cols():
-    df = pd.read_csv('mal_data_filtered.csv')
+    df = pd.read_csv('mal_data_full_sfw_updated_20240615.csv')
 
     for col in df.columns:
         # Check data type of the column
@@ -117,17 +131,39 @@ def check_and_fill_empty_cols():
             print(col)
             df[col].fillna(0, inplace=True)
 
-    df.drop(["Unnamed: 0"], axis=1, inplace=True)
-    df.to_csv("mal_data_filtered_filled.csv", index=False)
+    "filling missing seasons"
+    df['season'] = df.apply(
+        lambda row: get_season(row['aired.prop.from.month']) if pd.isna(row['season']) or row['season'] == '' else row[
+            'season'],
+        axis=1
+    )
 
-def make_smaller_animes_csv():
+    df.to_csv("mal_data_full_sfw_updated_20240615_2.csv", index=False)
 
-    df = pd.read_csv("mal_data_filtered_filled.csv")
+def make_smaller_animes_csv(csvfile):
+
+    df = pd.read_csv(f"{csvfile}.csv")
 
     df = df[df["aired.prop.from.year"] > 2021]
 
-    df.to_csv("mal_data_2022plus_subset.csv")
+    df.to_csv(f"{csvfile}_2021plus_subset.csv")
 
+
+
+"""this function is for updating the csv"""
+def merge_or_replace_csv():
+
+
+    df1 = pd.read_csv("mal_data_filtered_filled.csv")
+    df2 = pd.read_csv("2024_refreshed_sfw_animes_filtered_filled.csv")
+    df1['mal_id'] = df1['mal_id'].astype(float)
+    df2['mal_id'] = df2['mal_id'].astype(float)
+    common_mal_ids = df1['mal_id'].isin(df2['mal_id'])
+    df1.loc[common_mal_ids] = df2[df2['mal_id'].isin(df1['mal_id'])]
+    new_mal_ids = ~df2['mal_id'].isin(df1['mal_id'])
+    df1 = pd.concat([df1, df2[new_mal_ids]])
+    df1.to_csv('mal_data_full_sfw_updated_20240615.csv', index=False)
+    make_smaller_animes_csv("mal_data_full_sfw_updated_20240615")
 
 if __name__ == "__main__":
 
@@ -136,21 +172,30 @@ if __name__ == "__main__":
     anime_ids = requests.get(anime_cache_ids_url).text
     data = json.loads(anime_ids)
     sfw_ids = data["sfw"]
+    sfw_ids = list(set(sfw_ids))
 
     BASE_URL = "https://api.jikan.moe/v4/anime"
     death_note_data = requests.get(BASE_URL).text
 
-    main(BASE_URL, sfw_ids)
-    """
+    df = pd.read_csv("mal_data_filtered_filled.csv")
+    anime2023ids = df[df["aired.prop.from.year"] < 2024]["mal_id"].tolist()
+    anime2023ids = list(set(anime2023ids))
 
+    ids_to_request = list(filter(lambda x: x not in anime2023ids, sfw_ids))
+    ids_to_request = list(set(ids_to_request))
+    outfile = "2024_refreshed_sfw_animes"
+    main(BASE_URL, ids_to_request, outfile)
+
+    """
     #df = pd.read_csv("mal_data.csv")
     """accidently I wrote the header at every append, so had to delete them."""
     #df_filtered = df.drop(df.index[1::2])
     #df_filtered.to_csv("mal_data_filtered.csv", encoding="utf-8")
 
-    #check_and_fill_empty_cols("mal_data_filtered.csv")
+    #check_and_fill_empty_cols()
+    #merge_or_replace_csv()
     #get_anime_genres()
 
     #get_producers()
 
-    make_smaller_animes_csv()
+    make_smaller_animes_csv("mal_data_full_sfw_updated_20240615");
