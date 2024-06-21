@@ -36,8 +36,8 @@ main {
 
 
 .articleClass {
-    max-width: 1910px;
-    min-width: 1910px;
+    max-width: 1910px !important;
+    min-width: 1910px !important;
     display: table;
 }
 

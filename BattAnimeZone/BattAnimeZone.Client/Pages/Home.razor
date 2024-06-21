@@ -2,12 +2,14 @@
 @using BattAnimeZone.Shared.Models.AnimeDTOs
 @using BattAnimeZone.Client.Components
 @using BlazorBootstrap;
+@using BattAnimeZone.Client.Authentication
+@inject AuthenticationStateProvider authStateProvider
 @inject NavigationManager navManager
 @inject IHttpClientFactory HttpClientFactory
 @inject IJSRuntime JSRuntime
 @rendermode InteractiveWebAssembly
 @page "/"
-<link rel="stylesheet" href="/Home.css?version=0.2" />
+<link rel="stylesheet" href="/Home.css?version=0.1" />
 <PageTitle>Home</PageTitle>
 <SearchBar></SearchBar>
 
@@ -19,48 +21,60 @@
 		<h1 class="mt-5">Seasonal Animes</h1>
 
 		<div class="headerDiv d-flex align-items-center">
-			<p class="subtitle">@info_str</p>
+			<p class="subtitle">@info_str @type_str</p>
 			<div class="d-flex align-items-center headerInnerDiv">
-				<div class="yearDiv">
-				<RadzenLabel Text="YEAR:" class="orderComponentText rz-text-align-end" Component="DropDownTextValueProperties" Style="margin-right: 8px; vertical-align: middle;" />
-				<RadzenDropDown Change="onChangedYear" class="rzdropdown" @bind-Value=@selected_year Data=@filter_by_year Style="width: 100%; max-width: 400px;" Name="DropDownTextValueProperties" />
+				<div class="filterDiv">
+				<RadzenLabel Text="YEAR:" class="orderComponentText rz-text-align-end" Component="DropDownTextValueProperties" />
+				<RadzenDropDown Change="onChangedYear" class="rzdropdown" @bind-Value=@selected_year Data=@filter_by_year  Name="DropDownTextValueProperties" />
 				</div>
-				<RadzenLabel Text="SEASON:" class="orderComponentText rz-text-align-end" Component="DropDownTextValueProperties" Style="margin-right: 8px; vertical-align: middle;" />
-				<RadzenDropDown Change="onChangedSeason" class="rzdropdown" @bind-Value=@filter_str Data=@filter_by_season Style="width: 100%; max-width: 400px;" Name="DropDownTextValueProperties" />
+				<div class="filterDiv">
+				<RadzenLabel Text="SEASON:" class="orderComponentText rz-text-align-end" Component="DropDownTextValueProperties" />
+				<RadzenDropDown Change="onChangedSeason" class="rzdropdown" @bind-Value=@filter_str Data=@filter_by_season Name="DropDownTextValueProperties" />
+				</div>
+				<div class="filterDiv">
+					<RadzenLabel Text="TYPE:" class="orderComponentText rz-text-align-end" Component="DropDownTextValueProperties" />
+					<RadzenDropDown Change="onChangedType" class="rzdropdown" @bind-Value=@filter_type_str Data=@media_types Name="DropDownTextValueProperties" />
+				</div>
 			</div>
 		</div>
 
-		<div class="scrolling-wrapper row flex-row flex-nowrap mt-4 pb-4 pt-2">
-			@if(this.currentlySelectedAnimes != null){
-			@foreach (AnimeHomePageDTO anime in this.currentlySelectedAnimes)
-			{
-				<div class="col-2">
-						<div class="card card-block card-1" @onclick="@(() => NavigateTo(anime.Mal_id))" 
-							@onmouseenter="@(() => changeCardDivs(anime.Mal_id, true))" 
-							@onmouseleave="@(() => changeCardDivs(anime.Mal_id, false))">
-						@if(hoverDict[anime.Mal_id] == false ){
-							<img src="@anime.ImageLargeWebpUrl" class="img-fluid" alt="Anime image is missing!">
-							<div class="scoreDiv">@anime.Score</div>
-							<div class="typeDiv">@anime.MediaType</div>
-							<div class="titleDiv">@GetTitle(anime)</div>
-							@if(anime.Status != "Finished Airing")
-							{
-								<div class="statusDiv">@anime.Status</div>
-							}
+		<div class="centerWrapper">
+			<div class="scrolling-wrapper row flex-row ownWrapper">
+				@if(this.currentlySelectedAnimes != null && this.currentlySelectedAnimes.Count() > 0){
+				@foreach (AnimeHomePageDTO anime in this.currentlySelectedAnimes)
+					{
+						<div class="col-2">
+								<div class="ownCard card card-block card-1" @onclick="@(() => NavigateTo(anime.Mal_id))" 
+									@onmouseenter="@(() => changeCardDivs(anime.Mal_id, true))" 
+									@onmouseleave="@(() => changeCardDivs(anime.Mal_id, false))">
+								@if(hoverDict[anime.Mal_id] == false ){
+									<img src="@anime.ImageLargeWebpUrl" class="imgclass img-fluid" alt="Anime image is missing!">
+									<div class="scoreDiv">@anime.Score</div>
+									<div class="typeDiv">@anime.MediaType</div>
+									<div class="titleDiv">@GetTitle(anime)</div>
+									@if(anime.Status != "Finished Airing")
+									{
+										<div class="statusDiv">@anime.Status</div>
+									}
 
-							}
-						else
-						{
-							<img src="@anime.ImageLargeWebpUrl" class="img-fluid" alt="Anime image is missing!">
-							<div class="scoreDiv">@anime.Score</div>
-							<div class="typeDiv">@anime.MediaType</div>
-							<div class="synopsisDiv">@anime.Synopsis</div>
-						}
+									}
+								else
+								{
+									<img src="@anime.ImageLargeWebpUrl" class="imgclass img-fluid" alt="Anime image is missing!">
+									<div class="scoreDiv">@anime.Score</div>
+									<div class="typeDiv">@anime.MediaType</div>
+									<div class="synopsisDiv">@anime.Synopsis</div>
+								}
+							</div>
 					</div>
-			</div>
 			
-			}
-			}
+					}
+				}
+				else if (this.currentlySelectedAnimes != null && this.currentlySelectedAnimes.Count() == 0)
+				{
+					<h1>There are no animes here. :(</h1>
+				}
+			</div>
 		</div>
 	</div>
 
@@ -68,6 +82,7 @@
 @code{
 
 	HttpClient httpClient;
+	CustomAuthenticationStateProvider customAuthStateProvider;
 
 	bool loaded = false;
 
@@ -79,15 +94,26 @@
 	IEnumerable<AnimeHomePageDTO>? currentlySelectedAnimes;
 	Dictionary<int, bool> hoverDict = new Dictionary<int, bool>();
 
-	bool test = false;
-
 	string filter_str = "WINTER";
 	IEnumerable<string> filter_by_season = new List<string>() {"WINTER", "SPRING", "SUMMER", "FALL" };
 
 	int selected_year = 2024;
 	IEnumerable<int>? filter_by_year = new List<int>() {2023, 2024};
 
+	List<string?>? media_types;
+	string filter_type_str = "TV";
+
 	string info_str = "2024 Winter Animes";
+	string type_str = "";
+
+	protected override async Task OnInitializedAsync()
+	{
+
+		customAuthStateProvider = (CustomAuthenticationStateProvider)authStateProvider;
+		await FillMediaTypes();
+		await base.OnInitializedAsync();
+
+	}
 
 	protected override async Task OnAfterRenderAsync(bool firstRender)
 	{
@@ -128,12 +154,7 @@
 			//if the animes have been queried already
 			if (animes_per_year.ContainsKey(year))
 			{
-				info_str = year + info_str.Substring(4);
-				winterAnimes = animes_per_year[year]["winter"];
-				springAnimes = animes_per_year[year]["spring"];
-				summerAnimes = animes_per_year[year]["summer"];
-				fallAnimes = animes_per_year[year]["fall"];
-				currentlySelectedAnimes = winterAnimes ?? springAnimes ?? summerAnimes ?? fallAnimes;
+				await onChangedType();
 				return;
 			}
 
@@ -153,16 +174,14 @@
 					};
 				animes_per_year.Add(year, seasonsDictionary);
 
-				winterAnimes = animes_per_year[year]["winter"];
-				springAnimes = animes_per_year[year]["spring"];
-				summerAnimes = animes_per_year[year]["summer"];
-				fallAnimes = animes_per_year[year]["fall"];
-				currentlySelectedAnimes = winterAnimes ?? springAnimes ?? summerAnimes ?? fallAnimes;
-
 				foreach (var anime in animes)
 				{
 					hoverDict[anime.Mal_id] = false;
 				}
+
+				await onChangedType();
+
+				
 			}
 			else
 			{
@@ -174,6 +193,34 @@
 		{
 			await JSRuntime.InvokeVoidAsync("console.error", $"{e.Message}");
 			return;
+		}
+	}
+
+
+	protected async Task FillMediaTypes()
+	{
+		media_types = await customAuthStateProvider.GetFromSessionStorage<List<string>?>("media_types");
+
+		if (media_types == null)
+		{
+			try
+			{
+				var response = await httpClient.GetAsync($"{navManager.BaseUri}api/DbController/GetMediaTypes");
+
+				if (response.IsSuccessStatusCode)
+				{
+					media_types = await response.Content.ReadFromJsonAsync<List<string>>();
+					await customAuthStateProvider.SaveToSessionStorage("media_types", media_types);
+				}
+				else
+				{
+					await JSRuntime.InvokeVoidAsync("console.error", $"{response.StatusCode}\n {response.ReasonPhrase}");
+				}
+			}
+			catch (Exception ex)
+			{
+				await JSRuntime.InvokeVoidAsync("console.error", $"{ex.Message}"); ;
+			}
 		}
 	}
 
@@ -220,6 +267,29 @@
 			default:
 				break;
 		}
+	}
+
+
+	protected async Task onChangedType()
+	{
+
+
+		Dictionary<string, IEnumerable<AnimeHomePageDTO>> filtered_by_type_per_year = new Dictionary<string, IEnumerable<AnimeHomePageDTO>>();
+		
+		type_str = $"- {filter_type_str}";
+		foreach (var animes in animes_per_year[selected_year])
+		{
+			Console.WriteLine(animes.Key);
+			filtered_by_type_per_year[animes.Key] = animes.Value.Where(x => x.MediaType == filter_type_str);
+		}
+		
+
+		winterAnimes = filtered_by_type_per_year["winter"];
+		springAnimes = filtered_by_type_per_year["spring"];
+		summerAnimes = filtered_by_type_per_year["summer"];
+		fallAnimes = filtered_by_type_per_year["fall"];
+		await onChangedSeason();
+		StateHasChanged();
 	}
 
 
