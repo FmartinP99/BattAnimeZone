@@ -7,6 +7,7 @@ using BattAnimeZone.Shared.Models.Genre;
 using BattAnimeZone.Utilities;
 using AutoMapper;
 using BattAnimeZone.DbContexts;
+using BattAnimeZone._DEPRECATED.Utilities;
 
 #pragma warning disable CS1998
 #pragma warning disable CS8601
@@ -14,12 +15,12 @@ using BattAnimeZone.DbContexts;
 #pragma warning disable CS8602
 namespace BattAnimeZone.Services
 {
-	/// <summary>
-	/// WILL BE DEPRECATED IN THE FUTURE!!
-	/// This service uses inmemory database and must be used with the AnimeServiceController. 
-	/// For SQLite DataBase use the DataBaseController and DataBaseService 
-	/// </summary>
-	public partial class AnimeService
+    /// <summary>
+    /// WILL BE DEPRECATED IN THE FUTURE!!
+    /// This service uses inmemory database and must be used with the AnimeServiceController. 
+    /// For SQLite DataBase use the DataBaseController and DataBaseService 
+    /// </summary>
+    public partial class AnimeService
 	{
 
 		//mapper for AnimeDTO's

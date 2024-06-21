@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using DotNetEnv;
 using BattAnimeZone.Shared.Policies;
+using Microsoft.AspNetCore.Builder;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -125,6 +126,9 @@ app.UseHttpsRedirection();
 
 app.UseAuthentication();
 app.UseAuthorization();
+
+app.UseStatusCodePagesWithRedirects("/Error/{0}");
+
 
 app.UseStaticFiles();
 app.UseAntiforgery();
