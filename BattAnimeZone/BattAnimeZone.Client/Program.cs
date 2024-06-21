@@ -1,4 +1,5 @@
 ﻿using BattAnimeZone.Client.Authentication;
+using BattAnimeZone.Shared.Policies;
 using Blazored.LocalStorage;
 using Blazored.SessionStorage;
 using Microsoft.AspNetCore.Components.Authorization;
@@ -14,7 +15,7 @@ builder.Services.AddBlazoredSessionStorage();
 builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthenticationStateProvider>();
 
 builder.Services.AddScoped<AuthenticationMessageHandler>();
-builder.Services.AddAuthorizationCore();
+
 
 builder.Services.AddBlazorBootstrap();
 
@@ -24,5 +25,11 @@ builder.Services.AddHttpClient("AuthenticatedClient", client =>
     client.BaseAddress = new Uri(builder.HostEnvironment.BaseAddress);
 })
 .AddHttpMessageHandler<AuthenticationMessageHandler>();
+
+/*POLICITES */
+builder.Services.AddAuthorizationCore(config =>
+{
+	config.AddPolicy(Policies.IsAuthenticated, Policies.IsAuthenticatedPolicy());
+});
 
 await builder.Build().RunAsync();

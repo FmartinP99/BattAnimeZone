@@ -1,5 +1,6 @@
 @using BattAnimeZone.Client.Authentication
 @using BattAnimeZone.Client.Components
+@using BattAnimeZone.Shared.Policies
 @using BlazorBootstrap;
 @inject IJSRuntime JSRuntime
 @inject NavigationManager navManager
@@ -18,7 +19,7 @@
     </div>
     <div class="right-items">
             <div class="navbar-column-right" @onclick="ShowOffCanvasAbout">ABOUT</div>
-            <AuthorizeView Roles="Administrator, User">
+            <AuthorizeView Policy="@Policies.IsAuthenticated">
                 <Authorized>
                     <div class="navbar-column-right"  @onclick="ShowOffCanvasAuth">
                         @userName.ToUpper()
@@ -32,7 +33,7 @@
 </div>
 </div>
 
-<AuthorizeView Roles="Administrator, User">
+<AuthorizeView Policy="@Policies.IsAuthenticated">
     <Authorized>
         <Offcanvas @ref="offcanvasAuthorized" Class="offcanvas"> </Offcanvas>
     </Authorized>

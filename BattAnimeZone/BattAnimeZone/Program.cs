@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using DotNetEnv;
+using BattAnimeZone.Shared.Policies;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -61,7 +62,12 @@ builder.Services.AddAuthentication(o =>
         }
     };
 
+});
 
+/*POLICITES */
+builder.Services.AddAuthorizationCore(config =>
+{
+    config.AddPolicy(Policies.IsAuthenticated, Policies.IsAuthenticatedPolicy());
 });
 
 

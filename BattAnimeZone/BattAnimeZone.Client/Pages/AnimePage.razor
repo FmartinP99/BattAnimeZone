@@ -2,6 +2,7 @@
 @using BattAnimeZone.Client.Components
 @using BattAnimeZone.Shared.Models.AnimeDTOs
 @using BattAnimeZone.Shared.Models.User.BrowserStorageModels
+@using BattAnimeZone.Shared.Policies
 @using BattAnimeZone.Client.Authentication
 @using BlazorBootstrap;
 @using System.Net.Http.Headers;
@@ -24,7 +25,7 @@ else{
     @if (currentAnime != null){
     <div Style="padding-left: 20px; padding-right: 20px;">
 
-            <AuthorizeView Roles="Administrator, User">
+            <AuthorizeView Policy="@Policies.IsAuthenticated">
                 <Authorized>
                     <h1> AUTHORIZED</h1>
                 </Authorized>
