@@ -14,12 +14,12 @@ namespace BattAnimeZone.Services
     {
         private readonly ConcurrentDictionary<string, DateTime> _blacklist = new ConcurrentDictionary<string, DateTime>();
         private readonly Timer _cleanupTimer;
-        private readonly TimeSpan _tokenLifetime = TimeSpan.FromMinutes(1);
+        private readonly TimeSpan _tokenLifetime = TimeSpan.FromMinutes(10);
 
         public TokenBlacklistingService()
         {
            
-            _cleanupTimer = new Timer(CleanupExpiredTokens, null, TimeSpan.Zero, TimeSpan.FromMinutes(1));
+            _cleanupTimer = new Timer(CleanupExpiredTokens, null, TimeSpan.Zero, TimeSpan.FromMinutes(10));
         }
 
 
