@@ -121,9 +121,9 @@ CREATE TABLE AnimeProductionEntity (
 
 CREATE Table UserAccount(
  id integer NOT NULL PRIMARY KEY AUTOINCREMENT,
- username  TEXT NOT NULL UNIQUE,
+ username  TEXT NOT NULL UNIQUE COLLATE NOCASE,
  "password" TEXT not null,
-  email  TEXT NOT NULL UNIQUE
+  email  TEXT NOT NULL UNIQUE COLLATE NOCASE
   CHECK (
     email LIKE '%_@_%._%' AND
     LENGTH(email) - LENGTH(REPLACE(email, '@', '')) = 1 AND

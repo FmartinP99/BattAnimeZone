@@ -1,0 +1,74 @@
+﻿@inject NavigationManager navManager
+@inject IHttpClientFactory HttpClientFactory
+@inject IJSRuntime JSRuntime
+@using BattAnimeZone.Client.Components
+@rendermode InteractiveWebAssembly
+@page "/Profile/{UserName}"
+
+@if (!loaded)
+{
+    <LoadingComponent></LoadingComponent>
+}
+else if(loaded && username == null)
+{
+    <h3>This user doesn't exists!</h3>
+}
+else
+{
+    <h3>@username</h3>
+}
+
+@code {
+
+    bool loaded = false;
+
+    [Parameter]
+    public string? UserName { get; set; }
+
+    string? username;
+
+    HttpClient httpClient;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+    }
+
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            loaded = true;
+            try
+            {
+                httpClient = HttpClientFactory.CreateClient("AuthenticatedClient");
+                var response = await httpClient.GetAsync($"{navManager.BaseUri}api/AccountController/GetProfile/{UserName}");
+                if (response.IsSuccessStatusCode)
+                {
+                    var content = await response.Content.ReadFromJsonAsync<Dictionary<string, string?>>();
+                    username = content["userName"];
+                }
+                else if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
+                {
+
+                }
+                else
+                {
+                    await JSRuntime.InvokeVoidAsync("console.error", $"{response.StatusCode}\n {response.ReasonPhrase}");
+
+                }
+
+            }
+            catch (Exception e)
+            {
+                await JSRuntime.InvokeVoidAsync("console.error", $"{e.Message}");
+            }
+            finally
+            {
+                StateHasChanged();
+            }
+        }
+    }
+
+}
