@@ -232,7 +232,7 @@ else{
                 if (response.IsSuccessStatusCode)
                 {
                     media_types = await response.Content.ReadFromJsonAsync<List<string>>();
-                   
+                    await customAuthStateProvider.SaveToSessionStorage("media_types", media_types);
                 }
                 else
                 {
