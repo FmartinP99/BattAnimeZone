@@ -279,7 +279,6 @@
 		type_str = $"- {filter_type_str}";
 		foreach (var animes in animes_per_year[selected_year])
 		{
-			Console.WriteLine(animes.Key);
 			filtered_by_type_per_year[animes.Key] = animes.Value.Where(x => x.MediaType == filter_type_str);
 		}
 		
