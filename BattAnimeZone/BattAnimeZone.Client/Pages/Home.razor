@@ -53,7 +53,7 @@
 
 								<img src="@anime.ImageLargeWebpUrl" class="imgclass img-fluid" alt="Anime image is missing!">
 								<div class="scoreDiv">@anime.Score</div>
-								<div class="typeDiv">@anime.MediaType</div>
+								<div class="typeDiv" style=@($"{GetDynamicPositionsForType(anime.MediaType)}")>@anime.MediaType</div>
 							
 
 								@if(hoverDict[anime.Mal_id] == false ){
@@ -317,10 +317,15 @@
 				return "color: yellow";
 			default:
 				return "";
-
-
-
 		}
+	}
+
+	private string GetDynamicPositionsForType(string typestr)
+	{
+		if (typestr == "TV Special") return "left:85%; top:10%"; 
+
+		if (typestr.Length > 3) return "left:85%";
+		return "left:90%";
 	}
 
 
