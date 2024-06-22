@@ -127,7 +127,7 @@ namespace BattAnimeZone.Services
                                     {
                                         Name = x.streaming.Name,
                                         Url = x.streaming.Url,
-                                    }).ToList(),
+                                    }).OrderBy(x => x.Name).ToList(),
                                 }).AsSplitQuery()
                                  .AsNoTracking()
                                  .FirstOrDefaultAsync();

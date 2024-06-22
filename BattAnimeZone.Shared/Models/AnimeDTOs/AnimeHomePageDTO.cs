@@ -12,6 +12,7 @@
 		public string Season { get; set; } = string.Empty;
 		public string ImageLargeWebpUrl { get; set; } = string.Empty;
 		public string Synopsis { get; set; } = string.Empty;
+		public List<string>? Genres { get; set; } = null;
 	
 	}
 }

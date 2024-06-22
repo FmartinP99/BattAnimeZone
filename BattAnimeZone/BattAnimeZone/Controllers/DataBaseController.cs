@@ -22,7 +22,7 @@ namespace BattAnimeZone.Controllers
 		public async Task<IActionResult> GetAnimesByYear(int year)
 		{
             var result = await _dataBaseService.GetAnimesForHomePageByYear(year);
-			if (result == null)
+            if (result == null)
 			{
 				return NotFound();
 			}
