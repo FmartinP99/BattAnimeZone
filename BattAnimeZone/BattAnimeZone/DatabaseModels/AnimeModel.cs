@@ -133,5 +133,9 @@ namespace BattAnimeZone.DatabaseModels
 
         [Column("aired_string")]
         public string AiredString { get; set; } = "";
+
+        //further column for querying for HomePage
+        [NotMapped]
+        public List<string>? Genres { get; set; } = null;
     }
 }
