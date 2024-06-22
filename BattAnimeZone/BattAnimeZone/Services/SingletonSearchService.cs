@@ -18,8 +18,10 @@ namespace BattAnimeZone.Services
             public string TitleJapanese { get; set; } = string.Empty;
         }
 
+        //the search service compares these titles to the search values instead of querying the anime titles every time from the database
         private Dictionary<int, AnimeTitleContainer> animes = new Dictionary<int, AnimeTitleContainer> { };
 
+        //stores the similar anime id's for the past {recently_max_size} different searches.
         private Dictionary<string, int[]> recently_searched_distances = new Dictionary<string, int[]> { };
 
         int recently_max_size = 2000;

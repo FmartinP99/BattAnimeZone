@@ -2,6 +2,7 @@
 
 namespace BattAnimeZone.Utilities
 {
+    /*THIS CODE IS COPIED FROM HERE: https://github.com/JamesNK/Newtonsoft.Json/issues/980*/
     public static class JsonStringProcessor
     {
         public static string DecodeJSString(string s)
