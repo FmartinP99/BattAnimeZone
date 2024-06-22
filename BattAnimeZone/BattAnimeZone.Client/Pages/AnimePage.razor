@@ -26,16 +26,6 @@ else{
 
     @if (currentAnime != null){
     <div Style="padding-left: 20px; padding-right: 20px;">
-
-            <AuthorizeView Policy="@Policies.IsAuthenticated">
-                <Authorized>
-                    <h1> AUTHORIZED</h1>
-                </Authorized>
-                <NotAuthorized>
-                    <h1>NOT AUTHORIZED</h1>
-                </NotAuthorized>
-            </AuthorizeView>
-
         
         <div  class="defaultTitleDiv">@currentAnime.Title</div>
         <hr />

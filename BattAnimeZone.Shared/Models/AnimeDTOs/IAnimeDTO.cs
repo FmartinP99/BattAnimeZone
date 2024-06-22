@@ -9,5 +9,6 @@
         float Score { get; }
         int Popularity { get; }
         string MediaType { get; }
+        int Episodes { get; }
     }
 }
