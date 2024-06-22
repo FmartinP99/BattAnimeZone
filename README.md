@@ -2,19 +2,44 @@
 
 ### Blazor (Full Stack, web server & web assembly) Web App written in C# with .NET8
 
-This webapp is essentially a digital-library built on the [MyAnimeList](https://myanimelist.net)'s data capable of searching and displaying animes and studios with/based on their attributes,<br>
-The program uses string-similarity comparsion to find similar animes for the <br> searched-string so there's no need for an exact search term.<br>
-The program also features an Authentication & Authorization system. (various further features (i.e.: favorite/seen animes) will be added in the future.)
+This webapp is essentially a digital-library built on the [MyAnimeList](https://myanimelist.net)'s data. 
 
 
+### Features from the User's perspective
+
+- It's capable of searching and displaying animes and studios with/based on their various attributes,<br>
+- User accounts.
+- Easy to use/Intuitive UI.
+- Rating/Categorizing animes. (Planned, Watched, Dropped, Favorite, etc...).
+
+
+
+### Features from a technical perspective
+- MVC pattern with Service & EF layer  (View <-> Controller <-> Service <-> DbContext/EF <-> Database).
+- Database queries are written with EntityFramework.
+- Database layout is in 3NF.
+- Code first approach.
+- JWT based Authentication & Authorization system.
+- Refresh Tokens and token blacklisting.
+- Policy based authorization.
+- Encrypted Session / Local storage.
+- Custom HttpContext.
+- The program uses string-similarity comparsion to find similar animes for the <br> searched-string so there's no need for an exact search term.<br>
+- Uses an in-memory cache for the past N search to speed up the popular database queries. See: `SingletonSearachService`.
+- Custom Form validator.
+
+
+
+### About the program
 - The data was fetched from [MAL](https://myanimelist.net) using the [Jikan API](https://docs.api.jikan.moe) to build the database.
 - Missing numerical data was filled with 0.
 - You can find the python script for it in the /Files folder.
-- All the data the program runs on is in the /Files folder.
+- All the data the program uses to create the database is in the /Files folder.
 - The frontend was made by using [Radzen](https://blazor.radzen.com) and [BlazorBootstrap](https://demos.blazorbootstrap.com) components.
 - Currently the program uses Sqlite3. 
+- Because of this it is easy to replace the current SQlite3 database with some other relational database.
+- Based on the `appsettings.json`'s `ConnectionStrings`, if the database does not exists it creates one based on the `Data.sql` in the `/Files` folder.
 - The standalone Web server only version (older version) of the program available [here](https://github.com/FmartinP99/BattAnimeZone_WebServer).
-	
 
 
 ### Run
@@ -22,7 +47,9 @@ The program also features an Authentication & Authorization system. (various fur
 - .NET8 Required
 - Download repository
 - Open the .sln
-- Create a `.env` file in the same folder where the `.env.example` file is located and put `JWT_SECURITY_KEY={your-string-whatever-you-want}` into the file. <br> For example `JWT_SECURITY_KEY=yPkCqn4kSWLtaJwXvN2jGzpQRyTZ3gdXkt7FeBJP` 
-- Run
+- Create a `.env` file in the same folder where the `.env.example` file is located and put `JWT_SECURITY_KEY={your-string-whatever-you-want}` into the file. <br>
+- Also you can change the other enviroment variables however you want based on the `.env.example` file.
+- If you want to use a different database, or different paths, change the `appsettings.json`'s `ConnectionStrings` part.
+- - Run
 
 
