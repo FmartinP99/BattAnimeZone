@@ -11,91 +11,26 @@ namespace BattAnimeZone.Services
             {
 
 
-                List<LiAnimeDTO> query;
-                if ((genres == null || !genres.Any()) && (mediaTypes == null || !mediaTypes.Any()))
-                {
-                    query = (from a in _context.Animes
+                var query = (from a in _context.Animes
                              join ag in _context.AnimeGenres on a.Mal_id equals ag.AnimeId
+                             where (genres == null || !genres.Any() || genres.Contains(ag.GenreId))
+                             group ag by new { a.Mal_id, a.TitleEnglish, a.TitleJapanese, a.MediaType, a.Episodes, a.Status, a.Rating, a.Score, a.Popularity, a.Year, a.ImageLargeWebpUrl } into g
+                             where (genres == null || !genres.Any() || g.Select(ag => ag.GenreId).Distinct().Count() == genres.Count)
+                             && (mediaTypes == null || !mediaTypes.Any() || mediaTypes.Contains(g.Key.MediaType))
                              select new LiAnimeDTO
                              {
-                                 Mal_id = a.Mal_id,
-                                 TitleEnglish = a.TitleEnglish,
-                                 TitleJapanese = a.TitleJapanese,
-                                 MediaType = a.MediaType,
-                                 Episodes = a.Episodes,
-                                 Status = a.Status,
-                                 Rating = a.Rating,
-                                 Score = a.Score,
-                                 Popularity = a.Popularity,
-                                 Year = a.Year,
-                                 ImageLargeWebpUrl = a.ImageLargeWebpUrl
-                             }).Distinct().ToList();
-
-                }
-
-                else if (genres == null || !genres.Any())
-                {
-                    query = (from a in _context.Animes
-                             join ag in _context.AnimeGenres on a.Mal_id equals ag.AnimeId
-                             where mediaTypes.Contains(a.MediaType)
-                             select new LiAnimeDTO
-                             {
-                                 Mal_id = a.Mal_id,
-                                 TitleEnglish = a.TitleEnglish,
-                                 TitleJapanese = a.TitleJapanese,
-                                 MediaType = a.MediaType,
-                                 Episodes = a.Episodes,
-                                 Status = a.Status,
-                                 Rating = a.Rating,
-                                 Score = a.Score,
-                                 Popularity = a.Popularity,
-                                 Year = a.Year,
-                                 ImageLargeWebpUrl = a.ImageLargeWebpUrl
-                             }).Distinct().ToList();
-
-                }
-
-                else if (mediaTypes == null || !mediaTypes.Any())
-                {
-
-                    query = (from a in _context.Animes
-                             join ag in _context.AnimeGenres on a.Mal_id equals ag.AnimeId
-                             where genres.Contains(ag.GenreId)
-                             select new LiAnimeDTO
-                             {
-                                 Mal_id = a.Mal_id,
-                                 TitleEnglish = a.TitleEnglish,
-                                 TitleJapanese = a.TitleJapanese,
-                                 MediaType = a.MediaType,
-                                 Episodes = a.Episodes,
-                                 Status = a.Status,
-                                 Rating = a.Rating,
-                                 Score = a.Score,
-                                 Popularity = a.Popularity,
-                                 Year = a.Year,
-                                 ImageLargeWebpUrl = a.ImageLargeWebpUrl
-                             }).Distinct().ToList();
-                }
-                else
-                {
-                    query = (from a in _context.Animes
-                             join ag in _context.AnimeGenres on a.Mal_id equals ag.AnimeId
-                             where genres.Contains(ag.GenreId) && mediaTypes.Contains(a.MediaType)
-                             select new LiAnimeDTO
-                             {
-                                 Mal_id = a.Mal_id,
-                                 TitleEnglish = a.TitleEnglish,
-                                 TitleJapanese = a.TitleJapanese,
-                                 MediaType = a.MediaType,
-                                 Episodes = a.Episodes,
-                                 Status = a.Status,
-                                 Rating = a.Rating,
-                                 Score = a.Score,
-                                 Popularity = a.Popularity,
-                                 Year = a.Year,
-                                 ImageLargeWebpUrl = a.ImageLargeWebpUrl
-                             }).Distinct().ToList();
-                }
+                                 Mal_id = g.Key.Mal_id,
+                                 TitleEnglish = g.Key.TitleEnglish,
+                                 TitleJapanese = g.Key.TitleJapanese,
+                                 MediaType = g.Key.MediaType,
+                                 Episodes = g.Key.Episodes,
+                                 Status = g.Key.Status,
+                                 Rating = g.Key.Rating,
+                                 Score = g.Key.Score,
+                                 Popularity = g.Key.Popularity,
+                                 Year = g.Key.Year,
+                                 ImageLargeWebpUrl = g.Key.ImageLargeWebpUrl
+                             }).ToList();
 
                 return query;
             }
