@@ -1,5 +1,6 @@
 ﻿using BattAnimeZone.Services;
 using BattAnimeZone.Shared.Models.User;
+using BattAnimeZone.Shared.Models.AnimeDTOs;
 using BattAnimeZone.Shared.Models.User.BrowserStorageModels;
 using BattAnimeZone.Shared.Policies;
 using Microsoft.AspNetCore.Authorization;
@@ -105,12 +106,9 @@ namespace BattAnimeZone.Controllers
         [HttpGet]
         [Route("GetProfile/{username}")]
         [AllowAnonymous]
-        public async Task<ActionResult<Dictionary<string, string?>>> GetProfile(string username)
+        public async Task<ActionResult<List<AnimeProfilePageDTO>?>> GetProfile(string username)
         {
-
-            await Console.Out.WriteLineAsync($"searchign term: {username}");
             var userName = await _userAccountService.GetProfileByUserName(username);
-            await Console.Out.WriteLineAsync($"searched term: {userName}");
             if (userName is null)
                 return NotFound();
             else

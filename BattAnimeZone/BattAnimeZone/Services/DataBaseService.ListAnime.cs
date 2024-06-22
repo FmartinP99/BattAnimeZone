@@ -9,8 +9,7 @@ namespace BattAnimeZone.Services
         {
             using (var _context = await _dbContextFactory.CreateDbContextAsync())
             {
-
-                             var query = (from a in _context.Animes
+                var query = (from a in _context.Animes
                              join ag in _context.AnimeGenres on a.Mal_id equals ag.AnimeId
                              where (genres == null || !genres.Any() || genres.Contains(ag.GenreId))
                              group ag by new { a.Mal_id, a.TitleEnglish, a.TitleJapanese, a.MediaType, a.Episodes, a.Status, a.Rating, a.Score, a.Popularity, a.Year, a.ImageLargeWebpUrl } into g

@@ -2,6 +2,7 @@
 @inject IHttpClientFactory HttpClientFactory
 @inject IJSRuntime JSRuntime
 @using BattAnimeZone.Client.Components
+@using BattAnimeZone.Shared.Models.AnimeDTOs
 @rendermode InteractiveWebAssembly
 @page "/Profile/{UserName}"
 
@@ -9,13 +10,9 @@
 {
     <LoadingComponent></LoadingComponent>
 }
-else if(loaded && username == null)
-{
-    <h3>This user doesn't exists!</h3>
-}
 else
 {
-    <h3>@username</h3>
+    
 }
 
 @code {
@@ -25,7 +22,7 @@ else
     [Parameter]
     public string? UserName { get; set; }
 
-    string? username;
+    Dictionary<string, List<AnimeProfilePageDTO>?> OwnAnimes = new Dictionary<string, List<AnimeProfilePageDTO>?>();
 
     HttpClient httpClient;
 
@@ -46,8 +43,34 @@ else
                 var response = await httpClient.GetAsync($"{navManager.BaseUri}api/AccountController/GetProfile/{UserName}");
                 if (response.IsSuccessStatusCode)
                 {
-                    var content = await response.Content.ReadFromJsonAsync<Dictionary<string, string?>>();
-                    username = content["userName"];
+                    List<AnimeProfilePageDTO>? queried_animes = await response.Content.ReadFromJsonAsync<List<AnimeProfilePageDTO>?>();
+
+
+                    if (queried_animes != null)
+                    {
+                        foreach (var anime in queried_animes)
+                        {
+                            if (OwnAnimes.ContainsKey(anime.UserStatus) && OwnAnimes[anime.UserStatus] != null)
+                            {
+                                OwnAnimes[anime.UserStatus].Add(anime);
+                            }
+                            else
+                            {
+                                OwnAnimes[anime.UserStatus] = new List<AnimeProfilePageDTO> { anime };
+                            }
+                        }
+
+                        foreach (var kvp in OwnAnimes)
+                        {
+                            Console.WriteLine(kvp.Key);
+                            foreach (var v in kvp.Value)
+                            {
+                                Console.WriteLine($"\t {v.Title} - {v.Status} - {v.UserRating}");
+                            }
+                        }
+
+                    }
+
                 }
                 else if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
                 {

@@ -10,7 +10,7 @@
 
     string filter_str = "Score Descending";
     IEnumerable<string> filter_bys = new List<string>() {"Alphabetical ENG", "Alphabetical Descending ENG",  "Alphabetical JP", "Alphabetical Descending JP",
-    "Year", "Year Descending",
+    "Year", "Year Descending", "Episodes", "Episodes Descending",
     "Score", "Score Descending", "Popularity", "Popularity Descending", "Type", "Type Descending" };
 
     [Parameter]
@@ -54,6 +54,14 @@
             case "Year Descending":
                 animes = animes.OrderBy(anime => anime.Year == 0.0)
                 .ThenByDescending(anime => anime.Year).ToList();
+                break;
+            case "Episodes":
+                animes = animes.OrderBy(anime => anime.Episodes == 0.0)
+                .ThenBy(anime => anime.Episodes).ToList();
+                break;
+            case "Episodes Descending":
+                animes = animes.OrderBy(anime => anime.Episodes == 0.0)
+                .ThenByDescending(anime => anime.Episodes).ToList();
                 break;
             case "Score":
                 animes = animes.OrderBy(anime => anime.Score == 0.0)
