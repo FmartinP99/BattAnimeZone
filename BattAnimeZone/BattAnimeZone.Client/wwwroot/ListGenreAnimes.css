@@ -49,6 +49,13 @@
     font-size: 40px;
 }
 
+.rz-state-active {
+    background-image: linear-gradient(to right, #5832dd,#5025ce,#5832dd,#5025ce,#5832dd);
+    &:hover
 
+{
+    background-image: linear-gradient(to right, #5832dd,#5025ce,#5832dd,#5025ce,#5832dd) !important;
+}
+}
 
 
