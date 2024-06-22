@@ -78,7 +78,12 @@ namespace BattAnimeZone.DatabaseInitializer
 
 		private void FillAnimes(Dictionary<int, Anime> animes)
 		{
-			using (var reader = new StreamReader("Files/mal_data_full_sfw_updated_20240615_2021plus_subset.csv"))
+            if (!File.Exists(_configuration.GetConnectionString("CsvFileToInitDataForDbAnimes")))
+            {
+                Console.WriteLine("DB Initializer csv file for Animes does not exists!");
+                return;
+            }
+            using (var reader = new StreamReader(_configuration.GetConnectionString("CsvFileToInitDataForDbAnimes")))
 			using (var csv = new CsvReader(reader, CultureInfo.InvariantCulture))
 			{
 				csv.Read();
@@ -159,7 +164,13 @@ namespace BattAnimeZone.DatabaseInitializer
 
 		public void FillProductionEntities(Dictionary<int, ProductionEntity> productionEntities)
 		{
-			using (var reader = new StreamReader("Files/mal_producers.csv"))
+            if (!File.Exists(_configuration.GetConnectionString("CsvFileToInitDataForProductionEntities")))
+            {
+                Console.WriteLine("DB Initializer csv file for ProductionEntities does not exists!");
+                return;
+            }
+
+            using (var reader = new StreamReader(_configuration.GetConnectionString("CsvFileToInitDataForProductionEntities")))
 			using (var csv = new CsvReader(reader, CultureInfo.InvariantCulture))
 			{
 				csv.Read();
@@ -189,7 +200,12 @@ namespace BattAnimeZone.DatabaseInitializer
 
 		public void FillGenres(Dictionary<int, AnimeGenre> genres)
 		{
-			using (var reader = new StreamReader("Files/mal_anime_genres.csv"))
+            if (!File.Exists(_configuration.GetConnectionString("CsvFileToInitDataForDbGenres")))
+            {
+                Console.WriteLine("DB Initializer csv file for ProductionEntities does not exists!");
+                return;
+            }
+            using (var reader = new StreamReader(_configuration.GetConnectionString("CsvFileToInitDataForDbGenres")))
 			using (var csv = new CsvReader(reader, CultureInfo.InvariantCulture))
 			{
 				csv.Read();

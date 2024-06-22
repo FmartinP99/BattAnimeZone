@@ -94,7 +94,7 @@ namespace BattAnimeZone.Services
             using (var _context = await _dbContextFactory.CreateDbContextAsync())
             {
                 userAccount = await _context.UserAccounts.Where(x => x.UserName == username).FirstOrDefaultAsync();
-                if (userAccount == null) return null;
+                if (userAccount == null || userAccount.RefreshToken == null) return null;
 
                 DateTime refreshTokenExpiryDate = DateTime.Parse(userAccount.RefreshTokenExpiryTime, null, System.Globalization.DateTimeStyles.RoundtripKind);
                 if (userAccount.RefreshToken != refreshTokenDTO.RefreshToken || refreshTokenExpiryDate < DateTime.Now.ToUniversalTime()) return null;

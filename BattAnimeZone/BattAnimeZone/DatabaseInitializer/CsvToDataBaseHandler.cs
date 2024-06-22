@@ -731,8 +731,6 @@ namespace BattAnimeZone.DatabaseInitializer
 
             using (var _context = await _dbContextFactory.CreateDbContextAsync())
             {
-                Console.WriteLine($"registering: {user.Password}");
-
                 string role = user.UserName == "admin" ? "Admin" : "User";
                 _context.UserAccounts.Add(new UserAccountModel { UserName = user.UserName, Password = user.Password, Email = user.Email, Role = role });
                 await _context.SaveChangesAsync();
