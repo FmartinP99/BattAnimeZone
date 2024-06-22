@@ -5,19 +5,20 @@ namespace BattAnimeZone.Services
 {
     public partial class DataBaseService
     {
-        public async Task<List<LiAnimeDTO>> GetFilteredAnimes(List<int>? genres, List<string>? mediaTypes)
+        public async Task<List<LiAnimeDTO>> GetFilteredAnimes(List<int>? genres, List<string>? mediaTypes, int? yearlower, int? yearupper)
         {
             using (var _context = await _dbContextFactory.CreateDbContextAsync())
             {
 
-
-                var query = (from a in _context.Animes
+                             var query = (from a in _context.Animes
                              join ag in _context.AnimeGenres on a.Mal_id equals ag.AnimeId
                              where (genres == null || !genres.Any() || genres.Contains(ag.GenreId))
                              group ag by new { a.Mal_id, a.TitleEnglish, a.TitleJapanese, a.MediaType, a.Episodes, a.Status, a.Rating, a.Score, a.Popularity, a.Year, a.ImageLargeWebpUrl } into g
                              where (genres == null || !genres.Any() || g.Select(ag => ag.GenreId).Distinct().Count() == genres.Count)
                              && (mediaTypes == null || !mediaTypes.Any() || mediaTypes.Contains(g.Key.MediaType))
-                             select new LiAnimeDTO
+                             && (!yearlower.HasValue || g.Key.Year >= yearlower.Value)
+                             && (!yearupper.HasValue || g.Key.Year <= yearupper.Value)
+                                             select new LiAnimeDTO
                              {
                                  Mal_id = g.Key.Mal_id,
                                  TitleEnglish = g.Key.TitleEnglish,

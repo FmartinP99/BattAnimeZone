@@ -27,7 +27,7 @@
 			<div class="d-flex align-items-center headerInnerDiv">
 				<div class="filterDiv">
 				<RadzenLabel Text="YEAR:" class="orderComponentText rz-text-align-end" Component="DropDownTextValueProperties" />
-				<RadzenDropDown Change="onChangedYear" class="rzdropdown" @bind-Value=@selected_year Data=@filter_by_year  Name="DropDownTextValueProperties" />
+				<RadzenDropDown Change="onChangedYear" class="rzdropdown" @bind-Value=@selected_year Data=@available_years  Name="DropDownTextValueProperties" />
 				</div>
 				<div class="filterDiv">
 				<RadzenLabel Text="SEASON:" class="orderComponentText rz-text-align-end" Component="DropDownTextValueProperties" />
@@ -100,7 +100,7 @@
 	IEnumerable<string> filter_by_season = new List<string>() {"WINTER", "SPRING", "SUMMER", "FALL" };
 
 	int selected_year = 2024;
-	IEnumerable<int>? filter_by_year = new List<int>() {2023, 2024};
+	List<int>? available_years = new List<int>() {};
 
 	List<string?>? media_types;
 	string filter_type_str = "TV";
@@ -123,23 +123,30 @@
 		{
 			httpClient = HttpClientFactory.CreateClient("AuthenticatedClient");
 			loaded = true;
-			try
+
+			available_years = await storageService.GetFromSessionStorage<List<int>?>("years");
+			if (available_years == null)
 			{
-				var response = await httpClient.GetAsync($"{navManager.BaseUri}api/DbController/GetYears");
-				if (response.IsSuccessStatusCode)
+
+				try
 				{
-					filter_by_year = await response.Content.ReadFromJsonAsync<List<int>>();
+					var response = await httpClient.GetAsync($"{navManager.BaseUri}api/DbController/GetYears");
+					if (response.IsSuccessStatusCode)
+					{
+						available_years = await response.Content.ReadFromJsonAsync<List<int>>();
+						await storageService.SaveToSessionStorage("years", available_years);
+					}
+					else
+					{
+						await JSRuntime.InvokeVoidAsync("console.error", $"{response.StatusCode}\n {response.ReasonPhrase}");
+						return;
+					}
 				}
-				else
+				catch (Exception e)
 				{
-					await JSRuntime.InvokeVoidAsync("console.error", $"{response.StatusCode}\n {response.ReasonPhrase}");
+					await JSRuntime.InvokeVoidAsync("console.error", $"{e.Message}");
 					return;
 				}
-			}
-			catch (Exception e)
-			{
-				await JSRuntime.InvokeVoidAsync("console.error", $"{e.Message}");
-				return;
 			}
 
 

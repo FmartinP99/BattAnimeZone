@@ -116,10 +116,10 @@ namespace BattAnimeZone.Controllers
 
 
         [HttpGet("GetFilteredAnimes")]
-        public async Task<IActionResult> GetFilteredAnimes([FromQuery] List<int>? genres, [FromQuery] List<string>? mediaTypes)
+        public async Task<IActionResult> GetFilteredAnimes([FromQuery] List<int>? genres, [FromQuery] List<string>? mediaTypes,
+            [FromQuery] int? yearlower, [FromQuery] int? yearupper)
         {
-
-            var result = await _dataBaseService.GetFilteredAnimes(genres, mediaTypes);
+            var result = await _dataBaseService.GetFilteredAnimes(genres, mediaTypes, yearlower, yearupper);
             if (!result.Any())
             {
                 return NotFound();

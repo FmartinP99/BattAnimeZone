@@ -8,7 +8,6 @@ namespace BattAnimeZone.Services
 	{
 		public async Task<IEnumerable<AnimeHomePageDTO>> GetAnimesForHomePageByYear(int year)
 		{
-
 			using (var _context = await _dbContextFactory.CreateDbContextAsync())
 			{
 				IEnumerable<AnimeModel> animes_by_year = _context.Animes.Where(anime => anime.Year == year).OrderBy(anime => anime.Popularity);
