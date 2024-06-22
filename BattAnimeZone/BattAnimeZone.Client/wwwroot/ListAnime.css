@@ -19,6 +19,34 @@
     align-content:end;
 }
 
+.rzdropdown {
+    background-image: linear-gradient(to right, #5832dd,#5025ce,#5832dd,#5025ce,#5832dd);
+    color: white;
+}
+
+.rz-dropdown-panel {
+    background-color: rgba(0,0,0,0.6);
+    color: white !important;
+}
+
+.rz-dropdown-items-wrapper {
+    background-color: transparent !important;
+    color: white !important;
+}
+
+
+.rz-dropdown-items > li {
+    background-color: transparent !important;
+    color: white !important;
+    &:hover
+
+{
+    background-image: linear-gradient(to right, #5832dd,#5025ce,#5832dd,#5025ce,#5832dd);
+}
+
+}
+
+
 .orderComponentText {
     margin-left: 50px;
 }
@@ -62,32 +90,110 @@
 }
 
 
-.rzdropdown {
+.selectbarButton {
+    background-image: transparent;
+
+ 
+}
+
+.rz-button-text-only {
+    color: white !important;
+}
+
+.rz-state-active {
     background-image: linear-gradient(to right, #5832dd,#5025ce,#5832dd,#5025ce,#5832dd);
-    color: white;
-}
-
-.rz-dropdown-panel {
-    background-color: rgba(0,0,0,0.6);
-    color: white !important;
-}
-
-.rz-dropdown-items-wrapper {
-    background-color: transparent !important;
-    color: white !important;
-}
-
-
-.rz-dropdown-items > li {
-    background-color: transparent !important;
-    color: white !important;
     &:hover
 
 {
-    background-image: linear-gradient(to right, #5832dd,#5025ce,#5832dd,#5025ce,#5832dd);
+    background-image:  linear-gradient(to right, #5832dd,#5025ce,#5832dd,#5025ce,#5832dd) !important;
 }
 }
 
-.orderByCol{
-    margin-right:47px;
+
+.orderByCol {
+    margin-right: 47px;
 }
+
+
+.labeltext{
+    margin-left: 20px;
+    margin-right: 5px;
+    vertical-align:middle;
+}
+
+.left-items {
+    display: flex;
+    flex-wrap: wrap;
+    vertical-align:middle;
+}
+
+.right-items {
+    margin-left: auto;
+    flex-wrap: wrap;
+    display: flex;
+}
+
+
+
+
+.outer-row {
+    display: flex;
+    border-radius: 5px;
+    height: 100%;
+    padding: 6px;
+    width: 100%;
+
+
+}
+
+
+
+
+.navbar-column-left, .navbar-column-right {
+    min-width: 70px;
+    max-width: 10vw;
+    margin-right: 1vw;
+    display: table;
+    font-size: 20px !important;
+    font-family: 'system-ui';
+    &:hover
+
+{
+    text-decoration: underline;
+    box-shadow: none;
+    opacity: 0.9;
+    cursor: pointer;
+}
+
+}
+
+.navbar-column-right {
+    font-weight: 600;
+}
+
+.numericClass {
+    width: 100px;
+    height: 35px;
+    background-color: transparent;
+}
+
+.numericClass > input {
+    color:white;
+}
+
+.numericClass > button {
+    color: white;
+}
+
+.rz-spinner {
+    &:hover
+{
+    border-color:white !important;
+}
+
+}
+
+
+
+
+

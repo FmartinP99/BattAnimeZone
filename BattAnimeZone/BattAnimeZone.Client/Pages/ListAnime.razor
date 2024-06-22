@@ -11,7 +11,7 @@
 @inject IHttpClientFactory HttpClientFactory
 @inject IJSRuntime JSRuntime
 @rendermode InteractiveWebAssembly
-<link rel="stylesheet" href="/ListAnime.css?version=0.2" />
+<link rel="stylesheet" href="/ListAnime.css?version=0.1" />
 @page "/animelist"
 
 <SearchBar></SearchBar>
@@ -38,12 +38,31 @@ else{
             </RadzenPickList>
         </RadzenCard>
 
+        <div class="outer-row">
+             <div class="left-items">
+                 <div class="column-left">
+                    <RadzenLabel class="labeltext" Text="From: "/>
+                    <RadzenNumeric class="numericClass" Min="@available_years.Min()" Max="@available_years.Max()" @bind-Value=@lower_limit InputAttributes="@(new Dictionary<string,object>(){ { "aria-label", "enter value" }})" />
+                </div>
+                <div class="column-left">
+                    <RadzenLabel class="labeltext"  Text="To: " />
+                    <RadzenNumeric class="numericClass"  Min="@lower_limit" Max="@available_years.Max()" @bind-Value=@upper_limit InputAttributes="@(new Dictionary<string,object>(){ { "aria-label", "enter value" }})" />
+                </div>
+            </div>
   
-            <RadzenColumn class="rz-text-align-end">
-            <RadzenLabel Component="DropDownMultipleChips" Style="margin-right: 8px; vertical-align: middle;" />
-            <RadzenDropDown class="rzdropdown" @bind-Value=@selected_medias Data=@media_types Name="DropDownMultipleChips"
-                            Multiple=true AllowClear=true Placeholder="Select Media Types (OR search)" Chips=true Style="width: 100%; max-width: 400px;" />
-            </RadzenColumn>
+  
+            <div class="right-items">
+                <div class="column-right">
+                    <RadzenLabel  Component="DropDownMultipleChips" />
+                    <RadzenSelectBar class="selectbarButton mb-5" Multiple="true" Data="@media_types" @bind-Value=@selected_medias TValue="IEnumerable<string>" TextProperty="Name" ValueProperty="Id" />
+                </div>
+            </div>
+        </div>
+      
+
+      
+
+       
 
         <RadzenButton Click="Search" Style="background-image: linear-gradient(to right, #5832dd,#5025ce,#5832dd,#5025ce,#5832dd); margin-top:30px;">FILTER ANIMES</RadzenButton>
     </RadzenStack>
@@ -128,6 +147,36 @@ else{
     bool multiple = true;
     bool showHeader = true;
 
+
+
+
+
+    List<AnimeGenreDTO>? genres;
+    List<LiAnimeDTO> searched_animes = new List<LiAnimeDTO>();
+
+    List<string>? media_types;
+
+    IEnumerable<string> selected_medias = new List<string>();
+    IEnumerable<string> selected_medias2;
+
+    List<int> available_years = new List<int>();
+    List<int> available_years_upper_limit = new List<int>();
+    int? lower_limit = 0;
+    int? upper_limit = 9999;
+
+
+    IEnumerable<LiAnimeDTO> animes_per_page = new List<LiAnimeDTO>();
+    string pagingSummaryFormat = "Displaying page {0} of {1} (total {2} records)";
+    int pageSize = 10;
+    int count;
+    int pageNumber;
+    int pagenumcount = 15;
+    int last_skip = 0;
+
+    RadzenPager? pager;
+    RadzenPager? pager2;
+
+
     IEnumerable<AnimeGenreDTO> _sourceGenres = new List<AnimeGenreDTO>();
     IEnumerable<AnimeGenreDTO> SourceGenres
     {
@@ -168,27 +217,6 @@ else{
         }
     }
 
-
-
-    List<AnimeGenreDTO>? genres;
-    List<LiAnimeDTO> searched_animes = new List<LiAnimeDTO>();
-
-    List<string>? media_types;
-
-    List<string> selected_medias = new List<string>();
-
-
-    IEnumerable<LiAnimeDTO> animes_per_page = new List<LiAnimeDTO>();
-    string pagingSummaryFormat = "Displaying page {0} of {1} (total {2} records)";
-    int pageSize = 10;
-    int count;
-    int pageNumber;
-    int pagenumcount = 15;
-    int last_skip = 0;
-
-    RadzenPager pager;
-    RadzenPager pager2;
-
     protected override async Task OnInitializedAsync()
     {
 
@@ -206,6 +234,9 @@ else{
 
             bool success = await LoadRequestsAsync(); //sets media_types,  animeCountPerGenre, genres
             if (!success) return;
+            lower_limit = available_years.Min();
+            upper_limit = available_years.Max();
+
             SourceGenres = genres;
 
             SourceGenres = SourceGenres
@@ -302,6 +333,32 @@ else{
             }
         }
 
+
+        available_years = await storageService.GetFromSessionStorage<List<int>?>("years");
+        if (available_years == null)
+        {
+
+            try
+            {
+                var response = await httpClient.GetAsync($"{navManager.BaseUri}api/DbController/GetYears");
+                if (response.IsSuccessStatusCode)
+                {
+                    available_years = await response.Content.ReadFromJsonAsync<List<int>>();
+                    await storageService.SaveToSessionStorage("years", available_years);
+                }
+                else
+                {
+                    await JSRuntime.InvokeVoidAsync("console.error", $"{response.StatusCode}\n {response.ReasonPhrase}");
+                }
+            }
+            catch (Exception e)
+            {
+                await JSRuntime.InvokeVoidAsync("console.error", $"{e.Message}");
+            }
+        }
+
+
+
         return !found_error;
     }
 
@@ -311,11 +368,12 @@ else{
         firstsearch = true;
         try
         {
-   
             string genreQuery = TargetGenres.Select(g => g).Count() > 0 ? string.Join("&", TargetGenres.Select(g => $"genres={Uri.EscapeDataString(g.Mal_id.ToString())}")) : "";
-            string mediaTypeQuery = selected_medias.Count > 0 ? string.Join("&", selected_medias.Select(m => $"mediaTypes={Uri.EscapeDataString(m)}")) : "";
+            string mediaTypeQuery = selected_medias.ToList().Count > 0 ? string.Join("&", selected_medias.Select(m => $"mediaTypes={Uri.EscapeDataString(m)}")) : "";
 
             string fullQuery = string.Join("&", new[] { genreQuery, mediaTypeQuery }.Where(q => !string.IsNullOrWhiteSpace(q)));
+
+            fullQuery = $"&yearlower={lower_limit}&yearupper={upper_limit}";
 
             var response = await httpClient.GetAsync($"{navManager.BaseUri}api/DbController/GetFilteredAnimes?{fullQuery}");
 

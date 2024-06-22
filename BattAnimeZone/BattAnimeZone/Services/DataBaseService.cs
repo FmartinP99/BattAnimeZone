@@ -74,7 +74,7 @@ namespace BattAnimeZone.Services
 		{
 			using (var _context = await _dbContextFactory.CreateDbContextAsync())
 			{
-				List<int> distinctYears = await _context.DistinctYears.Select(x => x.Year).ToListAsync();
+				List<int> distinctYears = await _context.DistinctYears.Select(x => x.Year).OrderBy(x => x).ToListAsync();
 				return distinctYears;
 			}
 		}
