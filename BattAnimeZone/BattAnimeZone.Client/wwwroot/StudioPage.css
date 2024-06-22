@@ -1,6 +1,17 @@
 ﻿body {
 }
 
+
+.rz-state-active {
+    background-image: linear-gradient(to right, #5832dd,#5025ce,#5832dd,#5025ce,#5832dd) !important;
+    &:hover
+
+{
+    background-image: linear-gradient(to right, #5832dd,#5025ce,#5832dd,#5025ce,#5832dd) !important;
+}
+
+}
+
 .firstRow {
     display: flex;
     min-height: 500px;
@@ -47,6 +58,7 @@
     opacity: 0.9;
     cursor: pointer;
 }
+
 
 
 
