@@ -54,20 +54,21 @@
 								<img src="@anime.ImageLargeWebpUrl" class="imgclass img-fluid" alt="Anime image is missing!">
 								<div class="scoreDiv">@anime.Score</div>
 								<div class="typeDiv" style=@($"{GetDynamicPositionsForType(anime.MediaType)}")>@anime.MediaType</div>
-							
+								@if (anime.Status != "Finished Airing")
+								{
+									<div style=@($"{GetColorForStatus(anime.Status)}") class="statusDiv">@anime.Status</div>
+								}
 
 								@if(hoverDict[anime.Mal_id] == false ){
 
 									<div class="titleDiv">@GetTitle(anime)</div>
-									@if(anime.Status != "Finished Airing")
-									{
-										<div style=@($"{GetColorForStatus(anime.Status)}") class="statusDiv">@anime.Status</div>
-									}
 
 									@if (anime.Genres != null && anime.Genres.Any())
 									{
 										<div class="genreDiv">@string.Join(", ", anime.Genres)</div>
 									}
+
+
 
 								}
 								else
