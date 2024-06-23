@@ -206,7 +206,7 @@ else{
             </div>
              <div class=statusDiv>
             <RadzenLabel Text="Status:" class="statusComponentText" Style="vertical-align: middle;" />
-            <RadzenDropDown class="rzdropdownStatus" @bind-Value=@status Data=possibleStatuses Style="width: 100%; max-width: 160px;" Name="DropDownTextValueProperties" />
+                <RadzenDropDown class="rzdropdownStatus" @bind-Value=@status Data=@GetPossibleStatuses() Style="width: 100%; max-width: 160px;" Name="DropDownTextValueProperties" />
                 </div>
             <div class=favoriteDiv>
             <RadzenLabel Text="Favorite" Component="CheckBoxFavorite" Style="vertical-align: middle;" />
@@ -216,7 +216,7 @@ else{
 
         <FooterTemplate>
             <Button Color="ButtonColor.Secondary" @onclick="OnHideModalClick">Close</Button>
-            <Button Color="ButtonColor.Primary" @ref="modalSaveButton" @onclick="OnModalSaveClick" Style="background-image: linear-gradient(to right, #5832dd,#5025ce,#5832dd,#5025ce,#5832dd);">Save changes</Button>
+            <Button Color="ButtonColor.Primary" @ref="modalSaveButton" @onclick="OnModalSaveClick" Style="background-image: linear-gradient(to right, #5832dd,#5025ce,#5832dd,#5025ce,#5832dd);">@saveChangesString</Button>
         </FooterTemplate>
 </Modal>
 }
@@ -232,8 +232,11 @@ else{
 
     private string status = "Nothing";
     private string[] possibleStatuses = new string[6] { "Nothing", "Completed", "Watching", "Planned", "On hold", "Dropped" };
+    private string[] possibleStatusesNotFinished = new string[5] { "Nothing", "Watching", "Planned", "On hold", "Dropped" };
 
     private bool favorite = false;
+
+    string saveChangesString = "Save changes";
 
     HttpClient httpClient;
 
@@ -285,6 +288,7 @@ else{
         }
     }
 
+
     private async Task ChangeModalDisplayText()
     {
 
@@ -296,6 +300,9 @@ else{
         }
         string new_text = char.ToUpper(curr_intr_anim.Status[0]) + curr_intr_anim.Status.Substring(1) + " " + (curr_intr_anim.Rating != 0 ? $"({curr_intr_anim.Rating}/10)" : "");
         modalDisplayText = new_text;
+        rating = curr_intr_anim.Rating.ToString();
+        status = curr_intr_anim.Status;
+        favorite = curr_intr_anim.Favorite;
 
     } 
 
@@ -372,6 +379,12 @@ else{
 
         modalSaveButton.ShowLoading("Loading...");
 
+        if(currentAnime.Status != "Finished Airing" && this.status == "Completed")
+        {
+            modalSaveButton.HideLoading();
+            return;
+        }
+
 
         var username = await storageService.GetUsernameLocalStorage();
         if (username == null) return;
@@ -402,7 +415,6 @@ else{
             );
             if (response.IsSuccessStatusCode)
             {
-                await Task.Delay(300); // API call
                 modalSaveButton.HideLoading();
                 await modal.HideAsync();
                 StateHasChanged();
@@ -431,6 +443,14 @@ else{
 
     }
 
+    string[] GetPossibleStatuses()
+    {
+        if(this.currentAnime.Status == "Finished Airing")
+        {
+            return possibleStatuses;
+        }
+        return possibleStatusesNotFinished;
+    }
 
 
 

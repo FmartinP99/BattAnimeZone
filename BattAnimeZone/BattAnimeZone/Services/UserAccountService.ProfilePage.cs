@@ -34,6 +34,7 @@ namespace BattAnimeZone.Services
                                       ImageLargeWebpUrl = a.ImageLargeWebpUrl,
                                       UserStatus = au.Status,
                                       UserRating = au.Rating,
+                                      UserFavorite = au.favorite,
 
                                    }).ToListAsync();
                 return query;

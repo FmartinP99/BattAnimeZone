@@ -83,31 +83,31 @@ else{
             @foreach (LiAnimeDTO anime in animes_per_page)
             {
                 <RadzenRow @onclick=@(() => NavigateTo(anime.Mal_id)) Style="height:100px; margin-bottom: 30px;">
-                    <RadzenColumn Style="max-width:100px; ">
+                    <RadzenColumn Style="max-width:100px; display:inline-block;">
                         <RadzenImage Style="max-width:100px; max-height:100px;" Path="@anime.ImageLargeWebpUrl"></RadzenImage>
                     </RadzenColumn>
-                    <RadzenColumn Style="max-width:200px;">
+                    <RadzenColumn Style="max-width:200px; display:inline-block;">
                         English Name: <br> @anime.TitleEnglish
                     </RadzenColumn>
-                    <RadzenColumn Style="max-width:200px;">
+                    <RadzenColumn Style="max-width:200px; display:inline-block;">
                         Japanese name: <br> @anime.TitleJapanese
                     </RadzenColumn>
-                    <RadzenColumn Style="max-width:100px;">
+                    <RadzenColumn Style="max-width:100px; display:inline-block;">
                         Type: <br> @anime.MediaType
                     </RadzenColumn>
-                    <RadzenColumn Style="max-width:100px;">
+                    <RadzenColumn Style="max-width:100px; display:inline-block;">
                         Episodes: <br> @anime.Episodes
                     </RadzenColumn>
-                    <RadzenColumn Style="max-width:100px;">
+                    <RadzenColumn Style="max-width:100px; display:inline-block;">
                         Score: <br> @anime.Score
                     </RadzenColumn>
-                    <RadzenColumn Style="max-width:100px;">
+                    <RadzenColumn Style="max-width:100px; display:inline-block;">
                         Popularity: <br> @anime.Popularity
                     </RadzenColumn>
-                    <RadzenColumn Style="max-width:100px;">
+                    <RadzenColumn Style="max-width:100px; display:inline-block;">
                         Year: <br> @anime.Year
                     </RadzenColumn>
-                    <RadzenColumn Style="max-width:100px;">
+                    <RadzenColumn Style="max-width:100px; display:inline-block;">
                         Status: <br> @anime.Status
                     </RadzenColumn>
                 </RadzenRow>

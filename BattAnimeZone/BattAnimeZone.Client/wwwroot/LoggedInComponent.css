@@ -1,11 +1,8 @@
-﻿.logOutButton {
-    display: table;
-    &:hover
-
-{
-    text-decoration: underline;
-    box-shadow: none;
-    opacity: 0.9;
-    cursor: pointer;
+﻿
+.profileDiv > button > span{
+    font-size:30px;
 }
+
+.logoutDiv {
+    margin-top: 100px;
 }
