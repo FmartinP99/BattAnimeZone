@@ -106,6 +106,7 @@ namespace BattAnimeZone.Services
                 var token = new JwtSecurityTokenHandler().WriteToken(tokenOptions);
                 var refreshToken = jwtAuthenticationManager.GenerateRefreshToken();
                 userAccount.RefreshToken = refreshToken;
+                userAccount.Token = token;
 
                 _context.UserAccounts.Update(userAccount);
                 await _context.SaveChangesAsync();
