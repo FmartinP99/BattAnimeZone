@@ -147,7 +147,8 @@ namespace BattAnimeZone.Client.Authentication
                             userSession.RefreshTokenExpiryTimestamp = result.RefreshTokenExpiryTimeStamp;
                             await _localStorage.SaveItemEncryptedAsync("UserSession", userSession);
                             httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", userSession.Token);
-                            await fetchInteractedAnimesFromServer(userSession);
+                            Dictionary<int, InteractedAnime>?  interactedAnimes = await fetchInteractedAnimesFromServer(userSession);
+                            await _localStorage.SaveItemEncryptedAsync("InteractedAnimes", interactedAnimes);
                         }
 
                     }
@@ -170,33 +171,6 @@ namespace BattAnimeZone.Client.Authentication
             }
         }
 
-
-        private async Task fetchInteractedAnimesFromServer(UserSession userSession)
-        {
-            try
-            {
-                var response = await httpClient.GetAsync($"{navManager.BaseUri}api/AccountController/GetInteractedAnimes/{userSession.UserName}");
-                if (response.IsSuccessStatusCode)
-                {
-                    var content = await response.Content.ReadAsStringAsync();
-                    var interactedAnimes = await response.Content.ReadFromJsonAsync<Dictionary<int, InteractedAnime>>();
-                    await _localStorage.SaveItemEncryptedAsync("InteractedAnimes", interactedAnimes);
-                }
-                else
-                {
-                    await JSRuntime.InvokeVoidAsync("console.error", $"{response.StatusCode}\n {response.ReasonPhrase}");
-                   
-                }
-
-            }
-            catch (Exception ex)
-            {
-                await JSRuntime.InvokeVoidAsync("console.error", $"{ex.Message}");
-                httpClient.DefaultRequestHeaders.Authorization = null;
-            }
-        }
-
-
         public async Task UpdateAuthenticationState(UserSession? userSession)
         {
             ClaimsPrincipal claimsPrincipal;
@@ -211,7 +185,8 @@ namespace BattAnimeZone.Client.Authentication
                 userSession.TokenExpiryTimeStamp = DateTime.Now.ToUniversalTime().AddSeconds(userSession.ExpiresIn);
                 await _localStorage.SaveItemEncryptedAsync("UserSession", userSession);
                 httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", userSession.Token);
-                await fetchInteractedAnimesFromServer(userSession);
+                Dictionary<int, InteractedAnime>? interactedAnimes = await fetchInteractedAnimesFromServer(userSession);
+                await _localStorage.SaveItemEncryptedAsync("InteractedAnimes", interactedAnimes);
                 authenticationFailed = 0;
 
             }
@@ -225,6 +200,33 @@ namespace BattAnimeZone.Client.Authentication
             }
 
             NotifyAuthenticationStateChanged(Task.FromResult(new AuthenticationState(claimsPrincipal)));
+        }
+
+
+        private async Task<Dictionary<int, InteractedAnime>?> fetchInteractedAnimesFromServer(UserSession userSession)
+        {
+            try
+            {
+                var response = await httpClient.GetAsync($"{navManager.BaseUri}api/AccountController/GetInteractedAnimes/{userSession.UserName}");
+                if (response.IsSuccessStatusCode)
+                {
+                    var content = await response.Content.ReadAsStringAsync();
+                    var interactedAnimes = await response.Content.ReadFromJsonAsync<Dictionary<int, InteractedAnime>?>();
+                    return interactedAnimes;
+                }
+                else
+                {
+                    await JSRuntime.InvokeVoidAsync("console.error", $"{response.StatusCode}\n {response.ReasonPhrase}");
+                    return null;
+                }
+
+            }
+            catch (Exception ex)
+            {
+                await JSRuntime.InvokeVoidAsync("console.error", $"{ex.Message}");
+                httpClient.DefaultRequestHeaders.Authorization = null;
+                return null;
+            }
         }
 
         public async Task AuthenticationStateChecker()
