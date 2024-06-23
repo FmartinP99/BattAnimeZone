@@ -7,6 +7,9 @@
 @page "/Profile/{UserName}"
 <link rel="stylesheet" href="/ProfilePage.css?version=0.3" />
 
+
+<PageTitle>@UserName's profile</PageTitle>
+
 @if (!loaded)
 {
     <LoadingComponent></LoadingComponent>

@@ -12,7 +12,7 @@
 <link rel="stylesheet" href="/StudioPage.css" />
 
 
-<PageTitle>StudioPage</PageTitle>
+<PageTitle>Studio View</PageTitle>
 
 
 <SearchBar></SearchBar>
@@ -23,6 +23,9 @@
 }
 else{
     @if (currentProductionEntity.Mal_id != -1 ){
+
+        <PageTitle>@(currentProductionEntity?.Titles?.FirstOrDefault()?.Title ?? "Studio View")</PageTitle>
+
         <RadzenButton id="relation-button" Click="NavigateToMALStudio" Text="MAL LINK" Style="background-image: linear-gradient(to right, #5832dd,#5025ce,#5832dd,#5025ce,#5832dd); margin-bottom:30px;"></RadzenButton>
 
     <RadzenRow class="firstRow">
