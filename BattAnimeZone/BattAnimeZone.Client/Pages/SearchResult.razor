@@ -22,10 +22,10 @@ else{
             @foreach (AnimeSearchResultDTO similar_anime in this.similar_animes)
     {
     
-                <RadzenRow @onclick=@(() => NavigateTo(similar_anime.Mal_id)) Style="height:100px; margin-bottom: 30px;">
-                    <RadzenColumn Style="max-width:100px; display:inline-block;">
+            <RadzenRow @onclick=@(() => NavigateTo(similar_anime.Mal_id)) Style="height:100px; margin-bottom: 30px;">
+                <RadzenColumn Style="max-width:100px; display:inline-block;">
                         <RadzenImage Style="max-width:100px; max-height:100px;" Path="@similar_anime.ImageLargeWebpUrl"></RadzenImage>
-            </RadzenColumn>
+                </RadzenColumn>
             <RadzenColumn Style="max-width:200px; display:inline-block;">
                 English Name: <br> @similar_anime.TitleEnglish
             </RadzenColumn>

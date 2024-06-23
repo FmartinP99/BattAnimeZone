@@ -4,21 +4,34 @@
 @using BattAnimeZone.Shared.Models.User.BrowserStorageModels
 @using System.Net
 @using System.Net.Http.Headers;
+@using BlazorBootstrap;
 @inject NavigationManager navManager
 @inject IHttpClientFactory HttpClientFactory
 @inject IJSRuntime JSRuntime
 @inject StorageService storageService
 @inject AuthenticationStateProvider authStateProvider
-<link rel="stylesheet" href="/LoggedInComponent.css" />
+<link rel="stylesheet" href="/LoggedInComponent.css?version=0.1" />
 
-
-<RadzenColumn class="logOutButton" Style="min-width: 10vh; max-width: 10vh;" @onclick="Logout">LOGOUT!</RadzenColumn>
+<div class="profileDiv">
+    <Button Color="ButtonColor.None" @onclick="NavigateToProfile"><Icon Name="IconName.Person" Size=IconSize.x3 /> <span> @userName</span> </Button>
+</div>
+<div class="logoutDiv">
+<Button Color="ButtonColor.None" @onclick="Logout"><Icon Name="IconName.BoxArrowLeft" /> <span>LOGOUT!</span></Button>
+</div>
 
 @code {
 
-
+    [CascadingParameter] private Task<AuthenticationState>? authenticationState { get; set; }
 
     HttpClient httpClient;
+
+    string? userName = "";
+
+    protected override async Task OnInitializedAsync()
+    {
+        await GetUserName();
+        await base.OnInitializedAsync();
+    }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -27,6 +40,23 @@
             httpClient = HttpClientFactory.CreateClient("AuthenticatedClient");
         }
     }
+
+    public async Task GetUserName()
+    {
+        try
+        {
+            if (authenticationState == null) return;
+            var authState = await authenticationState;
+            var user = authState.User;
+            if (user.Identity.Name != null)
+                userName = user.Identity.Name.ToString();
+        }
+        catch (Exception e)
+        {
+            return;
+        }
+    }
+
     public async Task Logout()
     {
         bool confirmed = await JSRuntime.InvokeAsync<bool>("confirm", "Do you want to logout?");
@@ -45,9 +75,12 @@
                await customAuthStateProvider.UpdateAuthenticationState(null);
                navManager.NavigateTo(navManager.Uri, forceLoad: true);
             }
-
-
             
         }
+    }
+
+    public void NavigateToProfile()
+    {
+        navManager.NavigateTo($"/profile/{userName}");
     }
 }

@@ -5,17 +5,105 @@
 @using BattAnimeZone.Shared.Models.AnimeDTOs
 @rendermode InteractiveWebAssembly
 @page "/Profile/{UserName}"
+<link rel="stylesheet" href="/ProfilePage.css?version=0.1" />
 
 @if (!loaded)
 {
     <LoadingComponent></LoadingComponent>
-}
-else
-{
-    
-}
+}else{
 
-@code {
+
+    <RadzenRow id="mainContainerRow">
+
+
+        <RadzenColumn id="outerLeftColumn">
+
+        <div class="UserNameDiv">
+            <span class="userNameSpan">@UserName's profile</span>
+        </div>
+
+
+        </RadzenColumn>
+
+         <RadzenColumn id="outerRightColumn">
+            <RadzenTabs Change=@OnChange TabPosition=TabPosition.Top RenderMode="TabRenderMode.Client">
+                <Tabs>
+                    @foreach(string state in PossibleStates)
+                    {
+                        <RadzenTabsItem Text="@state">
+                            <RadzenDataList PageSize="10" WrapItems="true" AllowPaging="true" Data="@OwnAnimes[state]" TItem="AnimeProfilePageDTO">
+                                <Template Context="anime">
+                                    <RadzenRow class="animeRow" @onclick=@(() => NavigateTo(anime.Mal_id))>
+                                        <RadzenColumn class="imageCol">
+                                            <RadzenImage class="imageDiv" Path="@anime.ImageLargeWebpUrl"></RadzenImage>
+                                        </RadzenColumn>
+
+                                        <RadzenColumn class="notImageCol">
+
+                                            <RadzenRow class="animeCardUpperRow">
+
+                                                <div class="titleCol">
+                                                     @anime.Title
+                                                </div>
+
+                                            </RadzenRow>
+
+                                            <RadzenRow class="animeCardLowerRow">
+
+                                                <div class="attributesCol">
+                                                    Type: <br> @anime.MediaType
+                                                </div>
+
+                                                <div class="attributesCol">
+                                                    Episodes: <br> @anime.Episodes
+                                                </div>
+
+                                                <div class="attributesCol">
+                                                    Score: <br> @anime.Score
+                                                </div>
+
+                                                <div class="attributesCol">
+                                                    Popularity: <br> @anime.Popularity
+                                                </div>
+
+                                                <div Sclass="attributesCol">
+                                                    Year: <br> @anime.Year
+                                                </div>
+
+                                                <div class="attributesCol">
+                                                    Status: <br> @anime.Status
+                                                </div>
+
+                                                <div class="attributesCol">
+                                                    Rated at: <br> @anime.UserRating/10
+                                                </div>
+
+                                                <div class="attributesCol">
+                                                    Favorite: <br> @FavoriteToString(anime.UserFavorite)
+                                                </div>
+
+                                            </RadzenRow>
+
+                                        </RadzenColumn>
+
+
+                                    </RadzenRow>
+                                </Template>
+                            </RadzenDataList>
+                        </RadzenTabsItem>
+                    }
+
+                </Tabs>
+            </RadzenTabs>
+        </RadzenColumn>
+
+
+    </RadzenRow>
+
+
+
+
+    @code {
 
     bool loaded = false;
 
@@ -23,8 +111,10 @@ else
     public string? UserName { get; set; }
 
     Dictionary<string, List<AnimeProfilePageDTO>?> OwnAnimes = new Dictionary<string, List<AnimeProfilePageDTO>?>();
-
+    string selected_tab = "Finished";
     HttpClient httpClient;
+
+    List<string> PossibleStates = new List<string>(){ "completed", "watching", "on hold", "planned", "dropped", "favorites" };
 
     protected override async Task OnInitializedAsync()
     {
@@ -45,21 +135,28 @@ else
                 {
                     List<AnimeProfilePageDTO>? queried_animes = await response.Content.ReadFromJsonAsync<List<AnimeProfilePageDTO>?>();
 
+                    foreach(var state in PossibleStates)
+                    {
+                        OwnAnimes[state] = new List<AnimeProfilePageDTO>();
+                    }
 
                     if (queried_animes != null)
                     {
                         foreach (var anime in queried_animes)
                         {
-                            if (OwnAnimes.ContainsKey(anime.UserStatus) && OwnAnimes[anime.UserStatus] != null)
-                            {
+
+                            if (OwnAnimes[anime.UserStatus] != null)
                                 OwnAnimes[anime.UserStatus].Add(anime);
-                            }
-                            else
-                            {
+                            else                        
                                 OwnAnimes[anime.UserStatus] = new List<AnimeProfilePageDTO> { anime };
+
+                            if (OwnAnimes["favorites"] != null && anime.UserFavorite == true)
+                                OwnAnimes["favorites"].Add(anime);
+                            else if (OwnAnimes["favorites"] == null && anime.UserFavorite == true)
+                            {
+                                OwnAnimes["favorites"] = new List<AnimeProfilePageDTO> { anime };
                             }
                         }
-
                         foreach (var kvp in OwnAnimes)
                         {
                             Console.WriteLine(kvp.Key);
@@ -68,20 +165,13 @@ else
                                 Console.WriteLine($"\t {v.Title} - {v.Status} - {v.UserRating}");
                             }
                         }
-
                     }
-
-                }
-                else if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
-                {
-
                 }
                 else
                 {
                     await JSRuntime.InvokeVoidAsync("console.error", $"{response.StatusCode}\n {response.ReasonPhrase}");
 
                 }
-
             }
             catch (Exception e)
             {
@@ -93,5 +183,23 @@ else
             }
         }
     }
+
+    string FavoriteToString(bool favorite)
+    {
+        return favorite == true ? "Yes" : "No";
+    }
+
+    void OnChange(int index)
+    {
+        Console.WriteLine($"selected {index}");
+    }
+
+    protected void NavigateTo(int mal_id)
+    {
+
+        navManager.NavigateTo($"/anime/{mal_id}");
+    }
+
+}
 
 }

@@ -1,0 +1,109 @@
+﻿display-div {
+    width: 100%;
+}
+
+.rz-row:hover {
+    border: solid 1px white;
+    cursor: pointer;
+}
+
+.rz-row {
+    background-color: transparent !important;
+}
+
+
+
+.selectbarButton {
+    background-image: transparent;
+}
+
+
+.rz-tabview-title {
+    color: white !important;
+}
+
+
+.rz-tabview-nav > li {
+    background-color: transparent;
+    &:hover
+
+{
+    background-color: transparent !important;
+}
+
+}
+
+.rz-state-focused {
+    color: red !important;
+}
+
+/***********************************************************************************/
+
+#mainContainerRow {
+    display:grid;
+
+}
+
+#mainContainerRow:hover {
+    border: none;
+    cursor: default;
+    }
+
+#outerLeftColumn {
+    width: 960px !important;
+
+}
+
+.animeRow {
+    display:flex !important;
+}
+
+.imageCol{
+    display: flow;
+    max-width:100px;
+    min-width:100px;
+}
+
+.imageDiv {
+    display: flex;
+    width: 100%;
+    height: 100%;
+}
+
+.animeCardUpperRow{
+    display: flex !important;
+    height:50%;
+    margin_bottom:20px;
+
+    &:hover
+{
+    border: none;
+}
+
+
+
+}
+
+.animeCardLowerRow {
+    display: flex !important;
+    height: 50%;
+
+    &:hover
+{
+    border: none;
+}
+
+}
+
+
+.attributesCol {
+    width: 76px;
+    margin-left:5px;
+    display: inline-block;
+}
+
+.titleCol {
+    max-width: 100%;
+    margin-left: 5px;
+    display: inline-block;
+}
