@@ -31,6 +31,7 @@ namespace BattAnimeZone.Client.Authentication
         
 
         private  static Timer _timer;
+        private int authenticationFailed = 0;
 
         private AuthenticationState previousState = new AuthenticationState(new ClaimsPrincipal(new ClaimsIdentity()));
 
@@ -45,6 +46,17 @@ namespace BattAnimeZone.Client.Authentication
             if(_timer == null)
             _timer = new Timer(CheckAuthenticationState, null, TimeSpan.Zero, TimeSpan.FromSeconds(5));
             
+        }
+
+
+        public void PauseTimer()
+        {
+            _timer?.Change(Timeout.Infinite, Timeout.Infinite);
+        }
+
+        public void ResumeTimer()
+        {
+            _timer?.Change(TimeSpan.FromSeconds(5), TimeSpan.FromSeconds(5));
         }
 
         private async void CheckAuthenticationState(object state)
@@ -109,6 +121,8 @@ namespace BattAnimeZone.Client.Authentication
                         await _localStorage.RemoveItemAsync("UserSession");
                         await _localStorage.RemoveItemAsync("InteractedAnimes");
                         httpClient.DefaultRequestHeaders.Authorization = null;
+                        authenticationFailed += 1;
+                        if (authenticationFailed > 2) PauseTimer();
                         return await Task.FromResult(new AuthenticationState(_anonymous));
                     }
                     else
@@ -121,6 +135,8 @@ namespace BattAnimeZone.Client.Authentication
                             await _localStorage.RemoveItemAsync("UserSession");
                             await _localStorage.RemoveItemAsync("InteractedAnimes");
                             httpClient.DefaultRequestHeaders.Authorization = null;
+                            authenticationFailed += 1;
+                            if (authenticationFailed > 2) PauseTimer();
                             return await Task.FromResult(new AuthenticationState(_anonymous));
                         }
                         else
@@ -141,11 +157,15 @@ namespace BattAnimeZone.Client.Authentication
                     new Claim(ClaimTypes.Name, userSession.UserName),
                     new Claim(ClaimTypes.Role, userSession.Role)
                 }, "JwtAuth"));
+                authenticationFailed = 0;
+                ResumeTimer();
                 return await Task.FromResult(new AuthenticationState(claimsPrincipal));
             }
             catch
             {
                 await _localStorage.RemoveItemAsync("InteractedAnimes");
+                authenticationFailed += 1;
+                if (authenticationFailed > 2) PauseTimer();
                 return await Task.FromResult(new AuthenticationState(_anonymous));
             }
         }
@@ -192,8 +212,8 @@ namespace BattAnimeZone.Client.Authentication
                 await _localStorage.SaveItemEncryptedAsync("UserSession", userSession);
                 httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", userSession.Token);
                 await fetchInteractedAnimesFromServer(userSession);
+                authenticationFailed = 0;
 
-              
             }
             else
             {
