@@ -108,6 +108,7 @@ namespace BattAnimeZone.Client.Authentication
                     {
                         await _localStorage.RemoveItemAsync("UserSession");
                         await _localStorage.RemoveItemAsync("InteractedAnimes");
+                        httpClient.DefaultRequestHeaders.Authorization = null;
                         return await Task.FromResult(new AuthenticationState(_anonymous));
                     }
                     else
@@ -164,7 +165,7 @@ namespace BattAnimeZone.Client.Authentication
                 else
                 {
                     await JSRuntime.InvokeVoidAsync("console.error", $"{response.StatusCode}\n {response.ReasonPhrase}");
-                    return;
+                   
                 }
 
             }
@@ -189,6 +190,7 @@ namespace BattAnimeZone.Client.Authentication
                 }, "JwtAuth"));
                 userSession.TokenExpiryTimeStamp = DateTime.Now.ToUniversalTime().AddSeconds(userSession.ExpiresIn);
                 await _localStorage.SaveItemEncryptedAsync("UserSession", userSession);
+                httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", userSession.Token);
                 await fetchInteractedAnimesFromServer(userSession);
 
               
