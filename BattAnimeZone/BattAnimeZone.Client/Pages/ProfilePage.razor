@@ -157,14 +157,6 @@
                                 OwnAnimes["favorites"] = new List<AnimeProfilePageDTO> { anime };
                             }
                         }
-                        foreach (var kvp in OwnAnimes)
-                        {
-                            Console.WriteLine(kvp.Key);
-                            foreach (var v in kvp.Value)
-                            {
-                                Console.WriteLine($"\t {v.Title} - {v.Status} - {v.UserRating}");
-                            }
-                        }
                     }
                 }
                 else
