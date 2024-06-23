@@ -14,7 +14,7 @@ namespace BattAnimeZone.Client.Extensions
             await localStorageService.SetItemAsync(key, base64Json);
         }
 
-        public static async Task<T> ReadEncryptedItemAsync<T>(this ILocalStorageService localStorageService, string key)
+        public static async Task<T?> ReadEncryptedItemAsync<T>(this ILocalStorageService localStorageService, string key)
         {
             var base64Json = await localStorageService.GetItemAsync<string>(key);
             var itemJsonBytes = Convert.FromBase64String(base64Json);

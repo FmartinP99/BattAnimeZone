@@ -102,7 +102,7 @@ namespace BattAnimeZone.Client.Authentication
                 {
                     return await Task.FromResult(new AuthenticationState(_anonymous));
                 }
-                if (DateTime.Now.ToUniversalTime() > userSession.TokenExpiryTimeStamp)
+                if (DateTime.Now.ToUniversalTime() > userSession.TokenExpiryTimeStamp.AddSeconds(-55))
                 {
                     if (DateTime.Now.ToUniversalTime() > userSession.RefreshTokenExpiryTimestamp)
                     {
@@ -130,6 +130,7 @@ namespace BattAnimeZone.Client.Authentication
                             userSession.RefreshTokenExpiryTimestamp = result.RefreshTokenExpiryTimeStamp;
                             await _localStorage.SaveItemEncryptedAsync("UserSession", userSession);
                             httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", userSession.Token);
+                            await fetchInteractedAnimesFromServer(userSession);
                         }
 
                     }
@@ -148,6 +149,33 @@ namespace BattAnimeZone.Client.Authentication
             }
         }
 
+
+        private async Task fetchInteractedAnimesFromServer(UserSession userSession)
+        {
+            try
+            {
+                var response = await httpClient.GetAsync($"{navManager.BaseUri}api/AccountController/GetInteractedAnimes/{userSession.UserName}");
+                if (response.IsSuccessStatusCode)
+                {
+                    var content = await response.Content.ReadAsStringAsync();
+                    var interactedAnimes = await response.Content.ReadFromJsonAsync<Dictionary<int, InteractedAnime>>();
+                    await _localStorage.SaveItemEncryptedAsync("InteractedAnimes", interactedAnimes);
+                }
+                else
+                {
+                    await JSRuntime.InvokeVoidAsync("console.error", $"{response.StatusCode}\n {response.ReasonPhrase}");
+                    return;
+                }
+
+            }
+            catch (Exception ex)
+            {
+                await JSRuntime.InvokeVoidAsync("console.error", $"{ex.Message}");
+                httpClient.DefaultRequestHeaders.Authorization = null;
+            }
+        }
+
+
         public async Task UpdateAuthenticationState(UserSession? userSession)
         {
             ClaimsPrincipal claimsPrincipal;
@@ -161,29 +189,9 @@ namespace BattAnimeZone.Client.Authentication
                 }, "JwtAuth"));
                 userSession.TokenExpiryTimeStamp = DateTime.Now.ToUniversalTime().AddSeconds(userSession.ExpiresIn);
                 await _localStorage.SaveItemEncryptedAsync("UserSession", userSession);
-                httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", userSession.Token);
+                await fetchInteractedAnimesFromServer(userSession);
 
-                try
-                {
-                    var response = await httpClient.GetAsync($"{navManager.BaseUri}api/AccountController/GetInteractedAnimes/{userSession.UserName}");
-                    if (response.IsSuccessStatusCode)
-                    {
-                        var content = await response.Content.ReadAsStringAsync();
-                        var interactedAnimes = await response.Content.ReadFromJsonAsync<Dictionary<int, InteractedAnime>>();
-                        await _localStorage.SaveItemEncryptedAsync("InteractedAnimes", interactedAnimes);
-                    }
-                    else
-                    {
-                        await JSRuntime.InvokeVoidAsync("console.error", $"{response.StatusCode}\n {response.ReasonPhrase}");
-                        return;
-                    }
-
-                }
-                catch (Exception ex)
-                {
-                    await JSRuntime.InvokeVoidAsync("console.error", $"{ex.Message}");
-                    httpClient.DefaultRequestHeaders.Authorization = null;
-                }
+              
             }
             else
             {
@@ -208,7 +216,7 @@ namespace BattAnimeZone.Client.Authentication
             bool areEqual = await AreClaimsEqual(previousState.User, newState.User);
             if (!areEqual)
             {
-                navManager.NavigateTo("anime/52701", forceLoad: true);
+                navManager.NavigateTo(navManager.Uri, forceLoad: true);
                 previousState = newState;
             }
 

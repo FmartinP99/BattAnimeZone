@@ -52,7 +52,6 @@ namespace BattAnimeZone.Controllers
         [AllowAnonymous]
         public async Task<ActionResult<RefreshTokenDTO>> Refresh([FromBody] RefreshTokenDTO refreshTokenDTO)
         {
-
             var userSession = await _userAccountService.Refresh(refreshTokenDTO);
             if (userSession is null)
                 return Unauthorized();
@@ -78,9 +77,10 @@ namespace BattAnimeZone.Controllers
         [Route("AnimeRating")]
         public async Task<ActionResult<UserSession>> AnimeRating([FromBody] AnimeActionTransfer aat)
         {
-			var authorizationHeader = HttpContext.Request.Headers["Authorization"].FirstOrDefault();
+            var authorizationHeader = HttpContext.Request.Headers["Authorization"].FirstOrDefault();
 			var token = authorizationHeader.Substring("Bearer ".Length).Trim();
             bool response = await _userAccountService.RateAnime(aat, token);
+  
             if (response)
                 return Ok();
             else

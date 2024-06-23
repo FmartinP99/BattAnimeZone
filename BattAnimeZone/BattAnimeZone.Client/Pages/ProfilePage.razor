@@ -5,7 +5,7 @@
 @using BattAnimeZone.Shared.Models.AnimeDTOs
 @rendermode InteractiveWebAssembly
 @page "/Profile/{UserName}"
-<link rel="stylesheet" href="/ProfilePage.css?version=0.1" />
+<link rel="stylesheet" href="/ProfilePage.css?version=0.3" />
 
 @if (!loaded)
 {
@@ -18,9 +18,73 @@
 
         <RadzenColumn id="outerLeftColumn">
 
-        <div class="UserNameDiv">
-            <span class="userNameSpan">@UserName's profile</span>
+        <div id="UserNameDiv">
+            <span id="userNameSpan">@UserName's profile</span>
         </div>
+
+        <div id="animeCountContainerDiv">
+
+                <div id="completedDiv" class="textContainerDiv">
+                    <p class="centered-text">Completed</p>
+
+                    <p class="centered-text">
+                        ( @(OwnAnimes.ContainsKey("completed") ? @OwnAnimes["completed"].Count() : 0) )
+                    </p>
+                </div>
+
+
+                <div id="watchingDiv" class="textContainerDiv">
+                    <p class="centered-text">Watching</p>
+
+                    <p class="centered-text">
+                        ( @(OwnAnimes.ContainsKey("watching") ? @OwnAnimes["watching"].Count() : 0) )
+                    </p>
+                </div>
+
+
+
+                <div id="onholdDiv" class="textContainerDiv">
+                    <p class="centered-text">On hold</p>
+
+                    <p class="centered-text">
+                        ( @(OwnAnimes.ContainsKey("on hold") ? @OwnAnimes["on hold"].Count() : 0) )
+                    </p>
+                </div>
+
+
+
+
+                <div id="plannedDiv" class="textContainerDiv">
+                    <p class="centered-text">Planned</p>
+
+                    <p class="centered-text">
+                        ( @(OwnAnimes.ContainsKey("planned") ? @OwnAnimes["planned"].Count() : 0) )
+                    </p>
+                </div>
+
+
+
+
+                <div id="droppedDiv" class="textContainerDiv">
+                    <p class="centered-text">Dropped</p>
+
+                    <p class="centered-text">
+                        ( @(OwnAnimes.ContainsKey("dropped") ? @OwnAnimes["dropped"].Count() : 0) )
+                    </p>
+                </div>
+
+
+
+
+                <div id="favoritesDiv" class="textContainerDiv">
+                    <p class="centered-text">Favorites</p>
+
+                    <p class="centered-text">
+                        ( @( OwnAnimes.ContainsKey("favorites") ? @OwnAnimes["favorites"].Count() : 0 ) )
+                    </p>
+                </div>
+
+            </div>
 
 
         </RadzenColumn>
@@ -30,7 +94,7 @@
                 <Tabs>
                     @foreach(string state in PossibleStates)
                     {
-                        <RadzenTabsItem Text="@state">
+                        <RadzenTabsItem Text="@state" class="tabsItemClass">
                             <RadzenDataList PageSize="10" WrapItems="true" AllowPaging="true" Data="@OwnAnimes[state]" TItem="AnimeProfilePageDTO">
                                 <Template Context="anime">
                                     <RadzenRow class="animeRow" @onclick=@(() => NavigateTo(anime.Mal_id))>
