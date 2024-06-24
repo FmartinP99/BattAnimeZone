@@ -74,6 +74,19 @@ namespace BattAnimeZone.Controllers
         }
 
         [HttpPost]
+        [Route("ChangeDetails")]
+        public async Task<ActionResult<UserSession>> ChangeDetails([FromBody] ChangeDetailsRequest changeDetails)
+        {
+            var authorizationHeader = HttpContext.Request.Headers["Authorization"].FirstOrDefault();
+            var token = authorizationHeader.Substring("Bearer ".Length).Trim();
+            var response = await _userAccountService.ChangeDetails(changeDetails, token);
+            if (response.result == true)
+                return Ok(response);
+            else
+                return BadRequest(response);
+        }
+
+        [HttpPost]
         [Route("AnimeRating")]
         public async Task<ActionResult<UserSession>> AnimeRating([FromBody] AnimeActionTransfer aat)
         {

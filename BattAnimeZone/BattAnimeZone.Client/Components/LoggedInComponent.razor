@@ -5,6 +5,7 @@
 @using System.Net
 @using System.Net.Http.Headers;
 @using BlazorBootstrap;
+@using System.Security.Claims;
 @inject NavigationManager navManager
 @inject IHttpClientFactory HttpClientFactory
 @inject IJSRuntime JSRuntime
@@ -15,9 +16,21 @@
 <div class="profileDiv">
     <Button Color="ButtonColor.None" @onclick="NavigateToProfile"><Icon Name="IconName.Person" Size=IconSize.x3 /> <span> @userName</span> </Button>
 </div>
+
+<div class="changeDetailsDiv">
+    <Button Color="ButtonColor.None" @onclick="ShowOffCanvasChangeDetails"><Icon Name="IconName.TicketDetailed" /> <span>Change Details!</span></Button>
+</div>
+
+
 <div class="logoutDiv">
 <Button Color="ButtonColor.None" @onclick="Logout"><Icon Name="IconName.BoxArrowLeft" /> <span>LOGOUT!</span></Button>
 </div>
+
+
+
+
+
+<Offcanvas @ref="offcanvasChanngeDetails" Class="offcanvas" Placement=Placement.Start> </Offcanvas>
 
 @code {
 
@@ -26,6 +39,8 @@
     HttpClient httpClient;
 
     string? userName = "";
+
+    private Offcanvas offcanvasChanngeDetails = default!;
 
     protected override async Task OnInitializedAsync()
     {
@@ -50,6 +65,7 @@
             var user = authState.User;
             if (user.Identity.Name != null)
                 userName = user.Identity.Name.ToString();
+            
         }
         catch (Exception e)
         {
@@ -78,6 +94,15 @@
             
         }
     }
+
+
+    private async Task ShowOffCanvasChangeDetails()
+    {
+        var parameters = new Dictionary<string, object>();
+        parameters.Add("UserName", userName ?? "");
+        await offcanvasChanngeDetails.ShowAsync<ChangeDetailsComponent>(title: "Change Details", parameters: parameters);
+    }
+
 
     public void NavigateToProfile()
     {
