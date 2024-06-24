@@ -10,6 +10,7 @@ using Newtonsoft.Json;
 using System.ComponentModel;
 using System.Globalization;
 using System.Linq.Dynamic.Core;
+using DotNetEnv;
 
 namespace BattAnimeZone.DatabaseInitializer
 {
@@ -273,14 +274,6 @@ namespace BattAnimeZone.DatabaseInitializer
 			await _csvToDataBaseHandler.SaveAnimeProductionEntitiesToDatabase(animesData);
 			Console.WriteLine("saved animeproductionentities\n");
 
-			Console.WriteLine("creating user & admin accounts for testing purposes!");
-            await _csvToDataBaseHandler.CreateUsers();
-            Console.WriteLine("accounts have been created!\n");
-
-			Console.WriteLine("queried animeusers");
-			await _csvToDataBaseHandler.SaveAnimeUsersToDatabase();
-			Console.WriteLine("saved animeusers\n");
-
 			Console.WriteLine("queried genres");
 			await _csvToDataBaseHandler.SaveGenresToDatabase(genresData);
 			Console.WriteLine("saved genres\n");
@@ -298,7 +291,25 @@ namespace BattAnimeZone.DatabaseInitializer
 			await _csvToDataBaseHandler.SaveDistinctYears();
 			Console.WriteLine("saved distinctyears\n");
 
-		}
+
+			Env.Load();
+            if (Environment.GetEnvironmentVariable("MakeMockUsersOnDbInit") == "true")
+			{
+                await Console.Out.WriteLineAsync("Creating mock users and userinteractions! " +
+					"Change the MakeMockUsersOnDbInit in the .env file in order to disable it.");
+
+                Console.WriteLine("creating user & admin accounts for testing purposes!");
+				await _csvToDataBaseHandler.CreateUsers();
+				Console.WriteLine("accounts have been created!\n");
+
+				Console.WriteLine("queried animeusers");
+				await _csvToDataBaseHandler.SaveAnimeUsersToDatabase();
+				Console.WriteLine("saved animeusers\n");
+			}
+
+
+
+        }
 
 	}
 }

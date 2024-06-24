@@ -29,6 +29,10 @@ namespace BattAnimeZone.DatabaseModels
         public string Email { get; set; }
 
         [Required]
+        [Column("registered_at")]
+        public string RegisteredAt { get; set; }
+
+        [Required]
         [Column("role")]
         public string Role { get; set; }
 

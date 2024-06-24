@@ -132,7 +132,7 @@ namespace BattAnimeZone.Services
                 bool db_EmailExists = await _context.UserAccounts.AnyAsync(x => x.Email == user.Email);
                 if (db_EmailExists) return false;
                 string? passwordHash = _passwordHasher.Hash(user.Password);
-				_context.UserAccounts.Add(new UserAccountModel { UserName = user.UserName, Password = passwordHash, Email = user.Email.ToLower(), Role = "User" });
+				_context.UserAccounts.Add(new UserAccountModel { UserName = user.UserName, Password = passwordHash, Email = user.Email.ToLower(), Role = "User", RegisteredAt = DateTime.Now.ToUniversalTime().ToString() });
                 await _context.SaveChangesAsync();
                 return true;
             }
@@ -288,16 +288,24 @@ namespace BattAnimeZone.Services
                         UserId = db_User.Id,
                         favorite = aat.Favorite,
                         Status = aat.Status,
-                        Rating = aat.Rating
+                        Rating = aat.Rating,
+                        Date = DateTime.Now.ToUniversalTime().ToString(),
                     };
                     _context.AnimeUserModels.Add(updated_entry);
                     await _context.SaveChangesAsync();
                 }
                 else
                 {
+                    if (aat.Status != db_animeUser.Status)
+                    {
+                        db_animeUser.Date = DateTime.Now.ToUniversalTime().ToString();
+                    }
+
                     db_animeUser.favorite = aat.Favorite;
                     db_animeUser.Status = aat.Status;
                     db_animeUser.Rating = aat.Rating;
+
+                  
 
                     _context.AnimeUserModels.Update(db_animeUser);
                     await _context.SaveChangesAsync();

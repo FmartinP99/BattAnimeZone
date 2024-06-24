@@ -38,5 +38,9 @@ namespace BattAnimeZone.DatabaseModels
         [Required]
         public int Rating { get; set; } = 0;
 
+        [Column("date")]
+        [Required]
+        public string Date { get; set; }
+
     }
 }

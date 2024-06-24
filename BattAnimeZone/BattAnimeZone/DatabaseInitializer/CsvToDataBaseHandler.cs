@@ -543,6 +543,7 @@ namespace BattAnimeZone.DatabaseInitializer
                     favorite = true,
                     Status = "completed",
                     Rating = 10,
+                    Date = DateTime.Now.ToUniversalTime().ToString()
                 });
 
                 animeUserModels.Add(new AnimeUserModel
@@ -551,7 +552,7 @@ namespace BattAnimeZone.DatabaseInitializer
                     UserId = admin.Id,
                     favorite = false,
                     Status = "watching",
-
+                    Date = DateTime.Now.ToUniversalTime().ToString()
                 });
 
                 for (int i = 0; i < animeUserModels.Count; i += batchsize)
@@ -732,7 +733,7 @@ namespace BattAnimeZone.DatabaseInitializer
             using (var _context = await _dbContextFactory.CreateDbContextAsync())
             {
                 string role = user.UserName == "admin" ? "Admin" : "User";
-                _context.UserAccounts.Add(new UserAccountModel { UserName = user.UserName, Password = user.Password, Email = user.Email, Role = role });
+                _context.UserAccounts.Add(new UserAccountModel { UserName = user.UserName, Password = user.Password, Email = user.Email, Role = role, RegisteredAt = DateTime.Now.ToUniversalTime().ToString() });
                 await _context.SaveChangesAsync();
                 return true;
             }

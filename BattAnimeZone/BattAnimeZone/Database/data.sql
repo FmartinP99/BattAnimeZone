@@ -123,6 +123,7 @@ CREATE Table UserAccount(
  id integer NOT NULL PRIMARY KEY AUTOINCREMENT,
  username  TEXT NOT NULL UNIQUE COLLATE NOCASE,
  "password" TEXT not null,
+  registered_at TEXT not null,
   email  TEXT NOT NULL UNIQUE COLLATE NOCASE
   CHECK (
     email LIKE '%_@_%._%' AND
@@ -144,6 +145,7 @@ CREATE TABLE AnimeUser (
   user_id integer NOT NULL,
   rating integer CHECK(rating BETWEEN 0 AND 10) DEFAULT 0,
   favorite integer CHECK( favorite IN (0,1)) NOT NULL DEFAULT 0,
+  "date" TEXT not null,
   "status" text CHECK ("status" IN ('watching', 'completed', 'on hold', 'dropped', 'planned')),
   FOREIGN KEY(anime_id) REFERENCES Anime(id),
   FOREIGN KEY(user_id) REFERENCES UserAccount(id),
