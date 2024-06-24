@@ -149,7 +149,7 @@
     background-image: linear-gradient(to right, #5832dd,#5025ce,#5832dd,#5025ce,#5832dd);
 }
 
-.customModalHeaderCssClass > h5 {
+.customModalHeaderCs > h5 {
     color:white;
 }
 
@@ -187,7 +187,11 @@
 }
 
 
-
-
-
+.rz-dropdown-items > .rz-state-highlight {
+    &:hover
+{
+    background-image: linear-gradient(to right, #5832dd,#5025ce,#5832dd,#5025ce,#5832dd);
+    color: white !important;
+}
+}
 
