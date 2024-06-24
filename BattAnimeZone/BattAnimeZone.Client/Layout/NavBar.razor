@@ -55,7 +55,12 @@
     private Offcanvas offcanvasAbout = default!;
 
 
-    string? userName = "";
+    //parameter hack, it is not supposed to use as a parameter. 
+    //but looks like If I change this variable anyhow 
+    // it rerenders the component in the OnParameterSet() function, which is nice
+    [Parameter]
+    public string? userName { get; set; } = "";
+
 
 
     protected override async Task OnInitializedAsync()
@@ -64,8 +69,12 @@
         await base.OnInitializedAsync();
     }
 
+    protected override void OnParametersSet()
+    {
+        StateHasChanged();
+    }
 
-    public async Task GetUserName()
+        public async Task GetUserName()
     {
         try
         {
