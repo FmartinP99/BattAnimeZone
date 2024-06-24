@@ -106,28 +106,28 @@
 }
 
 #completedDiv {
-    background-image: radial-gradient( #1E8B22 70%,#0C300C);
+    background-image: linear-gradient( to right, #0C300C, #1E8B22,#0C300C );
     #6495ED
 }
 
 #watchingDiv {
-    background-image: radial-gradient( #6495ED 70%,#0B2557);
+    background-image: linear-gradient( #0B2557, #6495ED,#0B2557);
 }
 
 #onholdDiv {
-    background-image: radial-gradient( #696969 70%,#2D2D2D);
+    background-image: linear-gradient( to right, #2D2D2D , #696969, #2D2D2D);
 }
 
 #plannedDiv {
-    background-image: radial-gradient( #663399 70%,#361B52);
+    background-image: linear-gradient( to right, #361B52, #663399,#361B52);
 }
 
 #droppedDiv {
-    background-image: radial-gradient( #8B0000 70%, #3C0000);
+    background-image: linear-gradient( #4f0505, #8B0000, #4f0505);
 }
 
 #favoritesDiv {
-    background-image: radial-gradient( #FFE200 70%, #221e00);
+    background-image: linear-gradient( to right, #403907, #FFE200, #403907);
     color: black;
 }
 
