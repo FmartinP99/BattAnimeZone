@@ -105,30 +105,30 @@
     margin: 0;
 }
 
-#completedDiv{
-    background-color:forestgreen;
+#completedDiv {
+    background-image: radial-gradient( #1E8B22 70%,#0C300C);
+    #6495ED
 }
 
-#watchingDiv{
-    background-color: cornflowerblue;
+#watchingDiv {
+    background-image: radial-gradient( #6495ED 70%,#0B2557);
 }
 
-#onholdDiv{
-    background-color: dimgrey;
+#onholdDiv {
+    background-image: radial-gradient( #696969 70%,#2D2D2D);
 }
 
-#plannedDiv{
-    background-color:rebeccapurple;
+#plannedDiv {
+    background-image: radial-gradient( #663399 70%,#361B52);
 }
 
-#droppedDiv{
-    background-color:darkred;
-
+#droppedDiv {
+    background-image: radial-gradient( #8B0000 70%, #3C0000);
 }
 
-#favoritesDiv{
-    background-color:rgb(275, 226, 0);
-    color:black;
+#favoritesDiv {
+    background-image: radial-gradient( #FFE200 70%, #221e00);
+    color: black;
 }
 
 

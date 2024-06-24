@@ -1,0 +1,56 @@
+﻿.formDiv{
+    display:flex !important;
+    align-items:center !important;
+    align-content:fenter !important;
+    width:450px;
+}
+
+.login-input {
+    background-color: transparent;
+    color: white;
+    display: block;
+    width: 100%;
+    font-size: 1rem;
+    font-weight: 400;
+    line-heigt: 1.5;
+    appearance: none;
+    background-clip: padding-box;
+    border-radius: 5px;
+}
+
+.row {
+    margin-bottom: 70px;
+}
+
+.offcanvasContainerDiv{
+    display:flex;
+    align-content:center;
+    align-items:center;
+}
+
+#inputsDiv{
+    height:350px;
+}
+
+.tickbuttons {
+    display: grid;
+    align-content:center;
+    align-items:fenter;
+    margin-bottom: 20px;
+    justify-content:space-between;
+}
+
+.tickboxLabel{
+    width:150px;
+}
+
+.changePasswordDiv, .changeEmailDiv, changeUserNameDiv {
+    margin-bottom: 10px;
+}
+
+#registerButton {
+    width: 90%;
+    Margin-left: 10px;
+    Margin-right: 10px;
+    background-image: linear-gradient(to right, #5832dd,#5025ce,#5832dd,#5025ce,#5832dd);
+}

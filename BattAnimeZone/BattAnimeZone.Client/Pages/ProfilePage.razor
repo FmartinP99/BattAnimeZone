@@ -5,10 +5,10 @@
 @using BattAnimeZone.Shared.Models.AnimeDTOs
 @rendermode InteractiveWebAssembly
 @page "/Profile/{UserName}"
-<link rel="stylesheet" href="/ProfilePage.css?version=0.3" />
-
+<link rel="stylesheet" href="/ProfilePage.css?version=0.4" />
 
 <PageTitle>@UserName's profile</PageTitle>
+
 
 @if (!loaded)
 {
@@ -185,61 +185,68 @@
 
     protected override async Task OnInitializedAsync()
     {
+      
         await base.OnInitializedAsync();
-    }
 
+    }
+   
+    protected override async Task OnParametersSetAsync()
+    {
+        
+        try
+        {
+            httpClient = HttpClientFactory.CreateClient("AuthenticatedClient");
+            var response = await httpClient.GetAsync($"{navManager.BaseUri}api/AccountController/GetProfile/{UserName}");
+            if (response.IsSuccessStatusCode)
+            {
+                List<AnimeProfilePageDTO>? queried_animes = await response.Content.ReadFromJsonAsync<List<AnimeProfilePageDTO>?>();
+
+                foreach (var state in PossibleStates)
+                {
+                    OwnAnimes[state] = new List<AnimeProfilePageDTO>();
+                }
+
+                if (queried_animes != null)
+                {
+                    foreach (var anime in queried_animes)
+                    {
+
+                        if (OwnAnimes[anime.UserStatus] != null)
+                            OwnAnimes[anime.UserStatus].Add(anime);
+                        else
+                            OwnAnimes[anime.UserStatus] = new List<AnimeProfilePageDTO> { anime };
+
+                        if (OwnAnimes["favorites"] != null && anime.UserFavorite == true)
+                            OwnAnimes["favorites"].Add(anime);
+                        else if (OwnAnimes["favorites"] == null && anime.UserFavorite == true)
+                        {
+                            OwnAnimes["favorites"] = new List<AnimeProfilePageDTO> { anime };
+                        }
+                    }
+                }
+            }
+            else
+            {
+                await JSRuntime.InvokeVoidAsync("console.error", $"{response.StatusCode}\n {response.ReasonPhrase}");
+
+            }
+        }
+        catch (Exception e)
+        {
+            await JSRuntime.InvokeVoidAsync("console.error", $"{e.Message}");
+        }
+        finally
+        {
+            StateHasChanged();
+        }
+    }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
             loaded = true;
-            try
-            {
-                httpClient = HttpClientFactory.CreateClient("AuthenticatedClient");
-                var response = await httpClient.GetAsync($"{navManager.BaseUri}api/AccountController/GetProfile/{UserName}");
-                if (response.IsSuccessStatusCode)
-                {
-                    List<AnimeProfilePageDTO>? queried_animes = await response.Content.ReadFromJsonAsync<List<AnimeProfilePageDTO>?>();
-
-                    foreach(var state in PossibleStates)
-                    {
-                        OwnAnimes[state] = new List<AnimeProfilePageDTO>();
-                    }
-
-                    if (queried_animes != null)
-                    {
-                        foreach (var anime in queried_animes)
-                        {
-
-                            if (OwnAnimes[anime.UserStatus] != null)
-                                OwnAnimes[anime.UserStatus].Add(anime);
-                            else                        
-                                OwnAnimes[anime.UserStatus] = new List<AnimeProfilePageDTO> { anime };
-
-                            if (OwnAnimes["favorites"] != null && anime.UserFavorite == true)
-                                OwnAnimes["favorites"].Add(anime);
-                            else if (OwnAnimes["favorites"] == null && anime.UserFavorite == true)
-                            {
-                                OwnAnimes["favorites"] = new List<AnimeProfilePageDTO> { anime };
-                            }
-                        }
-                    }
-                }
-                else
-                {
-                    await JSRuntime.InvokeVoidAsync("console.error", $"{response.StatusCode}\n {response.ReasonPhrase}");
-
-                }
-            }
-            catch (Exception e)
-            {
-                await JSRuntime.InvokeVoidAsync("console.error", $"{e.Message}");
-            }
-            finally
-            {
-                StateHasChanged();
-            }
+          
         }
     }
 

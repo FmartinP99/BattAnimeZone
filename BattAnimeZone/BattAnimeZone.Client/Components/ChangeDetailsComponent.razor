@@ -1,0 +1,236 @@
+﻿@using BattAnimeZone.Shared.Models.User
+@using BattAnimeZone.Shared.Models.User.BrowserStorageModels
+@using BattAnimeZone.Client.Authentication
+@using System.Net
+@using System.ComponentModel.DataAnnotations
+@using BattAnimeZone.Client.Services
+@using System.Net.Http.Headers;
+@inject StorageService storageService
+@inject NavigationManager navManager
+@inject IHttpClientFactory HttpClientFactory
+@inject IJSRuntime JSRuntime
+@inject AuthenticationStateProvider authStateProvider
+<link rel="stylesheet" href="/ChangeDetails.css" />
+
+
+
+<div class="offcanvasContainerDiv">
+
+
+
+
+  <div class="formDiv">
+ 
+      
+
+        <EditForm Model="@changeDetailsRequest" OnValidSubmit="ChangeDetails" class="col-lg-10 offset-lg-1 pt-4 pb-4 ">
+
+            <DataAnnotationsValidator />
+
+
+            <div id="inputsDiv">
+
+                <div class="mb-3">
+                    <label>Current Password</label>
+                    <InputText @bind-Value="changeDetailsRequest.Password" type="password" class="login-input" placeholder="Current Password" />
+                    <ValidationMessage For="@(() => changeDetailsRequest.Password)" />
+                </div>
+
+                @if (changeDetailsRequest.ChangePassword)
+                {
+                    <div class="mb-3">
+                        <label>New Password</label>
+                        <InputText @bind-Value="changeDetailsRequest.NewPassword" type="password" class="login-input" placeholder="New Password" />
+                        <ValidationMessage For="@(() => changeDetailsRequest.NewPassword)" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label>Confirm New Password</label>
+                        <InputText @bind-Value="confirmPassword" type="password" class="login-input" placeholder="Confirm New Password" />
+                    </div>
+
+                }
+                else
+                {
+                    changeDetailsRequest.NewPassword = string.Empty;
+                }
+
+
+                @if (changeDetailsRequest.ChangeEmail)
+                {
+                    <div class="mb-3">
+                        <label>New Email</label>
+                        <InputText @bind-Value="changeDetailsRequest.NewEmail" class="login-input" placeholder="New Email" />
+                        <ValidationMessage For="@(() => changeDetailsRequest.NewEmail)" />
+                    </div>
+
+                }
+                else
+                {
+                    changeDetailsRequest.NewEmail = string.Empty;
+                }
+
+                @if (changeDetailsRequest.ChangeUserName)
+                {
+                    <div class="mb-3">
+                        <label>New User Name</label>
+                        <InputText @bind-Value="changeDetailsRequest.NewUsername" class="login-input" placeholder="New User Name" />
+                        <ValidationMessage For="@(() => changeDetailsRequest.NewUsername)" />
+                    </div>
+                }
+                else
+                {
+                    changeDetailsRequest.NewUsername = string.Empty;
+                }
+            </div>
+         
+
+ 
+
+
+            <div class="mb-3, tickbuttons">
+
+                <div class=changePasswordDiv>
+                    <RadzenLabel class="tickboxLabel" Text="Change Password" Component="CheckBoxPassword" Style="vertical-align: middle;" />
+                    <RadzenCheckBox @bind-Value=@changeDetailsRequest.ChangePassword Name="CheckBoxPassword" Style="vertical-align:middle" />
+                </div>
+
+                <div class=changeEmailDiv>
+                    <RadzenLabel class="tickboxLabel" Text="Change Email" Component="CheckBoxEmail" Style="vertical-align: middle;" />
+                    <RadzenCheckBox @bind-Value=@changeDetailsRequest.ChangeEmail Name="CheckBoxEmail" Style="vertical-align:middle" />
+                </div>
+
+                <div class=changeUserNameDiv>
+                    <RadzenLabel class="tickboxLabel" Text="Change User Name" Component="CheckBoxUserName" Style="vertical-align: middle;" />
+                    <RadzenCheckBox @bind-Value=@changeDetailsRequest.ChangeUserName Name="CheckBoxUserName" Style="vertical-align:middle" />
+                </div>
+
+            </div>
+           
+            <RadzenButton  ButtonType="ButtonType.Submit" id="registerButton" Text="Change Details"></RadzenButton>
+           
+        </EditForm>
+    </div>
+
+</div>
+
+
+
+
+
+@code {
+
+    HttpClient httpClient;
+    [CascadingParameter] private Task<AuthenticationState>? authenticationState { get; set; }
+
+    [Parameter]
+    public string? UserName { get; set; }
+
+
+    private ChangeDetailsRequest changeDetailsRequest = new ChangeDetailsRequest();
+    private string confirmPassword = "";
+    private string passwordMatchMessage = "";
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+
+            httpClient = HttpClientFactory.CreateClient("AuthenticatedClient");
+        }
+    }
+
+
+
+    public async Task Logout()
+    {
+
+
+        var customAuthStateProvider = (CustomAuthenticationStateProvider)authStateProvider;
+        UserSession userSession = await storageService.GetUserSession();
+
+        try
+        {
+            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", userSession.Token);
+            await httpClient.PostAsJsonAsync<UserSession>($"{navManager.BaseUri}api/AccountController/Logout", userSession);
+        }
+        catch { }
+        finally
+        {
+            await customAuthStateProvider.UpdateAuthenticationState(null);
+            navManager.NavigateTo(navManager.Uri, forceLoad: true);
+        }
+
+    }
+
+
+    private async Task ChangeDetails()
+    {
+        StateHasChanged();
+
+        if (!changeDetailsRequest.ChangePassword && !changeDetailsRequest.ChangeUserName && !changeDetailsRequest.ChangeEmail)
+        {
+            await JSRuntime.InvokeVoidAsync("alert", "You can't submit an empty form! Select a field to change.");
+            return;
+        }
+
+
+        if (changeDetailsRequest.ChangePassword)
+        {
+            if (confirmPassword != changeDetailsRequest.NewPassword)
+            {
+                await JSRuntime.InvokeVoidAsync("alert", "The 2 new passwords doesn't match!");
+                return;
+            }
+        }
+
+
+        if (changeDetailsRequest.ChangeUserName)
+        {
+            if (UserName?.ToLower() == changeDetailsRequest.NewUsername?.ToLower())
+            {
+                await JSRuntime.InvokeVoidAsync("alert", "The new username can't be the same as the previous one!");
+                return;
+            }
+        }
+
+
+        try
+        {  
+            var token = await storageService.GetTokenLocalStorage();
+            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            changeDetailsRequest.UserName = UserName;
+            var response = await httpClient.PostAsJsonAsync<ChangeDetailsRequest>($"{navManager.BaseUri}api/AccountController/ChangeDetails", changeDetailsRequest);
+            var data = await response.Content.ReadFromJsonAsync<ChangeDetailsResponse?>();
+
+            if (response.IsSuccessStatusCode)
+            {
+
+                await JSRuntime.InvokeVoidAsync("alert", $"{data.Message}");
+                changeDetailsRequest = new ChangeDetailsRequest();
+                confirmPassword = "";
+
+                UserSession? userSession = data.UserSession;
+                if (userSession != null)
+                {
+                    var customAuthStateProvider = (CustomAuthenticationStateProvider)authStateProvider;
+                    await customAuthStateProvider.UpdateAuthenticationState(userSession);
+                }
+                navManager.NavigateTo(navManager.Uri, forceLoad: true);
+
+
+            }
+            else if (response.StatusCode == HttpStatusCode.BadRequest)
+            {
+                await JSRuntime.InvokeVoidAsync("alert", $"{data.Message}");
+                return;
+            }
+        }catch(Exception ex)
+        {
+            await JSRuntime.InvokeVoidAsync("console.error", $"{ex.Message}");
+            return;
+        }
+    }
+
+
+}

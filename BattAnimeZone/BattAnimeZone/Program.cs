@@ -9,6 +9,8 @@ using Microsoft.IdentityModel.Tokens;
 using DotNetEnv;
 using BattAnimeZone.Shared.Policies;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Identity;
+using System.Security.Claims;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -41,7 +43,9 @@ builder.Services.AddAuthentication(o =>
         ValidateIssuer = true,
         ValidIssuer = validIssuer,
         ValidateAudience = true,
-        ValidAudience = validAudience
+        ValidAudience = validAudience,
+        NameClaimType = ClaimTypes.Name,
+        RoleClaimType = ClaimTypes.Role
 
     };
 
@@ -64,6 +68,7 @@ builder.Services.AddAuthentication(o =>
     };
 
 });
+
 
 /*POLICITES */
 builder.Services.AddAuthorizationCore(config =>

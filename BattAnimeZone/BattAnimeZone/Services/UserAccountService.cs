@@ -2,13 +2,11 @@
 using BattAnimeZone.Authentication.PasswordHasher;
 using BattAnimeZone.DatabaseModels;
 using BattAnimeZone.DbContexts;
-using BattAnimeZone.Shared.Models.Anime;
 using BattAnimeZone.Shared.Models.User;
 using BattAnimeZone.Shared.Models.User.BrowserStorageModels;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.EntityFrameworkCore;
 using System.IdentityModel.Tokens.Jwt;
+using System.Text.RegularExpressions;
 using LoginRequest = BattAnimeZone.Shared.Models.User.LoginRequest;
 using RegisterRequest = BattAnimeZone.Shared.Models.User.RegisterRequest;
 
@@ -139,6 +137,125 @@ namespace BattAnimeZone.Services
                 return true;
             }
         }
+
+
+        public async Task<ChangeDetailsResponse> ChangeDetails(ChangeDetailsRequest newUser, string token)
+        {
+
+            using (var _context = await _dbContextFactory.CreateDbContextAsync())
+            {
+
+                ChangeDetailsResponse result = new ChangeDetailsResponse();
+
+                /*CHECKING FOR EXISTING USERS*/
+                UserAccountModel? userAccount = await _context.UserAccounts.Where(x => x.UserName == newUser.UserName && x.Token == token).FirstOrDefaultAsync();
+                if (userAccount == null)
+                {
+                    result.result = false;
+                    result.Message = "User was not found in the database!";
+                    return result;
+                }
+
+                bool isMatching = _passwordHasher.Verify(userAccount.Password, newUser.Password);
+                if (!isMatching)
+                {
+                    result.result = false;
+                    result.Message = "The current password is incorrect!";
+                    return result;
+                }
+
+
+                if (newUser.ChangeUserName)
+                {
+                    if (userAccount?.UserName.ToLower() == newUser.NewUsername?.ToLower())
+                    {
+                        result.result = false;
+                        result.Message = "The New username can't be the same as the old username!";
+                        return result;
+                    }
+
+                    bool db_UserExists = await _context.UserAccounts.AnyAsync(x => x.UserName == newUser.NewUsername);
+                    if (db_UserExists)
+                    {
+                        result.result = false;
+                        result.Message = "The new Username is already taken!";
+                        return result;
+                    }
+
+                }
+
+                if (newUser.ChangeEmail)
+                {
+
+                    if(!Regex.IsMatch(newUser.NewEmail, @"^[^@\s]+@[^@\s]+\.[a-zA-Z]{2,}$"))
+                    {
+                        result.result = false;
+                        result.Message = "The new email's format is invalid!";
+                        return result;
+                    }
+
+                    if (userAccount?.Email.ToLower() == newUser.NewEmail?.ToLower())
+                    {
+                        result.result = false;
+                        result.Message = "The New email can't be the same as the old email!";
+                        return result;
+                    }
+
+                    bool db_UserExists = await _context.UserAccounts.AnyAsync(x => x.Email == newUser.NewEmail);
+                    if (db_UserExists)
+                    {
+                        result.result = false;
+                        result.Message = "The new Email is already taken!";
+                        return result;
+                    }
+
+                }
+
+
+                /*IF EVERYTHING WENT WELL, CHANGING THE NEW ATTRIBUTES*/
+
+                if (newUser.ChangePassword)
+                {
+                    string? passwordHash = _passwordHasher.Hash(newUser.NewPassword);
+                    userAccount.Password = passwordHash;
+                }
+
+                if (newUser.ChangeEmail)
+                {
+                    userAccount.Email = newUser.NewEmail;
+                }
+
+                if (newUser.ChangeUserName)
+                {
+                    userAccount.UserName = newUser.NewUsername;
+                }
+
+
+                result.result = true;
+                result.Message = "Credentials changed successfully!";
+                _tokenBlacklistingService.BlacklistToken(userAccount.Token);
+
+
+                var jwtAuthenticationManager = new JwtAuthenticationManager();
+                UserSession userSession = jwtAuthenticationManager.GenerateJwtToken(userAccount);
+               
+                userAccount.Token = userSession.Token;
+                userAccount.RefreshToken = userSession.RefreshToken;
+                userAccount.RefreshTokenExpiryTime = DateTime.Now.ToUniversalTime().AddMinutes(jwtAuthenticationManager.JWT_REFRESH_TOKEN_VALIDITY_MINS).ToString("o");
+
+                _context.UserAccounts.Update(userAccount);
+                await _context.SaveChangesAsync();
+
+                result.UserSession = userSession;
+
+                return result;
+
+
+
+            }
+        }
+
+
 
         public async Task<bool> RateAnime(AnimeActionTransfer aat, string? token)
         {
