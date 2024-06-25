@@ -94,8 +94,10 @@
             <hr />
 
             <RadzenChart ColorScheme="ColorScheme.Palette" >
+                <RadzenChartTooltipOptions Visible="false" />
                 <RadzenColumnSeries Fills=@(new [] { "#1E8B22", "#6495ED", "#696969", "#663399", "#8B0000", "#FFE200" }) Data="@animeChart" CategoryProperty="Status"  LineType="LineType.Dashed" ValueProperty="Count">
                     <RadzenSeriesDataLabels Visible="true" />
+                 
                 </RadzenColumnSeries>
                 <RadzenColumnOptions Radius="5" />
                 <RadzenValueAxis>
