@@ -147,23 +147,7 @@
 
 
 
-.navbar-column-left, .navbar-column-right {
-    min-width: 70px;
-    max-width: 10vw;
-    margin-right: 1vw;
-    display: table;
-    font-size: 20px !important;
-    font-family: 'system-ui';
-    &:hover
 
-{
-    text-decoration: underline;
-    box-shadow: none;
-    opacity: 0.9;
-    cursor: pointer;
-}
-
-}
 
 .navbar-column-right {
     font-weight: 600;

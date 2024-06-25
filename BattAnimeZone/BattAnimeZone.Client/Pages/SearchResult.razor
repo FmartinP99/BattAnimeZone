@@ -22,32 +22,44 @@ else{
             @foreach (AnimeSearchResultDTO similar_anime in this.similar_animes)
     {
     
-            <RadzenRow @onclick=@(() => NavigateTo(similar_anime.Mal_id)) Style="height:100px; margin-bottom: 30px;">
-                <RadzenColumn Style="max-width:100px; display:inline-block;">
+            <div @onclick=@(() => NavigateTo(similar_anime.Mal_id)) class="animeRow">
+                    <RadzenColumn Style="min-width:100px; max-width:100px; display:inline-block;">
                         <RadzenImage Style="max-width:100px; max-height:100px;" Path="@similar_anime.ImageLargeWebpUrl"></RadzenImage>
                 </RadzenColumn>
-            <RadzenColumn Style="max-width:200px; display:inline-block;">
-                English Name: <br> @similar_anime.TitleEnglish
-            </RadzenColumn>
-                    <RadzenColumn Style="max-width:200px; display:inline-block;">
-                        Japanese name: <br> @similar_anime.TitleJapanese
-            </RadzenColumn>
-                    <RadzenColumn Style="max-width:100px; display:inline-block;">
+
+                    <div class="attributeTitleDiv">
+                        Title: <br> @similar_anime.Title
+                    </div>
+
+                    <div class="attributeTitleDiv">
+                English Title: <br> @similar_anime.TitleEnglish
+                    </div>
+
+                    <div class="attributeTitleDiv">
+                        Japanese Title: <br> @similar_anime.TitleJapanese
+                    </div>
+
+                    <div class="attributeDiv">
                         Type: <br> @similar_anime.MediaType
-            </RadzenColumn>
-                    <RadzenColumn Style="max-width:100px; display:inline-block;">
+                     </div>
+
+                    <div class="attributeDiv">
                 Episodes: <br> @similar_anime.Episodes
-            </RadzenColumn>
-                    <RadzenColumn Style="max-width:100px; display:inline-block;">
+                      </div>
+
+                    <div class="attributeDiv">
                 Score: <br> @similar_anime.Score
-            </RadzenColumn>
-                    <RadzenColumn Style="max-width:100px; display:inline-block;">
+                    </div>
+
+                    <div class="attributeDiv">
                 Year: <br> @similar_anime.Year
-            </RadzenColumn>
-                    <RadzenColumn Style="max-width:100px; display:inline-block;">
+                    </div>
+
+                    <div class="attributeDiv">
                         Status: <br> @similar_anime.Status
-            </RadzenColumn>
-            </RadzenRow>
+                    </div>
+
+            </div>
 
 
         }
