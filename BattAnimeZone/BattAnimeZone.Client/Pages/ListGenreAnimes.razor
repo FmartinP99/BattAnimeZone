@@ -6,7 +6,7 @@
 @inject IHttpClientFactory HttpClientFactory
 @inject IJSRuntime JSRuntime
 @rendermode InteractiveWebAssembly
-<link rel="stylesheet" href="/ListGenreAnimes.css?version=0.1" />
+<link rel="stylesheet" href="/ListGenreAnimes.css?version=0.2" />
 @page "/genrelist/{genreid:int}"
 
 <PageTitle>List animes for a genre</PageTitle>
@@ -37,9 +37,9 @@
                     <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center">
                         <RadzenImage Path="@anime.ImageLargeWebpUrl" Style="width: 100px; height: 100px; border-radius: 15%" AlternateText="no image" />
                         <RadzenStack Gap="0" Style="width:70%">
-                            <RadzenText TextStyle="TextStyle.Overline" Style="color:White" class=" rz-display-flex rz-mt-2 rz-my-0">English Name</RadzenText>
+                            <RadzenText TextStyle="TextStyle.Overline" Style="color:White" class=" rz-display-flex rz-mt-2 rz-my-0">English Title</RadzenText>
                             <RadzenText TextStyle="TextStyle.Body1" Style="color:White"><b>@(anime.TitleEnglish)</b></RadzenText>
-                            <RadzenText TextStyle="TextStyle.Overline" Style="color:White" class="rz-display-flex rz-mt-4 rz-mb-0">Japanese Name</RadzenText>
+                            <RadzenText TextStyle="TextStyle.Overline" Style="color:White" class="rz-display-flex rz-mt-4 rz-mb-0">Japanese Title</RadzenText>
                             <RadzenText TextStyle="TextStyle.Body1" Style="color:White"><b>@(anime.TitleJapanese)</b></RadzenText>
                         </RadzenStack>
                         <RadzenStack Gap="0">
@@ -57,11 +57,16 @@
                         </RadzenStack>
                     </RadzenStack>
                     <hr style="border: none; background-color: rgba(0,0,0,.2); height: 1px; margin: 1rem 0;" />
-                    <RadzenRow>
+                    <RadzenRow>  
+                        <div class="titleDiv">
+                        <RadzenText TextStyle="TextStyle.Overline" Style="color:White" class="titleText rz-display-flex rz-mt-2 rz-my-0">Title</RadzenText>
+                        <RadzenText TextStyle="TextStyle.Body1" Style="color:White" class="titleColumn"><b>@(anime.Title)</b></RadzenText>
+                        </div>
+
                         <RadzenColumn Size="8" Class="rz-text-truncate">
                             <b>Episodes: @(anime.Episodes)</b>
-
                         </RadzenColumn>
+
                     </RadzenRow>
                 </RadzenCard>
             </Template>

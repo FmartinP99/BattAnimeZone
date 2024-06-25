@@ -9,7 +9,7 @@
 @code{
 
     string filter_str = "Score Descending";
-    IEnumerable<string> filter_bys = new List<string>() {"Alphabetical ENG", "Alphabetical Descending ENG",  "Alphabetical JP", "Alphabetical Descending JP",
+    IEnumerable<string> filter_bys = new List<string>() {"Alphabetical Title", "Alphabetical Title Descending" ,"Alphabetical ENG Title", "Alphabetical Descending ENG Title",  "Alphabetical JP Title", "Alphabetical Descending JP Title",
     "Year", "Year Descending", "Episodes", "Episodes Descending",
     "Score", "Score Descending", "Popularity", "Popularity Descending", "Type", "Type Descending" };
 
@@ -23,25 +23,33 @@
       
         switch (filter_str)
         {
-            case "Alphabetical ENG":
+            case "Alphabetical Title":
+                animes = animes = animes.OrderBy(anime => anime.Title)
+                .ToList();
+                break;
+            case "Alphabetical Title Descending":
+                animes = animes.OrderByDescending(anime => anime.Title)
+               .ToList();
+                break;
+            case "Alphabetical ENG Title":
                 animes = animes.OrderBy(anime => string.IsNullOrEmpty(anime.TitleEnglish) && string.IsNullOrEmpty(anime.TitleJapanese) ? 2 :
                 string.IsNullOrEmpty(anime.TitleEnglish) ? 1 : 0)
                 .ThenBy(anime => anime.TitleEnglish)
                 .ToList();
                 break;
-            case "Alphabetical Descending ENG":
+            case "Alphabetical Descending ENG Title":
                 animes = animes.OrderBy(anime => string.IsNullOrEmpty(anime.TitleEnglish) && string.IsNullOrEmpty(anime.TitleJapanese) ? 2 :
                string.IsNullOrEmpty(anime.TitleEnglish) ? 1 : 0)
                .ThenByDescending(anime => anime.TitleEnglish)
                .ToList();
                 break;
-            case "Alphabetical JP":
+            case "Alphabetical JP Title":
                 animes = animes.OrderBy(anime => string.IsNullOrEmpty(anime.TitleEnglish) && string.IsNullOrEmpty(anime.TitleJapanese) ? 2 :
                 string.IsNullOrEmpty(anime.TitleJapanese) ? 1 : 0)
                .ThenBy(anime => anime.TitleJapanese)
                .ToList();
                 break;
-            case "Alphabetical Descending JP":
+            case "Alphabetical Descending JP Title":
                 animes = animes.OrderBy(anime => string.IsNullOrEmpty(anime.TitleEnglish) && string.IsNullOrEmpty(anime.TitleJapanese) ? 2 :
                 string.IsNullOrEmpty(anime.TitleJapanese) ? 1 : 0)
                .ThenByDescending(anime => anime.TitleJapanese)

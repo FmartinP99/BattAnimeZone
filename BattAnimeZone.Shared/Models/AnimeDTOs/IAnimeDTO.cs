@@ -3,6 +3,7 @@
 {
     public interface IAnimeDTO
     {
+        string Title { get; }
         string TitleEnglish { get; }
         string TitleJapanese { get; }
         public int Year { get; }
