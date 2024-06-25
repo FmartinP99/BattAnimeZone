@@ -68,3 +68,7 @@
     background-image: linear-gradient(to right, #151515,#202020,#252525,#202020,#151515) !important;
 }
 
+
+.btn-close {
+    background-color: white !important;
+}
