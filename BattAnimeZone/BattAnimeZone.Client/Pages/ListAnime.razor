@@ -11,7 +11,7 @@
 @inject IHttpClientFactory HttpClientFactory
 @inject IJSRuntime JSRuntime
 @rendermode InteractiveWebAssembly
-<link rel="stylesheet" href="/ListAnime.css?version=0.1" />
+<link rel="stylesheet" href="/ListAnime.css?version=0.2" />
 @page "/animelist"
 
 <PageTitle>List animes</PageTitle>
@@ -79,40 +79,53 @@ else{
             <OrderComponent T="LiAnimeDTO" animes="searched_animes" AnimesChanged="OnAnimesChanged"></OrderComponent>
             </RadzenColumn>
 
-        <RadzenPager @ref=pager Style="overflow-x: clip; max-width: 75vw;" PagingSummaryFormat="@pagingSummaryFormat" ShowPagingSummary="true" HorizontalAlign="HorizontalAlign.Left" PageNumbersCount=@pagenumcount PageSize=@pageSize Count="count" PageChanged="@PageChanged" />
+            <RadzenPager @ref=pager class="radzenPagerClass" PagingSummaryFormat="@pagingSummaryFormat" ShowPagingSummary="true" HorizontalAlign="HorizontalAlign.Left" PageNumbersCount=@pagenumcount PageSize=@pageSize Count="count" PageChanged="@PageChanged" />
 
 
             @foreach (LiAnimeDTO anime in animes_per_page)
             {
-                <RadzenRow @onclick=@(() => NavigateTo(anime.Mal_id)) Style="height:100px; margin-bottom: 30px;">
-                    <RadzenColumn Style="max-width:100px; display:inline-block;">
+                <div @onclick=@(() => NavigateTo(anime.Mal_id)) class="animeRow">
+                    <RadzenColumn Style="min-width:100px; max-width:100px; display:inline-block;">
                         <RadzenImage Style="max-width:100px; max-height:100px;" Path="@anime.ImageLargeWebpUrl"></RadzenImage>
                     </RadzenColumn>
-                    <RadzenColumn Style="max-width:200px; display:inline-block;">
-                        English Name: <br> @anime.TitleEnglish
-                    </RadzenColumn>
-                    <RadzenColumn Style="max-width:200px; display:inline-block;">
-                        Japanese name: <br> @anime.TitleJapanese
-                    </RadzenColumn>
-                    <RadzenColumn Style="max-width:100px; display:inline-block;">
+
+                    <div class="attributeTitleDiv">
+                        Title: <br> @anime.Title
+                    </div>
+
+                    <div class="attributeTitleDiv">
+                        English Title: <br> @anime.TitleEnglish
+                    </div>
+
+                    <div class="attributeTitleDiv">
+                        Japanese Title: <br> @anime.TitleJapanese
+                    </div>
+
+                    <div class="attributeDiv">
                         Type: <br> @anime.MediaType
-                    </RadzenColumn>
-                    <RadzenColumn Style="max-width:100px; display:inline-block;">
+                    </div>
+
+                    <div class="attributeDiv">
                         Episodes: <br> @anime.Episodes
-                    </RadzenColumn>
-                    <RadzenColumn Style="max-width:100px; display:inline-block;">
+                    </div>
+
+                    <div class="attributeDiv">
                         Score: <br> @anime.Score
-                    </RadzenColumn>
-                    <RadzenColumn Style="max-width:100px; display:inline-block;">
+                    </div>
+
+                    <div class="attributeDiv">
                         Popularity: <br> @anime.Popularity
-                    </RadzenColumn>
-                    <RadzenColumn Style="max-width:100px; display:inline-block;">
+                    </div>
+
+                    <div class="attributeDiv">
                         Year: <br> @anime.Year
-                    </RadzenColumn>
-                    <RadzenColumn Style="max-width:100px; display:inline-block;">
+                    </div>
+
+                    <div class="attributeDiv">
                         Status: <br> @anime.Status
-                    </RadzenColumn>
-                </RadzenRow>
+                    </div>
+
+                </div>
             }
 
             <RadzenPager @ref=pager2 Style="overflow-x: clip; max-width: 75vw;" PagingSummaryFormat="@pagingSummaryFormat" ShowPagingSummary="true" HorizontalAlign="HorizontalAlign.Left" PageNumbersCount=@pagenumcount PageSize=@pageSize Count="count" PageChanged="@PageChanged" />
@@ -172,7 +185,7 @@ else{
     int pageSize = 7;
     int count;
     int pageNumber;
-    int pagenumcount = 15;
+    int pagenumcount = 20;
     int last_skip = 0;
 
     RadzenPager? pager;

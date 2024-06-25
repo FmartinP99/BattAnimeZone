@@ -12,7 +12,7 @@ namespace BattAnimeZone.Services
                 var query = (from a in _context.Animes
                              join ag in _context.AnimeGenres on a.Mal_id equals ag.AnimeId
                              where (genres == null || !genres.Any() || genres.Contains(ag.GenreId))
-                             group ag by new { a.Mal_id, a.TitleEnglish, a.TitleJapanese, a.MediaType, a.Episodes, a.Status, a.Rating, a.Score, a.Popularity, a.Year, a.ImageLargeWebpUrl } into g
+                             group ag by new { a.Mal_id, a.Title, a.TitleEnglish, a.TitleJapanese, a.MediaType, a.Episodes, a.Status, a.Rating, a.Score, a.Popularity, a.Year, a.ImageLargeWebpUrl } into g
                              where (genres == null || !genres.Any() || g.Select(ag => ag.GenreId).Distinct().Count() == genres.Count)
                              && (mediaTypes == null || !mediaTypes.Any() || mediaTypes.Contains(g.Key.MediaType))
                              && (!yearlower.HasValue || g.Key.Year >= yearlower.Value)
@@ -20,6 +20,7 @@ namespace BattAnimeZone.Services
                                              select new LiAnimeDTO
                              {
                                  Mal_id = g.Key.Mal_id,
+                                 Title = g.Key.Title,
                                  TitleEnglish = g.Key.TitleEnglish,
                                  TitleJapanese = g.Key.TitleJapanese,
                                  MediaType = g.Key.MediaType,

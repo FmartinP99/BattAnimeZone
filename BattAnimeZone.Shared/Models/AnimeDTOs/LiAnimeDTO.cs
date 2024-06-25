@@ -3,6 +3,7 @@
     public class LiAnimeDTO : IAnimeDTO
 	{
 		public int Mal_id { get; set; } = -1;
+		public string Title { get; set; } = string.Empty;
 		public string TitleEnglish { get; set; } = string.Empty;
 		public string TitleJapanese { get; set; } = string.Empty;
 		public string MediaType { get; set; } = string.Empty;
