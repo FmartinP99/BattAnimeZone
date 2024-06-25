@@ -21,5 +21,6 @@ namespace BattAnimeZone.Shared.Models.AnimeDTOs
         public string UserStatus { get; set; } = string.Empty;
         public int UserRating { get; set; } = -1;
         public bool UserFavorite { get; set; } = false;
+        public string Date { get; set; } = string.Empty;
     }
 }

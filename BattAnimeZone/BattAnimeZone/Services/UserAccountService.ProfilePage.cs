@@ -1,6 +1,7 @@
 ﻿using BattAnimeZone.DatabaseModels;
 using BattAnimeZone.Shared.Models.User.BrowserStorageModels;
 using BattAnimeZone.Shared.Models.AnimeDTOs;
+using BattAnimeZone.Shared.Models.User;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Dynamic.Core.Tokenizer;
 
@@ -9,12 +10,12 @@ namespace BattAnimeZone.Services
     public partial class UserAccountService
     {
 
-        public async Task<List<AnimeProfilePageDTO>?> GetProfileByUserName(string UserName)
+        public async Task<ProfilePageDTO?> GetProfileByUserName(string UserName)
         {
             using (var _context = await _dbContextFactory.CreateDbContextAsync())
             {
-                bool db_UserExists = await _context.UserAccounts.AnyAsync(x => x.UserName == UserName);
-                if (db_UserExists == false) return null;
+                var db_User = await _context.UserAccounts.Where(x => x.UserName == UserName).FirstOrDefaultAsync();
+                if (db_User == null) return null;
 
                 var query = await (from au in _context.AnimeUserModels
                                    join u in _context.UserAccounts on au.UserId equals u.Id
@@ -35,9 +36,18 @@ namespace BattAnimeZone.Services
                                       UserStatus = au.Status,
                                       UserRating = au.Rating,
                                       UserFavorite = au.favorite,
+                                      Date = au.Date,
 
                                    }).ToListAsync();
-                return query;
+
+                var return_data = new ProfilePageDTO
+                {
+                    Name = db_User.UserName,
+                    RegisteredAt = db_User.RegisteredAt,
+                    Animes = query
+                };
+
+                return return_data;
             }
         }
 

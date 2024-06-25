@@ -119,7 +119,7 @@ namespace BattAnimeZone.Controllers
         [HttpGet]
         [Route("GetProfile/{username}")]
         [AllowAnonymous]
-        public async Task<ActionResult<List<AnimeProfilePageDTO>?>> GetProfile(string username)
+        public async Task<ActionResult<ProfilePageDTO>> GetProfile(string username)
         {
             var userName = await _userAccountService.GetProfileByUserName(username);
             if (userName is null)

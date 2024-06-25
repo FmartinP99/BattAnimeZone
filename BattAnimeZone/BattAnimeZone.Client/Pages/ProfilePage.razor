@@ -1,11 +1,12 @@
-﻿@inject NavigationManager navManager
+@inject NavigationManager navManager
 @inject IHttpClientFactory HttpClientFactory
 @inject IJSRuntime JSRuntime
 @using BattAnimeZone.Client.Components
 @using BattAnimeZone.Shared.Models.AnimeDTOs
+@using BattAnimeZone.Shared.Models.User
 @rendermode InteractiveWebAssembly
 @page "/Profile/{UserName}"
-<link rel="stylesheet" href="/ProfilePage.css?version=0.4" />
+<link rel="stylesheet" href="/ProfilePage.css?version=0.2" />
 
 <PageTitle>@UserName's profile</PageTitle>
 
@@ -22,7 +23,8 @@
         <RadzenColumn id="outerLeftColumn">
 
         <div id="UserNameDiv">
-            <span id="userNameSpan">@UserName's profile</span>
+            <h2 id="userName">@UserName's profile</h2>
+            <h5 id="memberSince">@regesteredAt</h5>
         </div>
 
         <div id="animeCountContainerDiv">
@@ -89,6 +91,20 @@
 
             </div>
 
+            <hr />
+
+            <RadzenChart ColorScheme="ColorScheme.Palette" >
+                <RadzenColumnSeries Fills=@(new [] { "#1E8B22", "#6495ED", "#696969", "#663399", "#8B0000", "#FFE200" }) Data="@animeChart" CategoryProperty="Status"  LineType="LineType.Dashed" ValueProperty="Count">
+                    <RadzenSeriesDataLabels Visible="true" />
+                </RadzenColumnSeries>
+                <RadzenColumnOptions Radius="5" />
+                <RadzenValueAxis>
+                    <RadzenGridLines Visible="false" />
+                    <RadzenAxisTitle Text="Count" />
+                </RadzenValueAxis>
+                <RadzenLegend Visible="false"></RadzenLegend>
+            </RadzenChart>
+
 
         </RadzenColumn>
 
@@ -108,11 +124,19 @@
                                         <RadzenColumn class="notImageCol">
 
                                             <RadzenRow class="animeCardUpperRow">
+                                               
+                                                    <div class="titleCol">
+                                                         @anime.Title
+                                                    </div>
 
-                                                <div class="titleCol">
-                                                     @anime.Title
-                                                </div>
-
+                                                    <div class="dateCol">
+                                                    Added to list: <br>  
+                                                    @if (anime.Date != null)
+                                                    {
+                                                        @string.Join(" ", anime.Date.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries).Take(3))
+                                                    }
+                                                    </div>
+                                              
                                             </RadzenRow>
 
                                             <RadzenRow class="animeCardLowerRow">
@@ -151,6 +175,7 @@
 
                                             </RadzenRow>
 
+                                      
                                         </RadzenColumn>
 
 
@@ -172,34 +197,57 @@
 
     @code {
 
+
+    class DataItem
+    {
+        public string Status { get; set; }
+        public double? Count { get; set; }
+    }
+    DataItem[] animeChart = new DataItem[6];
+
     bool loaded = false;
 
     [Parameter]
     public string? UserName { get; set; }
 
     Dictionary<string, List<AnimeProfilePageDTO>?> OwnAnimes = new Dictionary<string, List<AnimeProfilePageDTO>?>();
+    string regesteredAt = "";
+
     string selected_tab = "Finished";
     HttpClient httpClient;
 
     List<string> PossibleStates = new List<string>(){ "completed", "watching", "on hold", "planned", "dropped", "favorites" };
 
+
+
+
     protected override async Task OnInitializedAsync()
     {
-      
+
         await base.OnInitializedAsync();
 
     }
-   
+
     protected override async Task OnParametersSetAsync()
     {
-        
+
         try
         {
             httpClient = HttpClientFactory.CreateClient("AuthenticatedClient");
             var response = await httpClient.GetAsync($"{navManager.BaseUri}api/AccountController/GetProfile/{UserName}");
             if (response.IsSuccessStatusCode)
             {
-                List<AnimeProfilePageDTO>? queried_animes = await response.Content.ReadFromJsonAsync<List<AnimeProfilePageDTO>?>();
+                ProfilePageDTO? profilePageDTO = await response.Content.ReadFromJsonAsync<ProfilePageDTO?>();
+                if (profilePageDTO == null) return;
+
+                List<AnimeProfilePageDTO> queried_animes = profilePageDTO.Animes;
+
+                string dateTimeString = profilePageDTO.RegisteredAt == null ? "" : profilePageDTO.RegisteredAt;
+                string[] parts = dateTimeString.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+                string dateOnly = string.Join(" ", parts.Take(3));
+
+
+                regesteredAt = profilePageDTO.RegisteredAt == null ? "" : $"Member since: {dateOnly}";
 
                 foreach (var state in PossibleStates)
                 {
@@ -223,6 +271,14 @@
                             OwnAnimes["favorites"] = new List<AnimeProfilePageDTO> { anime };
                         }
                     }
+
+                    animeChart[0] = new DataItem { Status = "Completed", Count = OwnAnimes["completed"]?.Count() ?? 0 };
+                    animeChart[1] = new DataItem { Status = "Watching", Count = OwnAnimes["watching"]?.Count() ?? 0 };
+                    animeChart[2] = new DataItem { Status = "On hold", Count = OwnAnimes["on hold"]?.Count() ?? 0 };
+                    animeChart[3] = new DataItem { Status = "Planned", Count = OwnAnimes["planned"]?.Count() ?? 0 };
+                    animeChart[4] = new DataItem { Status = "Dropped", Count = OwnAnimes["dropped"]?.Count() ?? 0 };
+                    animeChart[5] = new DataItem { Status = "Favorites", Count = OwnAnimes["favorites"]?.Count() ?? 0 };
+
                 }
             }
             else

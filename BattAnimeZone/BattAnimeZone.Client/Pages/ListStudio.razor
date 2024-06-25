@@ -70,7 +70,7 @@ else{
                 {
                     var ProdEnts = await response.Content.ReadFromJsonAsync<Dictionary<int, LiProductionEntityDTO>>();
                     productionEntities = ProdEnts.Values.ToList();
-                    productionEntities = productionEntities.OrderByDescending(prodent => prodent.Favorites).ToList();
+                    productionEntities = productionEntities.OrderBy(prodent => prodent.Titles[0].Title).ToList();
                     prodents_per_page = productionEntities.Take(pageSize);
                     count = productionEntities.Count;
                     StateHasChanged();

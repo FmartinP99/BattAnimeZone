@@ -56,6 +56,8 @@
     }
 
 
+
+
 /*--------------------------- LEFT COLUMN ------------------------------------------*/
 #outerLeftColumn {
     width: 960px !important;
@@ -68,19 +70,24 @@
     display: flex;
     justify-content: center;
     align-items: center;
+    flex-direction: column;
     border-bottom: 2px solid white;
 }
 
-#userNameSpan {
+#userName {
     font-size: 30px;
     margin-bottom:4px;
+}
+
+#memberSince{
+    font-size: 19px;
 }
 
 
 #animeCountContainerDiv {
     display: flex;
     flex-wrap: wrap;
-    justify-content:center;
+    justify-content: center;
 }
 
 .textContainerDiv {
@@ -139,6 +146,7 @@
 
 /*----------------------------------- RIGHT COLUMN -------------------------*/
 #outerRightColumn {
+    margin-top:22px;
     width: 960px !important;
     padding: 10px;
 }
@@ -165,19 +173,27 @@
     
 }
 
-.animeCardUpperRow{
+.animeCardUpperRow {
     display: flex !important;
-    height:50%;
-    margin_bottom:20px;
-    border-bottom:1px white dashed;
+    flex-direction: column;
+    height: 50%;
+    margin_bottom: 20px;
+    border-bottom: 1px white dashed;
     &:hover
 {
     border: none;
     border-bottom:1px white dashed;
 }
 
+}
 
 
+.titleCol {
+    max-width: 80%;
+    min-width: 80%;
+    margin-left: 5px;
+    min-height: 95%;
+    max-height: 95%;
 }
 
 .animeCardLowerRow {
@@ -198,8 +214,3 @@
    
 }
 
-.titleCol {
-    max-width: 100%;
-    margin-left: 5px;
-    
-}
