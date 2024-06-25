@@ -24,6 +24,7 @@ namespace BattAnimeZone.Services
                                              Animes = grp.Select(x => new LiGenreAnimeDTO
                                              {
                                                  Mal_id = x.a.Mal_id,
+                                                 Title = x.a.Title,
                                                  TitleEnglish = x.a.TitleEnglish,
                                                  TitleJapanese = x.a.TitleJapanese,
                                                  MediaType = x.a.MediaType,
