@@ -524,7 +524,39 @@ namespace BattAnimeZone.DatabaseInitializer
             }
         }
 
-        public async Task SaveAnimeUsersToDatabase()
+
+        public async Task SaveUpdatedProductionEntityCountsToDatabase()
+        {
+            using (var _context = _dbContextFactory.CreateDbContext())
+            {
+                var result = await _context.AnimeProductionEntities
+                .GroupBy(ape => ape.ProductionEntityId)
+                .Select(g => new
+                {
+                    ProductionEntityId = g.Key,
+                    AnimeCount = g.Count()
+                })
+                .ToListAsync();
+
+                foreach(var res in result)
+                {
+                    var prodent = _context.ProductionEntities.Where(x => x.Id == res.ProductionEntityId).FirstOrDefault();
+                    if(prodent != null)
+                    {
+                        prodent.Count = res.AnimeCount;
+                        _context.ProductionEntities.Update(prodent);
+                    }
+                }
+
+                await _context.SaveChangesAsync();
+
+
+            }
+            }
+
+
+
+            public async Task SaveAnimeUsersToDatabase()
         {
 
             List<AnimeUserModel> animeUserModels = new List<AnimeUserModel>();

@@ -274,7 +274,12 @@ namespace BattAnimeZone.DatabaseInitializer
 			await _csvToDataBaseHandler.SaveAnimeProductionEntitiesToDatabase(animesData);
 			Console.WriteLine("saved animeproductionentities\n");
 
-			Console.WriteLine("queried genres");
+
+            Console.WriteLine("Updating Counts for Production Entities based on the used data\n");
+            await _csvToDataBaseHandler.SaveUpdatedProductionEntityCountsToDatabase();
+            Console.WriteLine("Done updating Counts for Production Entities based on the used data\n");
+
+            Console.WriteLine("queried genres");
 			await _csvToDataBaseHandler.SaveGenresToDatabase(genresData);
 			Console.WriteLine("saved genres\n");
 
