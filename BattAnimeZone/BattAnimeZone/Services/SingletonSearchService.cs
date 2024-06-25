@@ -4,6 +4,7 @@ using BattAnimeZone.Shared.Models.AnimeDTOs;
 using F23.StringSimilarity;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
+using System.Data.SqlTypes;
 using System.Linq.Dynamic.Core;
 
 namespace BattAnimeZone.Services
@@ -22,7 +23,7 @@ namespace BattAnimeZone.Services
         private Dictionary<int, AnimeTitleContainer> animes = new Dictionary<int, AnimeTitleContainer> { };
 
         //stores the similar anime id's for the past {recently_max_size} different searches.
-        private Dictionary<string, int[]> recently_searched_distances = new Dictionary<string, int[]> { };
+        private Dictionary<string, int[]> recently_searched_strings = new Dictionary<string, int[]> { };
 
         int recently_max_size = 2000;
 
@@ -56,36 +57,36 @@ namespace BattAnimeZone.Services
 
         public int[] GetSimilarAnimesForSearchResult(int n, string name)
         {
-            name = name.ToLower();
-            Dictionary<int, double> distances = new Dictionary<int, double>();
+          
+            List<int> foundAnimes = new List<int>();
 
-            if (recently_searched_distances.ContainsKey(name)) return recently_searched_distances[name];
+            if (recently_searched_strings.ContainsKey(name.ToLower())) return recently_searched_strings[name.ToLower()];
 
-            var distance_metric = new JaroWinkler();
+           
             foreach (KeyValuePair<int, AnimeTitleContainer> anime in this.animes)
             {
-                double default_distance = double.MaxValue;
-                double eng_distance = double.MaxValue;
-                double jp_distance = double.MaxValue;
-                if (anime.Value.Title != "") default_distance = distance_metric.Distance(name, anime.Value.TitleEnglish.ToLower());
-                if (anime.Value.TitleEnglish != "") eng_distance = distance_metric.Distance(name, anime.Value.TitleJapanese.ToLower());
-                if (anime.Value.TitleJapanese != "") jp_distance = distance_metric.Distance(name, anime.Value.TitleJapanese.ToLower());
-                double min_distance = Math.Min(jp_distance, Math.Min(eng_distance, default_distance));
-                if (min_distance < 0.4) distances.Add(anime.Key, min_distance);
+
+                bool substring1 = anime.Value.TitleJapanese.IndexOf(name, StringComparison.OrdinalIgnoreCase) >= 0;
+                bool substring2 = anime.Value.TitleEnglish.IndexOf(name, StringComparison.OrdinalIgnoreCase) >= 0;
+                bool substring3 = anime.Value.Title.IndexOf(name, StringComparison.OrdinalIgnoreCase) >= 0;
+
+
+                if (substring1 || substring2 || substring3) foundAnimes.Add(anime.Key);
+                if (foundAnimes.Count() >= n) break;
             }
-            var top_n_ids = distances.OrderBy(kv => kv.Value).Take(n).Select(kv => kv.Key).ToList();
+          
 
             //this can die if there r multiple concurrent workers trying to remove from the dictionary. need to do something about it later.
             // update: hope lock prevents it 
-            lock (recently_searched_distances)
+            lock (recently_searched_strings)
             {
-                if (recently_searched_distances.Count >= recently_max_size)
+                if (recently_searched_strings.Count >= recently_max_size)
                 {
-                    string key_to_Remove = recently_searched_distances.Keys.ElementAt(0);
+                    string key_to_Remove = recently_searched_strings.Keys.ElementAt(0);
                     try
                     {
-                        recently_searched_distances.Remove(key_to_Remove);
-                        recently_searched_distances.Add(name, top_n_ids.ToArray());
+                        recently_searched_strings.Remove(key_to_Remove);
+                        recently_searched_strings.Add(name.ToLower(), foundAnimes.ToArray());
                     }
                     catch (Exception ex)
                     {
@@ -95,11 +96,11 @@ namespace BattAnimeZone.Services
                 }
                 else
                 {
-                    recently_searched_distances.Add(name, top_n_ids.ToArray());
+                    recently_searched_strings.Add(name.ToLower(), foundAnimes.ToArray());
                 }
             }
            
-            return top_n_ids.ToArray();
+            return foundAnimes.ToArray();
         }
     }
 }

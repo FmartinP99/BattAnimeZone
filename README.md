@@ -24,7 +24,6 @@ This webapp is essentially a digital-library built on the [MyAnimeList](https://
 - Policy based authorization.
 - Encrypted Session / Local storage.
 - Custom HttpContext.
-- The program uses string-similarity comparsion to find similar animes for the <br> searched-string so there's no need for an exact search term.<br>
 - Uses an in-memory cache for the past N search to speed up the popular database queries. See: `SingletonSearachService`.
 - Custom Form validator.
 

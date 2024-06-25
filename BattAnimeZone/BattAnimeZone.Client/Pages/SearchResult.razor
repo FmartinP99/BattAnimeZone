@@ -18,57 +18,64 @@
 }
 else{
     @if (this.similar_animes != null){
-    <div class="display-div">
-            @foreach (AnimeSearchResultDTO similar_anime in this.similar_animes)
-    {
+        @if(this.similar_animes.Count == 0)
+        {
+            <h1>There's no animes with the name: @name</h1>
+                }else{
+
+                <div class="display-div">
+                @foreach (AnimeSearchResultDTO similar_anime in this.similar_animes)
+                {
     
-            <div @onclick=@(() => NavigateTo(similar_anime.Mal_id)) class="animeRow">
-                    <RadzenColumn Style="min-width:100px; max-width:100px; display:inline-block;">
-                        <RadzenImage Style="max-width:100px; max-height:100px;" Path="@similar_anime.ImageLargeWebpUrl"></RadzenImage>
-                </RadzenColumn>
+                <div @onclick=@(() => NavigateTo(similar_anime.Mal_id)) class="animeRow">
+                        <RadzenColumn Style="min-width:100px; max-width:100px; display:inline-block;">
+                            <RadzenImage Style="max-width:100px; max-height:100px;" Path="@similar_anime.ImageLargeWebpUrl"></RadzenImage>
+                    </RadzenColumn>
 
-                    <div class="attributeTitleDiv">
-                        Title: <br> @similar_anime.Title
-                    </div>
+                        <div class="attributeTitleDiv">
+                            Title: <br> @similar_anime.Title
+                        </div>
 
-                    <div class="attributeTitleDiv">
-                English Title: <br> @similar_anime.TitleEnglish
-                    </div>
+                        <div class="attributeTitleDiv">
+                    English Title: <br> @similar_anime.TitleEnglish
+                        </div>
 
-                    <div class="attributeTitleDiv">
-                        Japanese Title: <br> @similar_anime.TitleJapanese
-                    </div>
+                        <div class="attributeTitleDiv">
+                            Japanese Title: <br> @similar_anime.TitleJapanese
+                        </div>
 
-                    <div class="attributeDiv">
-                        Type: <br> @similar_anime.MediaType
-                     </div>
+                        <div class="attributeDiv">
+                            Type: <br> @similar_anime.MediaType
+                         </div>
 
-                    <div class="attributeDiv">
-                Episodes: <br> @similar_anime.Episodes
-                      </div>
+                        <div class="attributeDiv">
+                    Episodes: <br> @similar_anime.Episodes
+                          </div>
 
-                    <div class="attributeDiv">
-                Score: <br> @similar_anime.Score
-                    </div>
+                        <div class="attributeDiv">
+                    Score: <br> @similar_anime.Score
+                        </div>
 
-                    <div class="attributeDiv">
-                Year: <br> @similar_anime.Year
-                    </div>
+                        <div class="attributeDiv">
+                    Year: <br> @similar_anime.Year
+                        </div>
 
-                    <div class="attributeDiv">
-                        Status: <br> @similar_anime.Status
-                    </div>
+                        <div class="attributeDiv">
+                            Status: <br> @similar_anime.Status
+                        </div>
 
-            </div>
+                </div>
 
 
+            }
+           </div>
         }
-       </div>
     }
     else if (this.similar_animes == null || this.name == "" || this.name == null)
     {
         <h1 style="margin-top:50px">You did not search for anything!</h1>
     }
+
 }
 
 
