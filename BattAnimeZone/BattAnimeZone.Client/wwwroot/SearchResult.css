@@ -15,3 +15,34 @@
     cursor: pointer;
     
 }
+
+.animeRow {
+    display: flex;
+    height: 100px;
+    margin-bottom: 30px;
+    min-width: 1700px;
+    max-width: 1700px;
+    &:hover
+
+{
+    border: solid 1px white;
+    cursor: pointer;
+}
+
+}
+
+
+.attributeTitleDiv {
+    min-width: 300px;
+    max-width: 300px;
+    margin-left: 20px;
+    display: inline-block;
+}
+
+
+.attributeDiv {
+    min-width: 85px;
+    max-width: 85px;
+    margin-left: 20px;
+    display: inline-block;
+}

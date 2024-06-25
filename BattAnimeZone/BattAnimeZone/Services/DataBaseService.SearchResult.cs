@@ -15,6 +15,7 @@ namespace BattAnimeZone.Services
                    .Select(a => new AnimeSearchResultDTO
                    {
                        Mal_id = a.Mal_id,
+                       Title = a.Title,
                        TitleEnglish = a.TitleEnglish,
                        TitleJapanese = a.TitleJapanese,
                        MediaType = a.MediaType,
