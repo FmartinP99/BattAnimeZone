@@ -1,3 +1,5 @@
+PRAGMA foreign_keys = ON;
+
 CREATE TABLE Anime (
   id integer NOT NULL PRIMARY KEY,
   title text DEFAULT "",
@@ -52,8 +54,8 @@ CREATE TABLE Relation (
   child_id NOT NULL,
   relationType TEXT not null,
   
-  FOREIGN KEY(parent_id) REFERENCES Anime(id),
-  FOREIGN KEY(child_id) REFERENCES Anime(id),
+  FOREIGN KEY(parent_id) REFERENCES Anime(id) ON DELETE CASCADE,
+  FOREIGN KEY(child_id) REFERENCES Anime(id) ON DELETE CASCADE,
   UNIQUE(parent_id, child_id, relationType)
 );
 
@@ -63,7 +65,7 @@ CREATE TABLE External (
   "name" text NOT NULL,
    url  text NOT NULL,
    anime_id integer NOT NULL,
-  FOREIGN KEY(anime_id) REFERENCES Anime(id)
+  FOREIGN KEY(anime_id) REFERENCES Anime(id) ON DELETE CASCADE
 );
 
 CREATE TABLE Streaming (
@@ -79,8 +81,8 @@ CREATE TABLE AnimeStreaming (
    id integer NOT NULL PRIMARY KEY AUTOINCREMENT,
    anime_id NOT NULL,
    streaming_id NOT NULL,
-   FOREIGN KEY(anime_id) REFERENCES Anime(id),
-  FOREIGN KEY(streaming_id) REFERENCES Streaming(id),
+   FOREIGN KEY(anime_id) REFERENCES Anime(id) ON DELETE CASCADE,
+  FOREIGN KEY(streaming_id) REFERENCES Streaming(id) ON DELETE CASCADE,
 UNIQUE(anime_id, streaming_id)
 );
 
@@ -102,7 +104,7 @@ id integer NOT NULL PRIMARY KEY AUTOINCREMENT,
 "type" TEXT NOT NULL DEFAULT "",
 title TEXT NOT NULL DEFAULT "",
 parent_id integer NOT NULL,
-FOREIGN KEY(parent_id) REFERENCES ProductionEntity(id)
+FOREIGN KEY(parent_id) REFERENCES ProductionEntity(id) ON DELETE CASCADE
 );
 
 
@@ -112,8 +114,8 @@ CREATE TABLE AnimeProductionEntity (
   productionEntity_id NOT NULL,
   "type" TEXT CHECK( "type" IN ('S','L','P') )   NOT NULL,
   
-  FOREIGN KEY(anime_id) REFERENCES Anime(id),
-  FOREIGN KEY(productionEntity_id) REFERENCES ProductionEntity(id),
+  FOREIGN KEY(anime_id) REFERENCES Anime(id) ON DELETE CASCADE,
+  FOREIGN KEY(productionEntity_id) REFERENCES ProductionEntity(id) ON DELETE CASCADE,
   UNIQUE(anime_id, productionEntity_id, "type")
 );
 
@@ -147,8 +149,8 @@ CREATE TABLE AnimeUser (
   favorite integer CHECK( favorite IN (0,1)) NOT NULL DEFAULT 0,
   "date" TEXT not null,
   "status" text CHECK ("status" IN ('watching', 'completed', 'on hold', 'dropped', 'planned')),
-  FOREIGN KEY(anime_id) REFERENCES Anime(id),
-  FOREIGN KEY(user_id) REFERENCES UserAccount(id),
+  FOREIGN KEY(anime_id) REFERENCES Anime(id) ON DELETE CASCADE,
+  FOREIGN KEY(user_id) REFERENCES UserAccount(id) ON DELETE CASCADE,
   UNIQUE(anime_id, user_id)
 );
 
@@ -163,8 +165,8 @@ CREATE TABLE AnimeGenre (
   anime_id integer NOT NULL,
   genre_id integer NOT NULL,
   is_theme integer CHECK(is_theme BETWEEN 0 AND 1) DEFAULT 0,
-  FOREIGN KEY(anime_id) REFERENCES Anime(id),
-  FOREIGN KEY(genre_id) REFERENCES Genre(id),
+  FOREIGN KEY(anime_id) REFERENCES Anime(id) ON DELETE CASCADE,
+  FOREIGN KEY(genre_id) REFERENCES Genre(id) ON DELETE CASCADE,
   UNIQUE(anime_id, genre_id)
 );
 

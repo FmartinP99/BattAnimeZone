@@ -26,7 +26,9 @@ namespace BattAnimeZone.DatabaseModels
 
         [Required]
         [Column("anime_id")]
-        [ForeignKey("anime_id")]
         public int AnimeId { get; set; }
+
+        [ForeignKey("AnimeId")]
+        public AnimeModel Anime { get; set; }
     }
 }

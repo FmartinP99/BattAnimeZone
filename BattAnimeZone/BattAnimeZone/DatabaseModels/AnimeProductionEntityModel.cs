@@ -17,17 +17,22 @@ namespace BattAnimeZone.DatabaseModels
 
         [Required]
         [Column("anime_id")]
-        [ForeignKey("anime_id")]
         public int AnimeId { get; set; }
 
         [Required]
         [Column("productionEntity_id")]
-        [ForeignKey("productionEntity_id")]
         public int ProductionEntityId { get; set; }
 
         [Required]
         [Column("type")]
         [MaxLength(1)]
         public string Type { get; set; }
+
+
+        [ForeignKey("AnimeId")]
+        public AnimeModel Anime {  get; set; }
+
+        [ForeignKey("ProductionEntityId")]
+        public ProductionEntityModel ProductionEntity { get; set; }
     }
 }
