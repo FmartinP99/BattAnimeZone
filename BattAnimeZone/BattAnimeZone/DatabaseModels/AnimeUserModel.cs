@@ -17,12 +17,10 @@ namespace BattAnimeZone.DatabaseModels
         public int Id { get; set; }
 
         [Column("anime_id")]
-        [ForeignKey("anime_id")]
         [Required]
         public int AnimeId { get; set; }
 
         [Column("user_id")]
-        [ForeignKey("user_id")]
         [Required]
         public int UserId { get; set; }
 
@@ -41,6 +39,12 @@ namespace BattAnimeZone.DatabaseModels
         [Column("date")]
         [Required]
         public string Date { get; set; }
+
+        [ForeignKey("AnimeId")]
+        public AnimeModel Anime { get; set; }
+
+        [ForeignKey("UserId")]
+        public UserAccountModel UserAccount { get; set; }
 
     }
 }

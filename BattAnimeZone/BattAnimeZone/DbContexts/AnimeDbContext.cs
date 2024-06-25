@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using BattAnimeZone.DatabaseModels;
+using BattAnimeZone.Shared.Models.Anime;
 
 namespace BattAnimeZone.DbContexts
 {
@@ -24,6 +25,106 @@ namespace BattAnimeZone.DbContexts
             : base(options)
         {
         }
+
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+           
+            modelBuilder.Entity<RelationModel>()
+           .HasOne(r => r.ParentAnime)
+           .WithMany()
+           .HasForeignKey(r => r.ParentId)
+           .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<RelationModel>()
+           .HasOne(r => r.ChildAnime)
+           .WithMany()
+           .HasForeignKey(r => r.ChildId)
+           .OnDelete(DeleteBehavior.Cascade);
+
+
+
+
+            modelBuilder.Entity<AnimeProductionEntityModel>()
+           .HasOne(r => r.Anime)
+           .WithMany()
+           .HasForeignKey(r => r.AnimeId)
+           .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<AnimeProductionEntityModel>()
+           .HasOne(r => r.ProductionEntity)
+           .WithMany()
+           .HasForeignKey(r => r.ProductionEntityId)
+           .OnDelete(DeleteBehavior.Cascade);
+
+
+
+
+            modelBuilder.Entity<AnimeGenreModel>()
+           .HasOne(r => r.Anime)
+           .WithMany()
+           .HasForeignKey(r => r.AnimeId)
+           .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<AnimeGenreModel>()
+           .HasOne(r => r.Genre)
+           .WithMany()
+           .HasForeignKey(r => r.GenreId)
+           .OnDelete(DeleteBehavior.Cascade);
+
+
+
+
+            modelBuilder.Entity<AnimeStreamingModel>()
+          .HasOne(r => r.Anime)
+          .WithMany()
+          .HasForeignKey(r => r.AnimeId)
+          .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<AnimeStreamingModel>()
+           .HasOne(r => r.Streaming)
+           .WithMany()
+           .HasForeignKey(r => r.StreamingId)
+           .OnDelete(DeleteBehavior.Cascade);
+
+
+
+
+            modelBuilder.Entity<AnimeUserModel>()
+           .HasOne(r => r.Anime)
+           .WithMany()
+           .HasForeignKey(r => r.AnimeId)
+           .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<AnimeUserModel>()
+           .HasOne(r => r.UserAccount)
+           .WithMany()
+           .HasForeignKey(r => r.UserId)
+           .OnDelete(DeleteBehavior.Cascade);
+
+
+
+
+
+            modelBuilder.Entity<ProductionEntityTitleModel>()
+          .HasOne(r => r.ProductionEntity)
+          .WithMany()
+          .HasForeignKey(r => r.ParentId)
+          .OnDelete(DeleteBehavior.Cascade);
+
+
+
+
+
+            modelBuilder.Entity<ExternalModel>()
+             .HasOne(r => r.Anime)
+             .WithMany()
+             .HasForeignKey(r => r.AnimeId)
+             .OnDelete(DeleteBehavior.Cascade);
+
+
+        }
+
 
 
         internal void DetachAll()

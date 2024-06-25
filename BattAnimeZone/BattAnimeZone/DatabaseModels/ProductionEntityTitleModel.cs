@@ -26,7 +26,9 @@ namespace BattAnimeZone.DatabaseModels
 
         [Required]
         [Column("parent_id")]
-        [ForeignKey("parent_id")]
         public int ParentId { get; set; }
+
+        [ForeignKey("ParentId")]
+        public ProductionEntityModel ProductionEntity { get; set; }
     }
 }
