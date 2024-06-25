@@ -3,7 +3,7 @@
 ### Blazor (Full Stack, web server & web assembly) Web App written in C# with .NET8
 
 This webapp is essentially a digital-library built on the [MyAnimeList](https://myanimelist.net)'s data. 
-
+It is highly advised to use it via a desktop computer/laptop and not with mobil devices, because the UI currently not supported for mobile devices.
 
 ### Features from the User's perspective
 
@@ -15,7 +15,7 @@ This webapp is essentially a digital-library built on the [MyAnimeList](https://
 
 
 ### Features from a technical perspective
-- MVC pattern with Service & EF layer  (View <-> Controller <-> Service <-> DbContext/EF <-> Database).
+- MVC pattern with Service & EF layer  (View <-> Controller <-> Service <-> DbContext/EF <-> Model/Database).
 - Database queries are written with EntityFramework.
 - Database layout is in 3NF.
 - Code first approach.
