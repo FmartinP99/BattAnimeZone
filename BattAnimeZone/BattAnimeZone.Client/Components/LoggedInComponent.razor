@@ -13,19 +13,46 @@
 @inject AuthenticationStateProvider authStateProvider
 <link rel="stylesheet" href="/LoggedInComponent.css?version=0.1" />
 
-<div class="profileDiv">
-    <Button Color="ButtonColor.None" @onclick="NavigateToProfile"><Icon Name="IconName.Person" Size=IconSize.x3 /> <span> @userName</span> </Button>
+<div class="content">
+
+    <div class="profileDiv">
+        <Button Color="ButtonColor.None" @onclick="NavigateToProfile"><Icon Name="IconName.Person" Size=IconSize.x3 /> <span> @userName</span> </Button>
+    </div>
+
+    <div class="changeDetailsDiv">
+        <Button Color="ButtonColor.None" @onclick="ShowOffCanvasChangeDetails"><Icon Name="IconName.TicketDetailed" /> <span>Change Details!</span></Button>
+    </div>
+
+
+    <div class="logoutDiv">
+    <Button Color="ButtonColor.None" @onclick="Logout"><Icon Name="IconName.BoxArrowLeft" /> <span>LOGOUT!</span></Button>
+    </div>
+
+    <div class="deleteAccountDiv">
+        <Button Color="ButtonColor.None" @onclick="OnShowModalClick"><Icon Name="IconName.PersonDash" /> <span>DELETE MY ACCOUNT!</span></Button>
+    </div>
+
 </div>
 
-<div class="changeDetailsDiv">
-    <Button Color="ButtonColor.None" @onclick="ShowOffCanvasChangeDetails"><Icon Name="IconName.TicketDetailed" /> <span>Change Details!</span></Button>
-</div>
 
 
-<div class="logoutDiv">
-<Button Color="ButtonColor.None" @onclick="Logout"><Icon Name="IconName.BoxArrowLeft" /> <span>LOGOUT!</span></Button>
-</div>
+<Modal title="Confirm Account Deletion" onfocus="true" @ref="modal" Class="customModalCssClass" IsVerticallyCentered="true"
+       FooterCssClass="customModalFooterCssClass"
+       BodyCssClass="customModalBodyCssClass"
+       HeaderCssClass="customModalHeaderCssClass"
+       CloseIconColor=IconColor.White>
 
+    <BodyTemplate>
+      
+        <RadzenLabel Text="Current password:" class="rateComponentText" Style="vertical-align: middle;" />
+        <input type="password" class="inputClass" @bind=@confirmpassword Style="width: 100%; max-width: 160px;" Name="DropDownTextValueProperties" />
+       
+    </BodyTemplate>
+    <FooterTemplate>
+        <Button Color="ButtonColor.Secondary" @onclick="OnHideModalClick" Style="background-color: green;">Close</Button>
+        <Button Color="ButtonColor.Primary" @ref="modalSaveButton" @onclick="OnModalSaveClick" Style="background-color: #8B0000;">DELETE MY ACCOUNT!</Button>
+    </FooterTemplate>
+</Modal>
 
 
 
@@ -41,6 +68,11 @@
     string? userName = "";
 
     private Offcanvas offcanvasChanngeDetails = default!;
+
+    Modal modal = default!;
+    private Button modalSaveButton = default!;
+
+    string confirmpassword = "";
 
     protected override async Task OnInitializedAsync()
     {
@@ -65,7 +97,7 @@
             var user = authState.User;
             if (user.Identity.Name != null)
                 userName = user.Identity.Name.ToString();
-            
+
         }
         catch (Exception e)
         {
@@ -85,13 +117,15 @@
             {
                 httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", userSession.Token);
                 await httpClient.PostAsJsonAsync<UserSession>($"{navManager.BaseUri}api/AccountController/Logout", userSession);
+                httpClient.DefaultRequestHeaders.Authorization = null;
+
             }catch {}
             finally
             {
-               await customAuthStateProvider.UpdateAuthenticationState(null);
-               navManager.NavigateTo(navManager.Uri, forceLoad: true);
+                await customAuthStateProvider.UpdateAuthenticationState(null);
+                navManager.NavigateTo(navManager.Uri, forceLoad: true);
             }
-            
+
         }
     }
 
@@ -102,6 +136,64 @@
         parameters.Add("UserName", userName ?? "");
         await offcanvasChanngeDetails.ShowAsync<ChangeDetailsComponent>(title: "Change Details", parameters: parameters);
     }
+
+    private async Task OnShowModalClick()
+    {
+
+
+        await modal.ShowAsync();
+
+    }
+
+    private async Task OnHideModalClick()
+    {
+        await modal.HideAsync();
+    }
+
+    private async Task OnModalSaveClick()
+    {
+
+        var customAuthStateProvider = (CustomAuthenticationStateProvider)authStateProvider;
+        UserSession userSession = await storageService.GetUserSession();
+
+        DeleteAccountRequest deleteAccountRequest = new DeleteAccountRequest
+            {
+                UserName = userName,
+                Password = confirmpassword
+            };
+
+        try
+        {
+            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", userSession.Token);
+            var response = await httpClient.PostAsJsonAsync<DeleteAccountRequest>($"{navManager.BaseUri}api/AccountController/DeleteAccount", deleteAccountRequest);
+            httpClient.DefaultRequestHeaders.Authorization = null;
+
+            DeleteAccountResponse? content = await response.Content.ReadFromJsonAsync<DeleteAccountResponse>();
+
+            if (response.IsSuccessStatusCode)
+            {
+                await JSRuntime.InvokeVoidAsync("alert", content?.Message);
+
+                await customAuthStateProvider.UpdateAuthenticationState(null);
+                navManager.NavigateTo(navManager.Uri, forceLoad: true);
+            }
+            else
+            {
+                await JSRuntime.InvokeVoidAsync("alert", content?.Message);
+                if (content.Message != "The password is incorrect!")
+                {
+                    await customAuthStateProvider.UpdateAuthenticationState(null);
+                    navManager.NavigateTo(navManager.Uri, forceLoad: true);
+                }
+
+            }
+        }
+        catch(Exception ex)
+        {
+            await JSRuntime.InvokeVoidAsync("alert", "Something went wrong with the account deletion. You will be logged out now! Log in, and try again!");
+        }
+    }
+
 
 
     public void NavigateToProfile()

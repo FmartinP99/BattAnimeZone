@@ -15,7 +15,10 @@
 {
     <LoadingComponent></LoadingComponent>
 }else{
-
+    if (!foundUser)
+    {
+        <h1>This user does not exists!</h1>
+    }else{
 
     <RadzenRow id="mainContainerRow">
 
@@ -193,6 +196,7 @@
 
 
     </RadzenRow>
+    }
 
 
 
@@ -208,6 +212,7 @@
     DataItem[] animeChart = new DataItem[6];
 
     bool loaded = false;
+    bool foundUser = true;
 
     [Parameter]
     public string? UserName { get; set; }
@@ -285,6 +290,7 @@
             }
             else
             {
+                foundUser = false;
                 await JSRuntime.InvokeVoidAsync("console.error", $"{response.StatusCode}\n {response.ReasonPhrase}");
 
             }
