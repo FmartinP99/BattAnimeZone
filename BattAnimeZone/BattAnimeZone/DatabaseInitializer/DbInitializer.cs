@@ -239,43 +239,43 @@ namespace BattAnimeZone.DatabaseInitializer
 
 		public async void FillDatabase(IDbContextFactory<AnimeDbContext> _contextFactory, Dictionary<int, Anime> animes, Dictionary<int, ProductionEntity> productionEntities, Dictionary<int, AnimeGenre> genres)
 		{
-			Console.WriteLine("step filldatabase");
+			Console.WriteLine("Filling database!\n");
 			var animesData = animes.Select(a => a.Value).ToList();
 			var prodentsData = productionEntities.Select(a => a.Value).ToList();
 			var genresData = genres.Select(a => a.Value).ToList();
 
 			CsvToDataBaseHandler _csvToDataBaseHandler = new CsvToDataBaseHandler(_contextFactory);
 
-			Console.WriteLine("queried animes");
+			Console.WriteLine("querying animes");
 			await _csvToDataBaseHandler.SaveAnimesToDatabase(animesData);
 			Console.WriteLine("saved animes\n");
 
 
-			Console.WriteLine("queried relations");
+			Console.WriteLine("querying relations");
 			await _csvToDataBaseHandler.SaveRelationsToDatabase(animes);
 			Console.WriteLine("saved relations\n");
 
-			Console.WriteLine("queried externals");
+			Console.WriteLine("querying externals");
 			await _csvToDataBaseHandler.SaveExternalsToDatabase(animesData);
 			Console.WriteLine("saved externals\n");
 
-			Console.WriteLine("queried streamings");
+			Console.WriteLine("querying streamings");
 			await _csvToDataBaseHandler.SaveStreamingsToDatabase(animesData);
 			Console.WriteLine("saved streamings\n");
 
-			Console.WriteLine("queried animestreamings");
+			Console.WriteLine("querying animestreamings");
 			await _csvToDataBaseHandler.SaveAnimeStreamingsToDatabase(animesData);
 			Console.WriteLine("saved animestreamings\n");
 
-			Console.WriteLine("queried productionentities");
+			Console.WriteLine("querying productionentities");
 			await _csvToDataBaseHandler.SaveProductionEntitiesToDatabase(prodentsData);
 			Console.WriteLine("saved productionentities\n");
 
-			Console.WriteLine("queried productionentitytitles");
+			Console.WriteLine("querying productionentitytitles");
 			await _csvToDataBaseHandler.SaveProductionEntityTitlesToDatabase(prodentsData);
 			Console.WriteLine("saved productionentitytitles\n");
 
-			Console.WriteLine("queried animeproductionentities");
+			Console.WriteLine("querying animeproductionentities");
 			await _csvToDataBaseHandler.SaveAnimeProductionEntitiesToDatabase(animesData);
 			Console.WriteLine("saved animeproductionentities\n");
 
@@ -284,20 +284,20 @@ namespace BattAnimeZone.DatabaseInitializer
             await _csvToDataBaseHandler.SaveUpdatedProductionEntityCountsToDatabase();
             Console.WriteLine("Done updating Counts for Production Entities based on the used data\n");
 
-            Console.WriteLine("queried genres");
+            Console.WriteLine("querying genres");
 			await _csvToDataBaseHandler.SaveGenresToDatabase(genresData);
 			Console.WriteLine("saved genres\n");
 
-			Console.WriteLine("queried animegenres");
+			Console.WriteLine("querying animegenres");
 			await _csvToDataBaseHandler.SaveAnimeGenresToDatabase(animesData);
 			Console.WriteLine("saved animegenres\n");
 
 
-            Console.WriteLine("queried distinctmediatypes");
+            Console.WriteLine("querying distinctmediatypes");
             await _csvToDataBaseHandler.SaveDistinctMediaTypes();
             Console.WriteLine("saved distinctmediatypes\n");
 
-			Console.WriteLine("queried distinctyears");
+			Console.WriteLine("querying distinctyears");
 			await _csvToDataBaseHandler.SaveDistinctYears();
 			Console.WriteLine("saved distinctyears\n");
 
