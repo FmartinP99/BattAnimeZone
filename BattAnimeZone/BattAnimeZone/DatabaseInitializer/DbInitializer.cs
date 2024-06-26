@@ -105,6 +105,11 @@ namespace BattAnimeZone.DatabaseInitializer
 					List<External>? externals = JsonConvert.DeserializeObject<List<External>>(csv.GetField("external"));
 					List<Streaming>? streamings = JsonConvert.DeserializeObject<List<Streaming>>(csv.GetField("streaming"));
 
+
+					int year_to_Append = (int?)csv.GetField<float>("aired.prop.from.year") ?? 0;
+					if (year_to_Append < 1980) continue;
+
+
 					Anime new_anime = new Anime
 					{
 						Mal_id = (int)csv.GetField<float>("mal_id"),
@@ -128,7 +133,7 @@ namespace BattAnimeZone.DatabaseInitializer
 						Synopsis = csv.GetField("synopsis"),
 						Background = csv.GetField("background"),
 						Season = csv.GetField("season"),
-						Year = (int)csv.GetField<float>("aired.prop.from.year"),
+						Year = year_to_Append,
 						Producers = producers,
 						Licensors = licensors,
 						Studios = studios,
@@ -152,8 +157,8 @@ namespace BattAnimeZone.DatabaseInitializer
 						TrailerImageMaximumUrl = csv.GetField("trailer.images.maximum_image_url"),
 						AiredFromDay = (int)csv.GetField<float>("aired.prop.from.day"),
 						AiredFromMonth = (int)csv.GetField<float>("aired.prop.from.month"),
-						AiredFromYear = (int)csv.GetField<float>("aired.prop.from.year"),
-						AiredToDay = (int)csv.GetField<float>("aired.prop.to.day"),
+						AiredFromYear = year_to_Append,
+                        AiredToDay = (int)csv.GetField<float>("aired.prop.to.day"),
 						AiredToMonth = (int)csv.GetField<float>("aired.prop.to.month"),
 						AiredToYear = (int)csv.GetField<float>("aired.prop.to.year"),
 						AiredString = csv.GetField("aired.string"),

@@ -178,4 +178,5 @@ FROM Anime;
 
 CREATE TABLE DistinctYears AS
 SELECT DISTINCT "Year"
-FROM Anime;
+FROM Anime
+WHERE "Year" IS NOT NULL;
