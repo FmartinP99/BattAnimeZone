@@ -239,6 +239,9 @@
 				await JSRuntime.InvokeVoidAsync("console.error", $"{ex.Message}"); ;
 			}
 		}
+
+		media_types?.RemoveAll(item => string.IsNullOrEmpty(item) || string.IsNullOrWhiteSpace(item));
+
 	}
 
 

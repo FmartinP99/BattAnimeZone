@@ -4,8 +4,11 @@ import json
 import requests
 import shutil
 import os
+import numpy as np
 example_data = dict()
-
+pd.set_option('display.width', 1920)
+np.set_printoptions(linewidth=1920)
+pd.set_option('display.max_columns',300)
 
 def main(BASE_URL, IDS, outfile):
 
@@ -119,8 +122,8 @@ def get_season(month):
 
 
 """this function is for filling empty values"""
-def check_and_fill_empty_cols():
-    df = pd.read_csv('mal_data_full_sfw_updated_20240615.csv')
+def check_and_fill_empty_cols(csvfile):
+    df = pd.read_csv(f'{csvfile}.csv')
 
     for col in df.columns:
         # Check data type of the column
@@ -138,7 +141,7 @@ def check_and_fill_empty_cols():
         axis=1
     )
 
-    df.to_csv("mal_data_full_sfw_updated_20240615_2.csv", index=False)
+    df.to_csv(f"{csvfile}_filtered_filled.csv", index=False)
 
 def make_smaller_animes_csv(csvfile):
 
@@ -152,18 +155,36 @@ def make_smaller_animes_csv(csvfile):
 
 """this function is for updating the csv"""
 def merge_or_replace_csv():
-
-
     df1 = pd.read_csv("mal_data_filtered_filled.csv")
     df2 = pd.read_csv("2024_refreshed_sfw_animes_filtered_filled.csv")
+
+    # Ensure 'mal_id' is of float type
     df1['mal_id'] = df1['mal_id'].astype(float)
     df2['mal_id'] = df2['mal_id'].astype(float)
-    common_mal_ids = df1['mal_id'].isin(df2['mal_id'])
-    df1.loc[common_mal_ids] = df2[df2['mal_id'].isin(df1['mal_id'])]
-    new_mal_ids = ~df2['mal_id'].isin(df1['mal_id'])
-    df1 = pd.concat([df1, df2[new_mal_ids]])
-    df1.to_csv('mal_data_full_sfw_updated_20240615.csv', index=False)
+
+    # Merge the dataframes
+    merged_df = pd.merge(df1, df2, on='mal_id', how='outer', suffixes=('_old', ''))
+
+    # Replace old columns with new ones where available
+    for column in df2.columns:
+        if column != 'mal_id':
+            merged_df[column] = merged_df[column].combine_first(merged_df[column + '_old'])
+
+    # Drop the old columns
+    merged_df = merged_df[df2.columns]
+
+    # Save the updated dataframe
+    merged_df.to_csv('mal_data_full_sfw_updated_20240615.csv', index=False)
+
+    # Call the function
     make_smaller_animes_csv("mal_data_full_sfw_updated_20240615")
+
+
+def check_duplicates(csvfile):
+
+    df = pd.read_csv(f"{csvfile}.csv")
+    duplicates = df[df.duplicated('mal_id', keep=False)]
+    print(duplicates)
 
 if __name__ == "__main__":
 
@@ -193,9 +214,11 @@ if __name__ == "__main__":
     #df_filtered.to_csv("mal_data_filtered.csv", encoding="utf-8")
 
     #check_and_fill_empty_cols()
-    #merge_or_replace_csv()
     #get_anime_genres()
 
     #get_producers()
+    #make_smaller_animes_csv("mal_data_full_sfw_updated_20240615")
 
-    make_smaller_animes_csv("mal_data_full_sfw_updated_20240615");
+    merge_or_replace_csv()
+
+    #check_duplicates("mal_data_full_sfw_updated_20240615")

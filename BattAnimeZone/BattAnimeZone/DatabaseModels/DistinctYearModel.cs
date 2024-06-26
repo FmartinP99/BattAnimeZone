@@ -8,6 +8,6 @@ namespace BattAnimeZone.DatabaseModels
 	{
 		[Key]
 		[Column("year")]
-		public int Year { get; set; }
+		public int? Year { get; set; }
 	}
 }
