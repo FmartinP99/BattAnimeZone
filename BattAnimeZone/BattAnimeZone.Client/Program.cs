@@ -28,6 +28,15 @@ builder.Services.AddHttpClient("AuthenticatedClient", client =>
 })
 .AddHttpMessageHandler<AuthenticationMessageHandler>();
 
+
+builder.Logging.SetMinimumLevel(LogLevel.Warning); 
+
+
+builder.Logging.AddFilter("System.Net.Http.HttpClient", LogLevel.Warning);
+
+
+
+
 /*POLICITES */
 builder.Services.AddAuthorizationCore(config =>
 {
