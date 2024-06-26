@@ -1,12 +1,65 @@
 ﻿
+.content {
+    display: flex;
+    flex-direction: column;
+    min-height: 100%;
+}
+
+
+.profileDiv {
+    color: #9877ee;
+}
+
 .profileDiv > button > span{
     font-size:30px;
+    
 }
 
 .logoutDiv {
-    margin-top: 100px;
+    margin-top: 30px;
+    color: #9877ee;
 }
 
-.changeDetailsDiv{
-    margin-top:20px;
+.changeDetailsDiv {
+    margin-top: 20px;
+    color: #9877ee;
 }
+
+.deleteAccountDiv{
+    margin-top: auto;
+    color:red;
+}
+
+.deleteAccountDiv  {
+    color: red;
+}
+
+
+
+
+
+
+/*DELETE MODAL*/
+.fade{
+    z-index:900;
+}
+
+.customModalHeaderCssClass {
+    background-image: linear-gradient(to right, #5832dd,#5025ce,#5832dd,#5025ce,#5832dd);
+    color:white !important;
+}
+
+
+.customModalBodyCssClass {
+    display: flex !important;
+    color: black;
+    width: 100% !important;
+    align-items: center !important;
+    align-content: center !important;
+}
+
+
+.inputClass{
+    margin-left: 20px;
+}
+

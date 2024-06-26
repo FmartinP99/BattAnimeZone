@@ -4,8 +4,10 @@ using BattAnimeZone.DatabaseModels;
 using BattAnimeZone.DbContexts;
 using BattAnimeZone.Shared.Models.User;
 using BattAnimeZone.Shared.Models.User.BrowserStorageModels;
+using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.EntityFrameworkCore;
 using System.IdentityModel.Tokens.Jwt;
+using System.Linq.Dynamic.Core;
 using System.Text.RegularExpressions;
 using LoginRequest = BattAnimeZone.Shared.Models.User.LoginRequest;
 using RegisterRequest = BattAnimeZone.Shared.Models.User.RegisterRequest;
@@ -315,7 +317,7 @@ namespace BattAnimeZone.Services
         }
 
 
-        public async Task<Dictionary<int, InteractedAnime>?> GetInteractedAnimes(string UserName, string? token)
+        public async Task<Dictionary<int, InteractedAnime>?> GetInteractedAnimes(string UserName, string token)
         {
             using (var _context = await _dbContextFactory.CreateDbContextAsync())
             {
@@ -345,6 +347,55 @@ namespace BattAnimeZone.Services
             }
 
         }
+
+
+
+
+        public async Task<DeleteAccountResponse> DeleteAccount(DeleteAccountRequest der, string token)
+        {
+            using (var _context = await _dbContextFactory.CreateDbContextAsync())
+            {
+                DeleteAccountResponse deleteAccountResponse = new DeleteAccountResponse();
+                UserAccountModel? db_User = await _context.UserAccounts.Where(x => x.UserName == der.UserName && x.Token == token).FirstOrDefaultAsync();
+                if (db_User == null)
+                {
+                    deleteAccountResponse.Message = "Either the account was not found, or the token was expired! You will be logged out! Try again";
+                    deleteAccountResponse.result = false;
+                    return deleteAccountResponse;
+                }
+
+
+                bool isMatching = _passwordHasher.Verify(db_User.Password, der.Password);
+                if(!isMatching)
+                {
+                    deleteAccountResponse.Message = "The password is incorrect!";
+                    deleteAccountResponse.result = false;
+                    return deleteAccountResponse;
+                }
+
+                try
+                {
+                    _context.UserAccounts.Remove(db_User);
+                    await _context.SaveChangesAsync();
+
+                    deleteAccountResponse.Message = "Account has been deleted :(. You will be logged out now. Goodbye!";
+                    deleteAccountResponse.result = true;
+                    return deleteAccountResponse;
+                } catch (Exception ex)
+                {
+                    deleteAccountResponse.Message = "Something went wrong with the account deletion. Try again later!";
+                    deleteAccountResponse.result = false;
+                    return deleteAccountResponse;
+                }
+
+                
+            }
+
+        }
+
+
+
+
 
     }
 }

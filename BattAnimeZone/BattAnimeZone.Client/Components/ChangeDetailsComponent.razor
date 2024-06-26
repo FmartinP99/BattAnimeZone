@@ -153,6 +153,7 @@
         {
             httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", userSession.Token);
             await httpClient.PostAsJsonAsync<UserSession>($"{navManager.BaseUri}api/AccountController/Logout", userSession);
+            httpClient.DefaultRequestHeaders.Authorization = null;
         }
         catch { }
         finally

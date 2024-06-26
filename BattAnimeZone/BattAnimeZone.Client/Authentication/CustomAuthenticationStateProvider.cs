@@ -148,6 +148,7 @@ namespace BattAnimeZone.Client.Authentication
                             await _localStorage.SaveItemEncryptedAsync("UserSession", userSession);
                             httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", userSession.Token);
                             Dictionary<int, InteractedAnime>?  interactedAnimes = await fetchInteractedAnimesFromServer(userSession);
+                            httpClient.DefaultRequestHeaders.Authorization = null;
                             await _localStorage.SaveItemEncryptedAsync("InteractedAnimes", interactedAnimes);
                         }
 
@@ -187,6 +188,7 @@ namespace BattAnimeZone.Client.Authentication
                 httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", userSession.Token);
                 Dictionary<int, InteractedAnime>? interactedAnimes = await fetchInteractedAnimesFromServer(userSession);
                 await _localStorage.SaveItemEncryptedAsync("InteractedAnimes", interactedAnimes);
+                httpClient.DefaultRequestHeaders.Authorization = null;
                 authenticationFailed = 0;
 
             }

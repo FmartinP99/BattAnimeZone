@@ -128,5 +128,19 @@ namespace BattAnimeZone.Controllers
                 return userName;
         }
 
+        [HttpPost]
+        [Route("DeleteAccount")]
+        [AllowAnonymous]
+        public async Task<ActionResult<DeleteAccountResponse>> DeleteAccount([FromBody] DeleteAccountRequest der)
+        {
+            var authorizationHeader = HttpContext.Request.Headers["Authorization"].FirstOrDefault();
+            var token = authorizationHeader.Substring("Bearer ".Length).Trim();
+            var response = await _userAccountService.DeleteAccount(der, token);
+            if (response.result  == false)
+                return NotFound(response);
+            else
+                return response;
+        }
+
     }
 }
