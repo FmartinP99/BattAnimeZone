@@ -146,7 +146,7 @@ app.MapRazorComponents<App>()
 
 var dbinit = Environment.GetEnvironmentVariable("DbInit");
 
-if (dbinit != "true")
+if (dbinit == "true")
 {
 #pragma warning disable CS8602 // Dereference of a possibly null reference.
     using (IServiceScope? serviceScope = app.Services.GetService<IServiceScopeFactory>().CreateScope())
