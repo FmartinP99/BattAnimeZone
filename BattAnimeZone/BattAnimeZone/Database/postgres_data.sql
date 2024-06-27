@@ -170,3 +170,25 @@ CREATE TABLE DistinctYears AS
 SELECT DISTINCT anime.year
 FROM Anime
 WHERE anime.year IS NOT NULL;
+
+
+
+
+
+
+
+
+
+CREATE FUNCTION get_anime_count_by_genre(input_genre_id INT)
+RETURNS TABLE (
+    genre_id INT,
+    anime_count INT
+) AS $$
+BEGIN
+    RETURN QUERY
+    SELECT ag.genre_id, COUNT(*) AS anime_count
+    FROM anime_genres ag
+    WHERE ag.genre_id = input_genre_id
+    GROUP BY ag.genre_id;
+END;
+$$ LANGUAGE plpgsql;

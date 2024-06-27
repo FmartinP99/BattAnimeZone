@@ -8,12 +8,13 @@ using BattAnimeZone.Shared.Models.GenreDTOs;
 using BattAnimeZone.DatabaseModels;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using BattAnimeZone.Services.Interfaces;
 
 
 namespace BattAnimeZone.Services
 {
-    public partial class DataBaseService
-    {
+    public partial class DataBaseService : IDataBaseService
+	{
 
         private IDbContextFactory<AnimeDbContext> _dbContextFactory;
         private static IMapper dataBaseMapper;

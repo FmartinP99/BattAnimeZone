@@ -92,8 +92,10 @@ namespace BattAnimeZone.Controllers
 		[HttpGet("GetGenres")]
         public async Task<IActionResult> GetGenres()
         {
-            var result = await _dataBaseService.GetGenres();
-            if (result == null)
+			//var result = await _dataBaseService.GetGenres();
+			var result = await _supaBaseService.GetGenres();
+
+			if (result == null)
             {
                 return NotFound();
             }
@@ -105,9 +107,10 @@ namespace BattAnimeZone.Controllers
         [HttpGet("GetAnimesPerGenreIdCount")]
         public async Task<IActionResult> GetAnimesPerGenreIdCount()
         {
-            var result = await _dataBaseService.GetAnimesPerGenreIdCount();
+            //var result = await _dataBaseService.GetAnimesPerGenreIdCount();
+			var result = await _supaBaseService.GetAnimesPerGenreIdCount();
 
-            if (result == null)
+			if (result == null)
             {
                 return NotFound();
             }
