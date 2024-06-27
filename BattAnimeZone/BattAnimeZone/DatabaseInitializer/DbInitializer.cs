@@ -19,7 +19,7 @@ namespace BattAnimeZone.DatabaseInitializer
 	{
 		private  IConfiguration _configuration;
 		
-		public void Initialize(IConfiguration configuration, IDbContextFactory<AnimeDbContext> _contextFactory, Supabase.Client client)
+		public void Initialize(IConfiguration configuration, IDbContextFactory<AnimeDbContext?>? _contextFactory, Supabase.Client? client)
 		{
 			_configuration = configuration;
 			
@@ -243,8 +243,8 @@ namespace BattAnimeZone.DatabaseInitializer
 
 
 
-		public async void FillDatabase(IDbContextFactory<AnimeDbContext> _contextFactory, Dictionary<int, Anime> animes, Dictionary<int, 
-			ProductionEntity> productionEntities, Dictionary<int, AnimeGenre> genres, Supabase.Client client)
+		public async void FillDatabase(IDbContextFactory<AnimeDbContext?>? _contextFactory, Dictionary<int, Anime> animes, Dictionary<int, 
+			ProductionEntity> productionEntities, Dictionary<int, AnimeGenre> genres, Supabase.Client? client)
 		{
 			Console.WriteLine("Filling database!\n");
 			var animesData = animes.Select(a => a.Value).ToList();
