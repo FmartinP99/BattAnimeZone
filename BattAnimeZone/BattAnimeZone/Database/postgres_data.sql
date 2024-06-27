@@ -192,3 +192,37 @@ BEGIN
     GROUP BY ag.genre_id;
 END;
 $$ LANGUAGE plpgsql;
+
+
+
+create
+or replace function get_anime_relations_by_parent_id (_parent_id int) returns table (
+  Mal_id int,
+  TitleEnglish text,
+  TitleJapanese text,
+  Relations JSONB
+) as $$
+BEGIN
+    RETURN QUERY
+    SELECT p.id AS Mal_id,
+           p.title_english AS TitleEnglish,
+           p.title_japanese AS TitleJapanese,
+           jsonb_agg(jsonb_build_object(
+               'Mal_id', c.id,
+               'TitleEnglish', c.title_english,
+               'TitleJapanese', c.title_japanese,
+               'MediaType', c.media_type,
+               'Episodes', c.episodes,
+               'Score', c.score,
+               'Popularity', c.popularity,
+               'Year', c.year,
+               'ImageLargeWebpUrl', c.image_large_webp_url,
+               'RelationType', r.relationtype
+           )) AS Relations
+    FROM relation r
+    JOIN anime p ON r.parent_id = p.id
+    JOIN anime c ON r.child_id = c.id
+    WHERE r.parent_id = _parent_id
+    GROUP BY p.id, p.title_english, p.title_japanese;
+END;
+$$ language plpgsql;
