@@ -280,3 +280,76 @@ BEGIN
         (genres IS NULL OR array_length(genres, 1) = 0 OR count(DISTINCT ag.genre_id) = array_length(genres, 1));
 END;
 $$ LANGUAGE plpgsql;
+
+
+
+
+
+DROP FUNCTION get_genre_animes(integer);
+CREATE OR REPLACE FUNCTION get_genre_animes(_genre_id INT) 
+RETURNS TABLE (
+    GenreName TEXT,
+    Animes JSONB
+)
+AS $$
+BEGIN
+    RETURN QUERY
+    SELECT
+        g.name AS GenreName,
+        jsonb_agg(jsonb_build_object(
+            'Mal_id', a.id,
+            'Title', a.title,
+            'TitleEnglish', a.title_english,
+            'TitleJapanese', a.title_japanese,
+            'MediaType', a.media_type,
+            'Episodes', a.episodes,
+            'Score', a.score,
+            'Popularity', a.popularity,
+            'Year', a.year,
+            'ImageLargeWebpUrl', a.image_large_webp_url
+        )) AS Animes
+    FROM
+        animegenre ag
+    JOIN
+        genre g ON ag.genre_id = g.id
+    JOIN
+        anime a ON ag.anime_id = a.id
+    WHERE
+        ag.genre_id = _genre_id
+    GROUP BY
+        g.name;
+END;
+$$ LANGUAGE plpgsql;
+
+
+
+
+
+
+CREATE OR REPLACE FUNCTION get_production_entities()
+RETURNS TABLE (
+    Mal_id INT,
+    Favorites INT,
+    Count INT,
+    Image_url TEXT,
+    Titles JSONB
+) AS $$
+BEGIN
+    RETURN QUERY
+    SELECT 
+        pe.id,
+        pe.favorites,
+        pe.count,
+        pe.image_url,
+        jsonb_agg(jsonb_build_object(
+            'Type', pet.type,
+            'Title', pet.title
+        )) AS titles
+    FROM 
+        productionentity pe
+    LEFT JOIN 
+        productionentitytitle pet ON pe.id = pet.parent_id
+    GROUP BY 
+        pe.id, pe.favorites, pe.count, pe.image_url;
+END;
+$$ LANGUAGE plpgsql;
