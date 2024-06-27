@@ -13,7 +13,7 @@ namespace BattAnimeZone.Controllers
 	{
 		IServiceScopeFactory serviceScopeFactory;
 		private DataBaseService? _dataBaseService = null;
-        private SupabaseService? _supaBaseService = null;
+        private SupaBaseService? _supaBaseService = null;
 
 
 		public DataBaseController(IServiceScopeFactory serviceScopeFactory)
@@ -23,7 +23,7 @@ namespace BattAnimeZone.Controllers
 		    using (var serviceScope = serviceScopeFactory.CreateScope())
 		    {
 			    _dataBaseService = serviceScope.ServiceProvider.GetService<DataBaseService>();
-			    _supaBaseService = serviceScope.ServiceProvider.GetService<SupabaseService>();
+			    _supaBaseService = serviceScope.ServiceProvider.GetService<SupaBaseService>();
 		    }
 			
 
@@ -57,8 +57,9 @@ namespace BattAnimeZone.Controllers
         [HttpGet("GetRelations/{mal_id}")]
         public async Task<IActionResult> GetRelations(int mal_id)
         {
-            var result = await _dataBaseService.GetRelations(mal_id);
-            if (result == null)
+			//var result = await _dataBaseService.GetRelations(mal_id);
+			var result = await _supaBaseService.GetRelations(mal_id);
+			if (result == null)
             {
                 return NotFound();
             }
