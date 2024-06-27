@@ -407,3 +407,48 @@ BEGIN
     );
 END;
 $$ LANGUAGE plpgsql;
+
+
+
+
+
+
+
+
+
+
+
+CREATE OR REPLACE FUNCTION get_similar_animes(similar_anime_ids INT[])
+RETURNS TABLE (
+    Mal_id INT,
+    Title TEXT,
+    TitleEnglish TEXT,
+    TitleJapanese TEXT,
+    MediaType TEXT,
+    Episodes INT,
+    Status TEXT,
+    Score REAL,
+    Season TEXT,
+    Year INT,
+    ImageLargeWebpUrl TEXT
+) AS $$
+BEGIN
+    RETURN QUERY
+    SELECT
+        a.id,
+        a.title,
+        a.title_english,
+        a.title_japanese,
+        a.media_type,
+        a.episodes,
+        a.status,
+        a.score,
+        a.season,
+        a.year,
+        a.image_large_webp_url
+    FROM
+        anime a
+    WHERE
+        a.id = ANY(similar_anime_ids);
+END;
+$$ LANGUAGE plpgsql;

@@ -153,6 +153,7 @@ namespace BattAnimeZone.Controllers
         {
 
             var result = await _dataBaseService.GetSimilarAnimesForSearchResult(similar_number, searched_term);
+            //var result = await _supaBaseService.GetSimilarAnimesForSearchResult(similar_number, searched_term);
 
 			if (result == null)
             {
