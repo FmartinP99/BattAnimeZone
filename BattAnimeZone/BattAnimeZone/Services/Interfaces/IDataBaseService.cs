@@ -1,5 +1,6 @@
 ﻿using BattAnimeZone.Shared.Models.AnimeDTOs;
 using BattAnimeZone.Shared.Models.GenreDTOs;
+using BattAnimeZone.Shared.Models.ProductionEntityDTOs;
 
 namespace BattAnimeZone.Services.Interfaces
 {
@@ -12,5 +13,6 @@ namespace BattAnimeZone.Services.Interfaces
 		public Task<AnimeRelationsKeyDTO?> GetRelations(int mal_id);
 		public Task<List<LiAnimeDTO>?> GetFilteredAnimes(List<int>? genres, List<string>? mediaTypes, int? yearlower, int? yearupper);
 		public Task<LiGenreAnimeDTOContainer?> GetAnimesForListGenreAnimes(int genre_id);
+		public Task<List<LiProductionEntityDTO>?> GetProductionEntitiesDTO();
     }
 }

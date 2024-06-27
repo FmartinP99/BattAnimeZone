@@ -50,7 +50,7 @@ else{
     HttpClient httpClient;
 
     bool loaded = false;
-    List<LiProductionEntityDTO> productionEntities;
+    List<LiProductionEntityDTO>? productionEntities;
     IEnumerable<LiProductionEntityDTO> prodents_per_page;
     string pagingSummaryFormat = "Displaying page {0} of {1} (total {2} records)";
     int pageSize = 10;
@@ -68,8 +68,8 @@ else{
                 var response = await httpClient.GetAsync($"{navManager.BaseUri}api/DbController/GetProductionEntities");
                 if (response.IsSuccessStatusCode)
                 {
-                    var ProdEnts = await response.Content.ReadFromJsonAsync<Dictionary<int, LiProductionEntityDTO>>();
-                    productionEntities = ProdEnts.Values.ToList();
+                    productionEntities = await response.Content.ReadFromJsonAsync<List<LiProductionEntityDTO>>();
+              
                     productionEntities = productionEntities.OrderBy(prodent => prodent.Titles[0].Title).ToList();
                     prodents_per_page = productionEntities.Take(pageSize);
                     count = productionEntities.Count;
