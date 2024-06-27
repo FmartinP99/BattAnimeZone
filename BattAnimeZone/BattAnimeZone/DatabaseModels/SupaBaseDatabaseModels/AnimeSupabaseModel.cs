@@ -1,19 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Supabase.Postgrest.Models;
+using Supabase.Postgrest.Attributes;
 
-namespace BattAnimeZone.DatabaseModels
+namespace BattAnimeZone.DatabaseModels.SuapaBaseDatabaseModels
 {
-    [Table("Anime")]
-    public class AnimeModel 
+    [Table("anime")]
+    public class AnimeSupabaseModel : BaseModel
     {
-        [Key]
-        [Column("id")]
+        [PrimaryKey("id", true)]
         public int Mal_id { get; set; }
 
         [Column("title")]
@@ -134,9 +132,5 @@ namespace BattAnimeZone.DatabaseModels
 
         [Column("aired_string")]
         public string AiredString { get; set; } = "";
-
-        //further column for querying for HomePage
-        [NotMapped]
-        public List<string>? Genres { get; set; } = null;
     }
 }

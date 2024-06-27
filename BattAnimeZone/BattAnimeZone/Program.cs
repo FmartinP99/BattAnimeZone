@@ -11,6 +11,7 @@ using BattAnimeZone.Shared.Policies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
 using System.Security.Claims;
+using Supabase;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -87,14 +88,38 @@ builder.Services.AddTransient<DataBaseService>();
 builder.Services.AddSingleton<SingletonSearchService>();
 
 
-//databasecontexts
-builder.Services.AddDbContextFactory<AnimeDbContext>((DbContextOptionsBuilder options) => options.UseSqlite(builder.Configuration.GetConnectionString("Database")));
 
+
+
+
+
+
+//databasecontexts
+builder.Services.AddDbContextFactory<AnimeDbContext>((DbContextOptionsBuilder options) =>
+options.UseSqlite(builder.Configuration.GetConnectionString("Database")));
 builder.Services.AddTransient<DbInitializer>();
 builder.Services.AddScoped<Radzen.DialogService>();
 builder.Services.AddScoped<Radzen.TooltipService>();
 builder.Services.AddScoped<Radzen.ContextMenuService>();
 builder.Services.AddScoped<Radzen.NotificationService>();
+
+
+var url = Environment.GetEnvironmentVariable("SUPABASE_URL");
+var key = Environment.GetEnvironmentVariable("SUPABASE_KEY");
+
+builder.Services.AddScoped<Supabase.Client>(_ =>
+ new Supabase.Client(
+     url, key, 
+     new SupabaseOptions
+     {
+         AutoRefreshToken = true,
+         AutoConnectRealtime = true,
+     }
+     )
+);
+
+builder.Services.AddTransient<SupabaseService>();
+
 
 builder.Services.AddBlazorBootstrap();
 
@@ -154,9 +179,10 @@ if (dbinit == "true")
         if (serviceScope == null) return;
         var contextFactory = serviceScope.ServiceProvider.GetRequiredService<IDbContextFactory<AnimeDbContext>>();
         var configuration = serviceScope.ServiceProvider.GetRequiredService<IConfiguration>();
+        var client = serviceScope.ServiceProvider.GetRequiredService<Supabase.Client>();
 
         var dbInitializer = serviceScope.ServiceProvider.GetRequiredService<DbInitializer>();
-        dbInitializer.Initialize(configuration, contextFactory);
+        dbInitializer.Initialize(configuration, contextFactory, client);
     }
 }
 #pragma warning restore CS8602 // Dereference of a possibly null reference.
