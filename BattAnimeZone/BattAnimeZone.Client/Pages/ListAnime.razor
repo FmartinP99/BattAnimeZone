@@ -79,7 +79,7 @@ else{
             <OrderComponent T="LiAnimeDTO" animes="searched_animes" AnimesChanged="OnAnimesChanged"></OrderComponent>
             </RadzenColumn>
 
-            <RadzenPager @ref=pager class="radzenPagerClass" PagingSummaryFormat="@pagingSummaryFormat" ShowPagingSummary="true" HorizontalAlign="HorizontalAlign.Left" PageNumbersCount=@pagenumcount PageSize=@pageSize Count="count" PageChanged="@PageChanged" />
+            <RadzenPager AlwaysVisible="true" @ref=pager class="radzenPagerClass" PagingSummaryFormat="@pagingSummaryFormat" ShowPagingSummary="true" HorizontalAlign="HorizontalAlign.Left" PageNumbersCount=@pagenumcount PageSize=@pageSize Count="count" PageChanged="@PageChanged" />
 
 
             @foreach (LiAnimeDTO anime in animes_per_page)
@@ -128,7 +128,7 @@ else{
                 </div>
             }
 
-            <RadzenPager @ref=pager2 Style="overflow-x: clip; max-width: 75vw;" PagingSummaryFormat="@pagingSummaryFormat" ShowPagingSummary="true" HorizontalAlign="HorizontalAlign.Left" PageNumbersCount=@pagenumcount PageSize=@pageSize Count="count" PageChanged="@PageChanged" />
+            <RadzenPager  @ref=pager2 Style="overflow-x: clip; max-width: 75vw;" PagingSummaryFormat="@pagingSummaryFormat" ShowPagingSummary="true" HorizontalAlign="HorizontalAlign.Left" PageNumbersCount=@pagenumcount PageSize=@pageSize Count="count" PageChanged="@PageChanged" />
         }
         else if (firstsearch)
         {
