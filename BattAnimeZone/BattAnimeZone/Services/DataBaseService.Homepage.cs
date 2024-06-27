@@ -1,11 +1,11 @@
 ﻿using BattAnimeZone.Shared.Models.Anime;
 using BattAnimeZone.Shared.Models.AnimeDTOs;
-using BattAnimeZone.DatabaseModels;
 using DotNetEnv;
+using BattAnimeZone.DatabaseModels.SQliteDatabaseModels;
 
 namespace BattAnimeZone.Services
 {
-	public partial class DataBaseService
+    public partial class DataBaseService
 	{
 
 		public async Task<IEnumerable<AnimeHomePageDTO>> GetAnimesForHomePageByYear(int year)

@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using BattAnimeZone.DatabaseModels;
 using BattAnimeZone.Shared.Models.Anime;
+using BattAnimeZone.DatabaseModels.SQliteDatabaseModels;
 
 namespace BattAnimeZone.DbContexts
 {

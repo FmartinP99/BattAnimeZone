@@ -1,15 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using BattAnimeZone.DatabaseModels._IDataBaseModels;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace BattAnimeZone.DatabaseModels
+namespace BattAnimeZone.DatabaseModels.SQliteDatabaseModels
 {
     [Table("Streaming")]
-    public class StreamingModel
+    public class StreamingModel : IStreamingModel
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]

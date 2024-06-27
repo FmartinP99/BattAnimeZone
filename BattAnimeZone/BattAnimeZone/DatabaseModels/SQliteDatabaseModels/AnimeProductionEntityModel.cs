@@ -1,16 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using BattAnimeZone.DatabaseModels._IDataBaseModels;
 
-namespace BattAnimeZone.DatabaseModels
+namespace BattAnimeZone.DatabaseModels.SQliteDatabaseModels
 {
     [Table("AnimeProductionEntity")]
-    public class AnimeProductionEntityModel
-    {
+    public class AnimeProductionEntityModel : IAnimeProductionEntityModel
+	{
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
@@ -30,7 +26,7 @@ namespace BattAnimeZone.DatabaseModels
 
 
         [ForeignKey("AnimeId")]
-        public AnimeModel Anime {  get; set; }
+        public AnimeModel Anime { get; set; }
 
         [ForeignKey("ProductionEntityId")]
         public ProductionEntityModel ProductionEntity { get; set; }

@@ -1,16 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using BattAnimeZone.DatabaseModels._IDataBaseModels;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace BattAnimeZone.DatabaseModels
+namespace BattAnimeZone.DatabaseModels.SQliteDatabaseModels
 {
     [Table("Relation")]
-    public class RelationModel
-    {
+    public class RelationModel : IRelationModel
+	{
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         [Column("id")]
@@ -29,8 +25,8 @@ namespace BattAnimeZone.DatabaseModels
         public string RelationType { get; set; } = "";
 
         [ForeignKey("ParentId")]
-        public AnimeModel ParentAnime { get; set; } 
+        public AnimeModel ParentAnime { get; set; }
         [ForeignKey("ChildId")]
-        public AnimeModel ChildAnime { get; set; }  
+        public AnimeModel ChildAnime { get; set; }
     }
 }
