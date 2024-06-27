@@ -353,3 +353,57 @@ BEGIN
         pe.id, pe.favorites, pe.count, pe.image_url;
 END;
 $$ LANGUAGE plpgsql;
+
+
+
+
+CREATE OR REPLACE FUNCTION get_animes_for_prod_ent(_mal_id INT)
+RETURNS JSONB AS $$
+BEGIN
+    RETURN (
+        SELECT jsonb_build_object(
+            'ProdEnt', jsonb_build_object(
+                'Mal_id', pe.id,
+                'Url', pe.url,
+                'Favorites', pe.favorites,
+                'Established', pe.established,
+                'About', pe.about,
+                'Count', pe.count,
+                'Image_url', pe.image_url,
+                'Titles', jsonb_agg(jsonb_build_object(
+                    'Type', pet.type,
+                    'Title', pet.title
+                ))
+            ),
+            'ProducedAnimes', (SELECT jsonb_agg(jsonb_build_object(
+                'Mal_id', a.id,
+                'TitleEnglish', a.title_english,
+                'TitleJapanese', a.title_japanese,
+                'ImageLargeWebpUrl', a.image_large_webp_url
+            )) FROM animeproductionentity ape
+            JOIN anime a ON ape.anime_id = a.id
+            WHERE ape.productionentity_id = _mal_id AND ape.type = 'P'),
+            'LicensedAnimes', (SELECT jsonb_agg(jsonb_build_object(
+                'Mal_id', a.id,
+                'TitleEnglish', a.title_english,
+                'TitleJapanese', a.title_japanese,
+                'ImageLargeWebpUrl', a.image_large_webp_url
+            )) FROM animeproductionentity ape
+            JOIN anime a ON ape.anime_id = a.id
+            WHERE ape.productionentity_id = _mal_id AND ape.type = 'L'),
+            'StudioAnimes', (SELECT jsonb_agg(jsonb_build_object(
+                'Mal_id', a.id,
+                'TitleEnglish', a.title_english,
+                'TitleJapanese', a.title_japanese,
+                'ImageLargeWebpUrl', a.image_large_webp_url
+            )) FROM animeproductionentity ape
+            JOIN anime a ON ape.anime_id = a.id
+            WHERE ape.productionentity_id = _mal_id AND ape.type = 'S')
+        )
+        FROM productionentity pe
+        JOIN productionentitytitle pet ON pe.id = pet.parent_id
+        WHERE pe.id = _mal_id
+        GROUP BY pe.id
+    );
+END;
+$$ LANGUAGE plpgsql;
