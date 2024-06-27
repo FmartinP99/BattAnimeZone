@@ -1,7 +1,9 @@
-﻿using BattAnimeZone.DbContexts;
+﻿using BattAnimeZone.DatabaseInitializer;
+using BattAnimeZone.DbContexts;
 using BattAnimeZone.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace BattAnimeZone.Controllers
 {
@@ -9,14 +11,23 @@ namespace BattAnimeZone.Controllers
 	[ApiController]
 	public class DataBaseController : Controller
 	{
-		private DataBaseService _dataBaseService;
-        private SupabaseService _supabaseService;
+		IServiceScopeFactory serviceScopeFactory;
+		private DataBaseService? _dataBaseService = null;
+        private SupabaseService? _supaBaseService = null;
 
 
-		public DataBaseController(DataBaseService dataBaseService, SupabaseService supabaseService)
+		public DataBaseController(IServiceScopeFactory serviceScopeFactory)
 		{
-			_dataBaseService = dataBaseService;
-			_supabaseService = supabaseService;
+
+			
+		    using (var serviceScope = serviceScopeFactory.CreateScope())
+		    {
+			    _dataBaseService = serviceScope.ServiceProvider.GetService<DataBaseService>();
+			    _supaBaseService = serviceScope.ServiceProvider.GetService<SupabaseService>();
+		    }
+			
+
+			
 		}
 
 
@@ -136,8 +147,6 @@ namespace BattAnimeZone.Controllers
         {
 
             var result = await _dataBaseService.GetSimilarAnimesForSearchResult(similar_number, searched_term);
-
-			await _supabaseService.fillDatabase();
 
 			if (result == null)
             {

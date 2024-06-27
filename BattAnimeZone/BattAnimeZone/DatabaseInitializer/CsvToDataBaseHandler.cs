@@ -25,10 +25,10 @@ namespace BattAnimeZone.DatabaseInitializer
     {
 
         private readonly static int batchsize = 100;
-        private IDbContextFactory<AnimeDbContext> _dbContextFactory;
-        private Supabase.Client _client;
+        private IDbContextFactory<AnimeDbContext?>? _dbContextFactory;
+        private Supabase.Client? _client;
 
-        public CsvToDataBaseHandler(IDbContextFactory<AnimeDbContext> dbContextFactory, Supabase.Client client)
+        public CsvToDataBaseHandler(IDbContextFactory<AnimeDbContext?>? dbContextFactory, Supabase.Client? client)
         {
             _dbContextFactory = dbContextFactory;
             _client = client;

@@ -104,22 +104,26 @@ builder.Services.AddScoped<Radzen.ContextMenuService>();
 builder.Services.AddScoped<Radzen.NotificationService>();
 
 
-var url = Environment.GetEnvironmentVariable("SUPABASE_URL");
-var key = Environment.GetEnvironmentVariable("SUPABASE_KEY");
+bool use_supabase = Environment.GetEnvironmentVariable("USE_SUPABASE_DATABASE") == "true" ? true : false;
+if (use_supabase)
+{
+    var url = Environment.GetEnvironmentVariable("SUPABASE_URL");
+    var key = Environment.GetEnvironmentVariable("SUPABASE_KEY");
 
-builder.Services.AddScoped<Supabase.Client>(_ =>
- new Supabase.Client(
-     url, key, 
-     new SupabaseOptions
-     {
-         AutoRefreshToken = true,
-         AutoConnectRealtime = true,
-     }
-     )
-);
 
-builder.Services.AddTransient<SupabaseService>();
 
+    builder.Services.AddScoped<Supabase.Client>(_ =>
+     new Supabase.Client(
+         url, key,
+         new SupabaseOptions
+         {
+             AutoRefreshToken = true,
+             AutoConnectRealtime = true,
+         }
+         )
+    );
+    builder.Services.AddTransient<SupabaseService>();
+}
 
 builder.Services.AddBlazorBootstrap();
 
@@ -169,17 +173,18 @@ app.MapRazorComponents<App>()
     .AddAdditionalAssemblies(typeof(BattAnimeZone.Client._Imports).Assembly);
 
 
-var dbinit = Environment.GetEnvironmentVariable("DbInit");
+bool dbinit = Environment.GetEnvironmentVariable("DbInit") == "true" ? true : false;
 
-if (dbinit == "true")
+if (dbinit)
 {
 #pragma warning disable CS8602 // Dereference of a possibly null reference.
     using (IServiceScope? serviceScope = app.Services.GetService<IServiceScopeFactory>().CreateScope())
     {
         if (serviceScope == null) return;
-        var contextFactory = serviceScope.ServiceProvider.GetRequiredService<IDbContextFactory<AnimeDbContext>>();
-        var configuration = serviceScope.ServiceProvider.GetRequiredService<IConfiguration>();
-        var client = serviceScope.ServiceProvider.GetRequiredService<Supabase.Client>();
+		var configuration = serviceScope.ServiceProvider.GetRequiredService<IConfiguration>();
+
+		var contextFactory = serviceScope.ServiceProvider.GetService<IDbContextFactory<AnimeDbContext>>();
+        var client = serviceScope.ServiceProvider.GetService<Supabase.Client>();
 
         var dbInitializer = serviceScope.ServiceProvider.GetRequiredService<DbInitializer>();
         dbInitializer.Initialize(configuration, contextFactory, client);
