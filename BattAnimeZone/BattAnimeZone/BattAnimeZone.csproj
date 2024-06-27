@@ -7,6 +7,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+   <None Update=".env">
+    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+  </None>
+   <PackageReference Include="supabase" Version="1.0.4" />
     <ProjectReference Include="..\..\BattAnimeZone.Shared\BattAnimeZone.Shared.csproj" />
     <ProjectReference Include="..\BattAnimeZone.Client\BattAnimeZone.Client.csproj" />
     <PackageReference Include="AutoMapper" Version="13.0.1" />

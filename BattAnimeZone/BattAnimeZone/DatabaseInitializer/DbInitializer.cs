@@ -11,15 +11,18 @@ using System.ComponentModel;
 using System.Globalization;
 using System.Linq.Dynamic.Core;
 using DotNetEnv;
+using System.Text;
 
 namespace BattAnimeZone.DatabaseInitializer
 {
     public class DbInitializer
 	{
 		private  IConfiguration _configuration;
-		public void Initialize(IConfiguration configuration, IDbContextFactory<AnimeDbContext> _contextFactory)
+		
+		public void Initialize(IConfiguration configuration, IDbContextFactory<AnimeDbContext> _contextFactory, Supabase.Client client)
 		{
 			_configuration = configuration;
+			
 
 			using (var _context = _contextFactory.CreateDbContext())
 			{
@@ -36,7 +39,10 @@ namespace BattAnimeZone.DatabaseInitializer
 					Console.WriteLine("Reading SQL initialization script!");
 					_context.Database.ExecuteSqlRaw(sqlCommands);
                     Console.WriteLine("Database has been created!");
-                }
+
+
+
+				}
 
 				if (_context.Animes.Any()) {
 					Console.WriteLine("Database isn't empty! Writing some AnimeGenres for test.\n");
@@ -72,7 +78,7 @@ namespace BattAnimeZone.DatabaseInitializer
 			FillAnimes(animes);
 			FillProductionEntities(productionEntities);
 			FillGenres(genres);
-			FillDatabase(_contextFactory, animes, productionEntities, genres);
+			FillDatabase(_contextFactory, animes, productionEntities, genres, client);
 			
 
 		}
@@ -237,14 +243,15 @@ namespace BattAnimeZone.DatabaseInitializer
 
 
 
-		public async void FillDatabase(IDbContextFactory<AnimeDbContext> _contextFactory, Dictionary<int, Anime> animes, Dictionary<int, ProductionEntity> productionEntities, Dictionary<int, AnimeGenre> genres)
+		public async void FillDatabase(IDbContextFactory<AnimeDbContext> _contextFactory, Dictionary<int, Anime> animes, Dictionary<int, 
+			ProductionEntity> productionEntities, Dictionary<int, AnimeGenre> genres, Supabase.Client client)
 		{
 			Console.WriteLine("Filling database!\n");
 			var animesData = animes.Select(a => a.Value).ToList();
 			var prodentsData = productionEntities.Select(a => a.Value).ToList();
 			var genresData = genres.Select(a => a.Value).ToList();
 
-			CsvToDataBaseHandler _csvToDataBaseHandler = new CsvToDataBaseHandler(_contextFactory);
+			CsvToDataBaseHandler _csvToDataBaseHandler = new CsvToDataBaseHandler(_contextFactory, client);
 
 			Console.WriteLine("querying animes");
 			await _csvToDataBaseHandler.SaveAnimesToDatabase(animesData);

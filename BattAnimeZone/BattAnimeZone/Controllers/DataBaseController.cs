@@ -10,11 +10,13 @@ namespace BattAnimeZone.Controllers
 	public class DataBaseController : Controller
 	{
 		private DataBaseService _dataBaseService;
+        private SupabaseService _supabaseService;
 
 
-		public DataBaseController(DataBaseService dataBaseService)
+		public DataBaseController(DataBaseService dataBaseService, SupabaseService supabaseService)
 		{
 			_dataBaseService = dataBaseService;
+			_supabaseService = supabaseService;
 		}
 
 
@@ -134,11 +136,16 @@ namespace BattAnimeZone.Controllers
         {
 
             var result = await _dataBaseService.GetSimilarAnimesForSearchResult(similar_number, searched_term);
-            if (result == null)
+
+			await _supabaseService.fillDatabase();
+
+			if (result == null)
             {
                 return NotFound();
             }
             return Ok(result);
+
+
         }
 
         [HttpGet("GetProductionEntities")]

@@ -8,6 +8,13 @@ using Microsoft.EntityFrameworkCore.Internal;
 using BattAnimeZone.Shared.Models.AnimeDTOs;
 using BattAnimeZone.Shared.Models.User;
 using BattAnimeZone.Authentication.PasswordHasher;
+using DotNetEnv;
+using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using static System.Runtime.InteropServices.JavaScript.JSType;
+using System.Xml.Linq;
+using System;
+using BattAnimeZone.DatabaseModels.SuapaBaseDatabaseModels;
 
 
 
@@ -19,10 +26,12 @@ namespace BattAnimeZone.DatabaseInitializer
 
         private readonly static int batchsize = 100;
         private IDbContextFactory<AnimeDbContext> _dbContextFactory;
+        private Supabase.Client _client;
 
-        public CsvToDataBaseHandler(IDbContextFactory<AnimeDbContext> dbContextFactory)
+        public CsvToDataBaseHandler(IDbContextFactory<AnimeDbContext> dbContextFactory, Supabase.Client client)
         {
             _dbContextFactory = dbContextFactory;
+            _client = client;
         }
 
         public AnimeModel MapAnimeCsvToAnime(Anime anime)
@@ -73,7 +82,61 @@ namespace BattAnimeZone.DatabaseInitializer
             };
         }
 
-        public async Task SaveAnimesToDatabase(List<Anime> animes)
+
+		public AnimeSupabaseModel MapAnimeCsvToAnimeSupabase(Anime anime)
+		{
+			return new AnimeSupabaseModel
+			{
+				Mal_id = anime.Mal_id,
+				Title = anime.Title,
+				TitleEnglish = anime.TitleEnglish,
+				TitleJapanese = anime.TitleJapanese,
+				TitleSynonyms = string.Join("|!!|", anime.TtileSynonyms),
+				MediaType = anime.MediaType,
+				Source = anime.Source,
+				Episodes = anime.Episodes,
+				Status = anime.Status,
+				Duration = anime.Duration,
+				Rating = anime.Rating,
+				Score = anime.Score,
+				ScoredBy = anime.ScoredBy,
+				Rank = anime.Rank,
+				Popularity = anime.Popularity,
+				Members = anime.Members,
+				Favorites = anime.Favorites,
+				Synopsis = anime.Synopsis,
+				Background = anime.Background,
+				Season = anime.Season,
+				Year = anime.Year,
+				ImageJpgUrl = anime.ImageJpgUrl,
+				ImageSmallJpgUrl = anime.ImageSmallJpgUrl,
+				ImageLargeJpgUrl = anime.ImageLargeJpgUrl,
+				ImageWebpUrl = anime.ImageWebpUrl,
+				ImageSmallWebpUrl = anime.ImageSmallWebpUrl,
+				ImageLargeWebpUrl = anime.ImageLargeWebpUrl,
+				TrailerUrl = anime.TrailerUrl,
+				TrailerEmbedUrl = anime.TrailerEmbedUrl,
+				TrailerImageUrl = anime.TrailerImageUrl,
+				TrailerImageSmallUrl = anime.TrailerImageSmallUrl,
+				TrailerImageMediumUrl = anime.TrailerImageMediumUrl,
+				TrailerImageLargeUrl = anime.TrailerImageLargeUrl,
+				TrailerImageMaximumUrl = anime.TrailerImageMaximumUrl,
+				AiredFromDay = anime.AiredFromDay,
+				AiredFromMonth = anime.AiredFromMonth,
+				AiredFromYear = anime.AiredFromYear,
+				AiredToDay = anime.AiredToDay,
+				AiredToMonth = anime.AiredToMonth,
+				AiredToYear = anime.AiredToYear,
+				AiredString = anime.AiredString
+			};
+		}
+
+
+
+
+
+
+		public async Task SaveAnimesToDatabase(List<Anime> animes)
         {
 
             List<AnimeModel> animeModels = new List<AnimeModel>();
@@ -85,6 +148,7 @@ namespace BattAnimeZone.DatabaseInitializer
             }
 
 
+			
             using (var _context = _dbContextFactory.CreateDbContext())
             {
 
@@ -103,13 +167,31 @@ namespace BattAnimeZone.DatabaseInitializer
                     }
                 }
             }
-        }
+
+
+			List<AnimeSupabaseModel> animeSupabaseModels = new List<AnimeSupabaseModel>();
+
+			foreach (Anime an in animes)
+			{
+				AnimeSupabaseModel animeModel = MapAnimeCsvToAnimeSupabase(an);
+				animeSupabaseModels.Add(animeModel);
+			}
+
+            await _client.InitializeAsync();
+
+			
+            var response = await _client.From<AnimeSupabaseModel>().Insert(animeSupabaseModels);
+            
+
+
+
+			}
 
 
 
 
 
-        public static bool AreDictionariesEqual(Dictionary<Dictionary<int, int>, string> dict1, Dictionary<Dictionary<int, int>, string> dict2)
+		public static bool AreDictionariesEqual(Dictionary<Dictionary<int, int>, string> dict1, Dictionary<Dictionary<int, int>, string> dict2)
         {
 
             if (dict1.Count != dict2.Count)
