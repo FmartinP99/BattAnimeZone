@@ -122,7 +122,7 @@ if (use_supabase)
          }
          )
     );
-    builder.Services.AddTransient<SupabaseService>();
+    builder.Services.AddTransient<SupaBaseService>();
 }
 
 builder.Services.AddBlazorBootstrap();

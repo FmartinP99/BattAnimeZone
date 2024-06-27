@@ -10,18 +10,21 @@ using System.Text.Json;
 
 namespace BattAnimeZone.Services
 {
-	public class SupabaseService : IDataBaseService
+	public partial class SupaBaseService : IDataBaseService
 	{
 		private Supabase.Client? _client;
-		JsonSerializerOptions jsonOptions;
+		private JsonSerializerOptions jsonOptions;
 
-		private struct GenreCountDTO
+		private struct AnimeCountByGenreDTO
 		{
 			public int GenreId { get; set; }
 			public int AnimeCount { get; set; }
 		}
 
-		public SupabaseService(Supabase.Client? client)
+
+
+
+		public SupaBaseService(Supabase.Client? client)
         {
 			_client = client;
 
@@ -31,6 +34,33 @@ namespace BattAnimeZone.Services
 				PropertyNamingPolicy = JsonNamingPolicy.CamelCase 
 			};
 		}
+
+
+
+
+
+		public async Task<List<string?>> GetDistinctMediaTypes()
+		{
+			var response = await _client.From<DistinctMediaTypesSupabasaeModel>()
+									.Select("media_type").Get();
+
+			var media_types = response.Models.Select(x => x.mediaType).ToList();
+
+			return media_types;
+		}
+
+		public async Task<List<int?>> GetDistinctYears()
+		{
+			var response = await _client.From<DistinctYearSupabaseModel>()
+									.Select("year").Get();
+
+			var years = response.Models.Select(x=> x.Year).ToList();
+
+			return years;
+
+		}
+
+
 
 
 		public async Task<List<AnimeGenreDTO>?> GetGenres()
@@ -55,9 +85,8 @@ namespace BattAnimeZone.Services
 
 			Dictionary<int, int> return_dict = new Dictionary<int, int>();
 			var response = await _client.Rpc("get_anime_count_by_genre", null);
-            await Console.Out.WriteLineAsync(response.Content);
 
-			var genreCounts = JsonSerializer.Deserialize<List<GenreCountDTO>>(response.Content, jsonOptions);
+			var genreCounts = JsonSerializer.Deserialize<List<AnimeCountByGenreDTO>>(response.Content, jsonOptions);
 
 			foreach(var item in genreCounts)
 			{
