@@ -14,17 +14,16 @@ namespace BattAnimeZone.Services
 	{
 		private Supabase.Client? _client;
 		private JsonSerializerOptions jsonOptions;
+        private SingletonSearchService _ssService;
 
-		private struct AnimeCountByGenreDTO
+        private struct AnimeCountByGenreDTO
 		{
 			public int GenreId { get; set; }
 			public int AnimeCount { get; set; }
 		}
 
 
-
-
-		public SupaBaseService(Supabase.Client? client)
+		public SupaBaseService(Supabase.Client? client, SingletonSearchService ssService)
         {
 			_client = client;
 
@@ -33,7 +32,9 @@ namespace BattAnimeZone.Services
 				PropertyNameCaseInsensitive = true, 
 				PropertyNamingPolicy = JsonNamingPolicy.CamelCase 
 			};
-		}
+
+            _ssService = ssService;
+        }
 
 
 
