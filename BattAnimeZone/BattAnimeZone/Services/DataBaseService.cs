@@ -62,7 +62,7 @@ namespace BattAnimeZone.Services
         }
 
 
-        public async Task<List<string?>> GetDistinctMediaTypes()
+        public async Task<List<string?>?> GetDistinctMediaTypes()
         {
             using (var _context = await _dbContextFactory.CreateDbContextAsync())
             {
@@ -71,7 +71,7 @@ namespace BattAnimeZone.Services
             }
         }
 
-		public async Task<List<int?>> GetDistinctYears()
+		public async Task<List<int?>?> GetDistinctYears()
 		{
 			using (var _context = await _dbContextFactory.CreateDbContextAsync())
 			{
@@ -95,7 +95,7 @@ namespace BattAnimeZone.Services
             }
         }
 
-        public async Task<Dictionary<int, int>> GetAnimesPerGenreIdCount()
+        public async Task<Dictionary<int, int>?> GetAnimesPerGenreIdCount()
         {
             using (var _context = await _dbContextFactory.CreateDbContextAsync())
             {

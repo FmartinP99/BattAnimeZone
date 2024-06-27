@@ -57,8 +57,8 @@ namespace BattAnimeZone.Controllers
         [HttpGet("GetRelations/{mal_id}")]
         public async Task<IActionResult> GetRelations(int mal_id)
         {
-			//var result = await _dataBaseService.GetRelations(mal_id);
-			var result = await _supaBaseService.GetRelations(mal_id);
+			var result = await _dataBaseService.GetRelations(mal_id);
+			//var result = await _supaBaseService.GetRelations(mal_id);
 			if (result == null)
             {
                 return NotFound();
@@ -93,8 +93,8 @@ namespace BattAnimeZone.Controllers
 		[HttpGet("GetGenres")]
         public async Task<IActionResult> GetGenres()
         {
-			//var result = await _dataBaseService.GetGenres();
-			var result = await _supaBaseService.GetGenres();
+			var result = await _dataBaseService.GetGenres();
+			//var result = await _supaBaseService.GetGenres();
 
 			if (result == null)
             {
@@ -108,8 +108,8 @@ namespace BattAnimeZone.Controllers
         [HttpGet("GetAnimesPerGenreIdCount")]
         public async Task<IActionResult> GetAnimesPerGenreIdCount()
         {
-            //var result = await _dataBaseService.GetAnimesPerGenreIdCount();
-			var result = await _supaBaseService.GetAnimesPerGenreIdCount();
+            var result = await _dataBaseService.GetAnimesPerGenreIdCount();
+			//var result = await _supaBaseService.GetAnimesPerGenreIdCount();
 
 			if (result == null)
             {
@@ -136,8 +136,9 @@ namespace BattAnimeZone.Controllers
         public async Task<IActionResult> GetFilteredAnimes([FromQuery] List<int>? genres, [FromQuery] List<string>? mediaTypes,
             [FromQuery] int? yearlower, [FromQuery] int? yearupper)
         {
-            var result = await _dataBaseService.GetFilteredAnimes(genres, mediaTypes, yearlower, yearupper);
-            if (!result.Any())
+			var result = await _dataBaseService.GetFilteredAnimes(genres, mediaTypes, yearlower, yearupper);
+			//var result = await _supaBaseService.GetFilteredAnimes(genres, mediaTypes, yearlower, yearupper);
+			if (!result.Any() || result == null)
             {
                 return NotFound();
             }

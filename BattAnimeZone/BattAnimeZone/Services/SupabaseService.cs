@@ -39,14 +39,16 @@ namespace BattAnimeZone.Services
 
 
 
-		public async Task<List<string?>> GetDistinctMediaTypes()
+		public async Task<List<string?>?> GetDistinctMediaTypes()
 		{
 			var response = await _client.From<DistinctMediaTypesSupabasaeModel>()
 									.Select("media_type").Get();
-
-			var media_types = response.Models.Select(x => x.mediaType).ToList();
-
-			return media_types;
+			if (response.ResponseMessage.IsSuccessStatusCode)
+			{
+				var media_types = response.Models.Select(x => x.mediaType).ToList();
+				return media_types;
+			}
+			return null;
 		}
 
 		public async Task<List<int?>> GetDistinctYears()
@@ -79,7 +81,7 @@ namespace BattAnimeZone.Services
 
 		}
 
-		public async Task<Dictionary<int, int>> GetAnimesPerGenreIdCount()
+		public async Task<Dictionary<int, int>?> GetAnimesPerGenreIdCount()
 		{
 			
 

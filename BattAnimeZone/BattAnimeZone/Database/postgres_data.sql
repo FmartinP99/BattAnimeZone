@@ -226,3 +226,57 @@ BEGIN
     GROUP BY p.id, p.title_english, p.title_japanese;
 END;
 $$ language plpgsql;
+
+
+
+
+CREATE OR REPLACE FUNCTION get_filtered_animes(
+    genres INT[],
+    media_types TEXT[],
+    year_lower INT,
+    year_upper INT
+) RETURNS TABLE (
+    Mal_id INT,
+    Title TEXT,
+    TitleEnglish TEXT,
+    TitleJapanese TEXT,
+    MediaType TEXT,
+    Episodes INT,
+    Status TEXT,
+    Rating TEXT,
+    Score real,
+    Popularity INT,
+    Year INT,
+    ImageLargeWebpUrl TEXT
+) AS $$
+BEGIN
+    RETURN QUERY
+    SELECT
+        a.id,
+        a.title,
+        a.title_english,
+        a.title_japanese,
+        a.media_type,
+        a.episodes,
+        a.status,
+        a.rating,
+        a.score,
+        a.popularity,
+        a.year,
+        a.image_large_webp_url
+    FROM
+        Anime a
+    LEFT JOIN
+        AnimeGenre ag ON a.id = ag.anime_id
+    WHERE
+        (genres IS NULL OR ag.genre_id = ANY(genres))
+         AND (media_types IS NULL OR a.media_type = ANY(media_types))
+        AND (year_lower IS NULL OR a.year >= year_lower)
+        AND (year_upper IS NULL OR a.year <= year_upper)
+    GROUP BY
+        a.id, a.title, a.title_english, a.title_japanese, a.media_type, a.episodes, a.status,
+        a.rating, a.score, a.popularity, a.year, a.image_large_webp_url
+    HAVING
+        (genres IS NULL OR array_length(genres, 1) = 0 OR count(DISTINCT ag.genre_id) = array_length(genres, 1));
+END;
+$$ LANGUAGE plpgsql;

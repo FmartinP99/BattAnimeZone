@@ -404,6 +404,7 @@ else{
             else
             {
                 await JSRuntime.InvokeVoidAsync("console.error", $"{response.StatusCode}\n {response.ReasonPhrase}");
+                searched_animes = new List<LiAnimeDTO>();
             }
         }
         catch(Exception e)

@@ -10,8 +10,13 @@ namespace BattAnimeZone.Services
 		public async Task<AnimeRelationsKeyDTO?> GetRelations(int mal_id)
 		{
 			var response = await _client.Rpc("get_anime_relations_by_parent_id", new { _parent_id = mal_id });
-			var returnDto = JsonSerializer.Deserialize<List<AnimeRelationsKeyDTO>>(response.Content, jsonOptions)?.FirstOrDefault();
-			return returnDto;
+			if (response.ResponseMessage.IsSuccessStatusCode)
+			{
+				var returnDto = JsonSerializer.Deserialize<List<AnimeRelationsKeyDTO>>(response.Content, jsonOptions)?.FirstOrDefault();
+
+				return returnDto;
+			}
+			return null;
 
 		}
 	}
