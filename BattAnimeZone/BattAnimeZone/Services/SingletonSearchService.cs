@@ -1,8 +1,11 @@
-﻿using BattAnimeZone.DbContexts;
+﻿using BattAnimeZone.DatabaseModels.SuapaBaseDatabaseModels;
+using BattAnimeZone.DbContexts;
+using BattAnimeZone.Services.Interfaces;
 using BattAnimeZone.Shared.Models.Anime;
 using BattAnimeZone.Shared.Models.AnimeDTOs;
 using F23.StringSimilarity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using System.Collections.Generic;
 using System.Data.SqlTypes;
 using System.Linq.Dynamic.Core;
@@ -28,11 +31,24 @@ namespace BattAnimeZone.Services
         int recently_max_size = 2000;
 
 
-        private IDbContextFactory<AnimeDbContext> _dbContextFactory;
-        public SingletonSearchService(IDbContextFactory<AnimeDbContext> dbContextFactory) {
+        private IDbContextFactory<AnimeDbContext?>? _dbContextFactory;
+        private Supabase.Client? _client;
+        public SingletonSearchService(IServiceScopeFactory serviceScopeFactory) {
 
-            _dbContextFactory = dbContextFactory;
-            FillOrRefreshAnimes();
+            using (var serviceScope = serviceScopeFactory.CreateScope())
+            {
+                _dbContextFactory = serviceScope.ServiceProvider.GetService<IDbContextFactory<AnimeDbContext?>?>();
+                _client = serviceScope.ServiceProvider.GetService<Supabase.Client?>();
+            }
+
+            if (_dbContextFactory != null)
+            {
+                FillOrRefreshAnimes();
+            }
+            else if (_client != null)
+            {
+                FillOrRefreshAnimesSupaBase();
+            }
         }
 
 
@@ -53,6 +69,26 @@ namespace BattAnimeZone.Services
 
                 this.animes = animeDictionary;
             }
+        }
+
+        public async void FillOrRefreshAnimesSupaBase()
+        {
+            var response = await _client.From<AnimeSupabaseModel>()
+                                        .Select("id, title, title_english, title_japanese")
+                                        .Get();
+
+            var animeDictionary = response.Models.Select(x => new
+            {
+                Key = x.Mal_id,
+                Value = new AnimeTitleContainer
+                {
+                    Title = x.Title,
+                    TitleEnglish = x.TitleEnglish,
+                    TitleJapanese = x.TitleJapanese
+                }
+            }).ToDictionary(x => x.Key, x => x.Value);
+
+            this.animes = animeDictionary;
         }
 
         public int[] GetSimilarAnimesForSearchResult(int n, string name)

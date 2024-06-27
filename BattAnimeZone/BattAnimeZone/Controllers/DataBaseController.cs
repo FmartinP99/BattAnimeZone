@@ -11,7 +11,7 @@ namespace BattAnimeZone.Controllers
 	[ApiController]
 	public class DataBaseController : Controller
 	{
-		IServiceScopeFactory serviceScopeFactory;
+
 		private DataBaseService? _dataBaseService = null;
         private SupaBaseService? _supaBaseService = null;
 
