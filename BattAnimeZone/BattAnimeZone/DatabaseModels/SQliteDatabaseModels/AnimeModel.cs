@@ -1,17 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Supabase.Postgrest.Models;
+using BattAnimeZone.DatabaseModels._IDataBaseModels;
 
-namespace BattAnimeZone.DatabaseModels
+namespace BattAnimeZone.DatabaseModels.SQliteDatabaseModels
 {
     [Table("Anime")]
-    public class AnimeModel 
-    {
+    public class AnimeModel : IAnimeModel
+	{
         [Key]
         [Column("id")]
         public int Mal_id { get; set; }
@@ -37,9 +32,9 @@ namespace BattAnimeZone.DatabaseModels
         [Column("episodes")]
         public int Episodes { get; set; } = 0;
         [Column("status")]
-		public string Status { get; set; } = string.Empty;
+        public string Status { get; set; } = string.Empty;
 
-		[Column("duration")]
+        [Column("duration")]
         public string Duration { get; set; } = "";
 
         [Column("rating")]

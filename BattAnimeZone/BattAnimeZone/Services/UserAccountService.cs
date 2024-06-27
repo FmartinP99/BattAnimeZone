@@ -1,6 +1,6 @@
 ﻿using BattAnimeZone.Authentication;
 using BattAnimeZone.Authentication.PasswordHasher;
-using BattAnimeZone.DatabaseModels;
+using BattAnimeZone.DatabaseModels.SQliteDatabaseModels;
 using BattAnimeZone.DbContexts;
 using BattAnimeZone.Shared.Models.User;
 using BattAnimeZone.Shared.Models.User.BrowserStorageModels;

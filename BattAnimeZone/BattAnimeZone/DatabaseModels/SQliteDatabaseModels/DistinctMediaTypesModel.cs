@@ -1,12 +1,12 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using BattAnimeZone.DatabaseModels._IDataBaseModels;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace BattAnimeZone.DatabaseModels
+namespace BattAnimeZone.DatabaseModels.SQliteDatabaseModels
 {
     [Table("DistinctMediaTypes")]
-    public class DistinctMediaTypesModel
-    {
+    public class DistinctMediaTypesModel : IDistinctMediaTypesModel
+	{
         [Key]
         [Column("media_type")]
         public string? mediaType { get; set; }

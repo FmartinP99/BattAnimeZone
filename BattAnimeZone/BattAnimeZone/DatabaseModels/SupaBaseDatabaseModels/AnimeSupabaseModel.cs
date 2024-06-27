@@ -1,16 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Supabase.Postgrest.Attributes;
 using Supabase.Postgrest.Models;
-using Supabase.Postgrest.Attributes;
+using BattAnimeZone.DatabaseModels._IDataBaseModels;
 
 namespace BattAnimeZone.DatabaseModels.SuapaBaseDatabaseModels
 {
     [Table("anime")]
-    public class AnimeSupabaseModel : BaseModel
-    {
+    public class AnimeSupabaseModel : BaseModel , IAnimeModel
+	{
         [PrimaryKey("id", true)]
         public int Mal_id { get; set; }
 

@@ -134,7 +134,7 @@ CREATE TABLE AnimeUser (
   anime_id INTEGER NOT NULL,
   user_id INTEGER NOT NULL,
   rating INTEGER CHECK (rating BETWEEN 0 AND 10) DEFAULT 0,
-  favorite INTEGER CHECK (favorite IN (0, 1)) NOT NULL DEFAULT 0,
+  favorite boolean  NOT NULL DEFAULT False,
   date TEXT NOT NULL,
   status TEXT CHECK (status IN ('watching', 'completed', 'on hold', 'dropped', 'planned')) NOT NULL,
   FOREIGN KEY (anime_id) REFERENCES Anime(id) ON DELETE CASCADE,
@@ -154,19 +154,19 @@ CREATE TABLE AnimeGenre (
   id SERIAL PRIMARY KEY,
   anime_id INTEGER NOT NULL,
   genre_id INTEGER NOT NULL,
-  is_theme INTEGER CHECK (is_theme BETWEEN 0 AND 1) DEFAULT 0,
+  is_theme boolean  DEFAULT False,
   FOREIGN KEY (anime_id) REFERENCES Anime(id) ON DELETE CASCADE,
   FOREIGN KEY (genre_id) REFERENCES Genre(id) ON DELETE CASCADE,
   UNIQUE (anime_id, genre_id)
 );
 
 
-CREATE VIEW DistinctMediaTypes AS
+CREATE TABLE DistinctMediaTypes AS
 SELECT DISTINCT media_type
 FROM Anime;
 
 
-CREATE VIEW DistinctYears AS
+CREATE TABLE DistinctYears AS
 SELECT DISTINCT anime.year
 FROM Anime
 WHERE anime.year IS NOT NULL;

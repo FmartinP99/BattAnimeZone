@@ -1,4 +1,4 @@
-﻿using BattAnimeZone.DatabaseModels;
+﻿using BattAnimeZone.DatabaseModels.SQliteDatabaseModels;
 using BattAnimeZone.Services;
 using BattAnimeZone.Shared.Models.User.BrowserStorageModels;
 using Microsoft.AspNetCore.Identity;
