@@ -123,6 +123,7 @@ namespace BattAnimeZone.Controllers
         public async Task<IActionResult> GetAnimesForListGenreAnimes(int mal_id)
         {
             var result = await _dataBaseService.GetAnimesForListGenreAnimes(mal_id);
+            //var result = await _supaBaseService.GetAnimesForListGenreAnimes(mal_id);
 
             if (result == null)
             {
