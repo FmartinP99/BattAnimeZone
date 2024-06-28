@@ -21,7 +21,7 @@ using BattAnimeZone.DatabaseModels.SQliteDatabaseModels;
 
 namespace BattAnimeZone.DatabaseInitializer
 {
-    public class CsvToDataBaseHandler
+    public partial class CsvToDataBaseHandler
     {
 
         private readonly static int batchsize = 100;
@@ -167,20 +167,6 @@ namespace BattAnimeZone.DatabaseInitializer
                     }
                 }
             }
-
-            /*
-			List<AnimeSupabaseModel> animeSupabaseModels = new List<AnimeSupabaseModel>();
-
-			foreach (Anime an in animes)
-			{
-				AnimeSupabaseModel animeModel = MapAnimeCsvToAnimeSupabase(an);
-				animeSupabaseModels.Add(animeModel);
-			}
-
-
-			
-            var response = await _client.From<AnimeSupabaseModel>().Insert(animeSupabaseModels);
-            */
 			}
 
 
@@ -260,9 +246,6 @@ namespace BattAnimeZone.DatabaseInitializer
                             ChildId = entry.Mal_id,
                             RelationType = relations.Relation,
                         };
-
-                        //relationSupabaseModels.Add(relsupamod);
-
 					}
                 }
             }
@@ -286,14 +269,6 @@ namespace BattAnimeZone.DatabaseInitializer
 
                 }
             }
-
-
-	
-
-			//var response = await _client.From<RelationSupabaseModel>().Insert(relationSupabaseModels);
-
-
-
 		}
 
 
@@ -322,16 +297,6 @@ namespace BattAnimeZone.DatabaseInitializer
                         };
                         externalModels.Add(extm);
 
-                        /*
-						ExternalSupabaseModel extms = new ExternalSupabaseModel
-						{
-							Name = ext.Name,
-							Url = ext.Url,
-							AnimeId = an.Mal_id
-						};
-
-                        externalSupabaseModels.Add(extms);
-                        */
 					}
                 }
 
@@ -349,10 +314,6 @@ namespace BattAnimeZone.DatabaseInitializer
                         _context.Entry(rmod).State = EntityState.Detached;
                     }
                 }
-
-
-				//var response = await _client.From<ExternalSupabaseModel>().Insert(externalSupabaseModels);
-
 
 			}
 		}
@@ -382,15 +343,6 @@ namespace BattAnimeZone.DatabaseInitializer
                     };
                     streamingModels.Add(stm);
 
-                    /*
-					StreamingSupabaseModel stmb = new StreamingSupabaseModel
-					{
-						Name = st.Name,
-						Url = st.Url,
-					};
-					streamingSupabaseModels.Add(stmb);
-                    */
-
 
 				}
             }
@@ -410,10 +362,6 @@ namespace BattAnimeZone.DatabaseInitializer
                 }
             }
 
-
-			//var response = await _client.From<StreamingSupabaseModel>().Insert(streamingSupabaseModels);
-
-
 		}
 
 
@@ -423,21 +371,20 @@ namespace BattAnimeZone.DatabaseInitializer
 
             List<AnimeStreamingModel> animeStreamingModels = new List<AnimeStreamingModel>();
 
-            List<AnimeStreamingSupabaseModel> animeSupabaseStreamingModels = new List<AnimeStreamingSupabaseModel>();
-
             HashSet<string> visited = new HashSet<string>();
             using (var _context = _dbContextFactory.CreateDbContext())
             {
                 foreach (Anime anime in animes)
                 {
+                    var entity2 = _context.Animes.Find(anime.Mal_id);
+                    if (entity2 == null) continue;
+
                     if (anime.Streamings == null) continue;
                     foreach (Streaming streaming in anime.Streamings)
                     {
                         StreamingModel? streamingModel = _context.Streamings.FirstOrDefault(s => s.Name == streaming.Name && s.Url == streaming.Url);
                         if (streamingModel == null) continue;
-
-                        var entity2 = _context.Animes.Find(anime.Mal_id);
-                        if (entity2 == null) continue;
+                       
 
                         int streamingId = streamingModel.Id;
 
@@ -452,16 +399,6 @@ namespace BattAnimeZone.DatabaseInitializer
                         };
 
                         animeStreamingModels.Add(astm);
-
-						/*
-						AnimeSupabaseStreamingModel astms = new AnimeStreamingSupabaseModel
-						{
-							AnimeId = anime.Mal_id,
-							StreamingId = streamingId
-						};
-
-						animeSupabaseStreamingModels.Add(astms);
-                        */
 
 					}
 				}
@@ -481,8 +418,6 @@ namespace BattAnimeZone.DatabaseInitializer
                     }
                 }
             }
-
-			//var response = await _client.From<AnimeStreamingSupabaseModel>().Insert(animeSupabaseStreamingModels);
 		}
 
 
@@ -509,20 +444,6 @@ namespace BattAnimeZone.DatabaseInitializer
 
                 });
 
-                /*
-				productionEntitySupabaseModels.Add(new ProductionEntitySupabaseModel
-				{
-					Id = prod.Mal_id,
-					Url = prod.Url,
-					Favorites = prod.Favorites,
-					Established = prod.Established,
-					About = prod.About,
-					Count = prod.Count,
-					ImageUrl = prod.Image_url
-
-				});
-                */
-
 			}
 
             using (var _context = _dbContextFactory.CreateDbContext())
@@ -540,9 +461,6 @@ namespace BattAnimeZone.DatabaseInitializer
                     }
                 }
             }
-
-			//var response = await _client.From<ProductionEntitySupabaseModel>().Insert(productionEntitySupabaseModels);
-
 		}
 
 		public async Task SaveProductionEntityTitlesToDatabase(List<ProductionEntity> prodents)
@@ -572,15 +490,6 @@ namespace BattAnimeZone.DatabaseInitializer
                             ParentId = prod.Mal_id
 
                         });
-                        /*
-						productionEntityTitleSupabaseModels.Add(new ProductionEntityTitleSupabaseModel
-						{
-							Type = title.Type,
-							Title = title.Title,
-							ParentId = prod.Mal_id
-
-						});
-                        */
 
 					}
 
@@ -599,9 +508,6 @@ namespace BattAnimeZone.DatabaseInitializer
                     }
                 }
             }
-
-			//var response = await _client.From<ProductionEntityTitleSupabaseModel>().Insert(productionEntityTitleSupabaseModels);
-
 
 		}
 
@@ -639,16 +545,7 @@ namespace BattAnimeZone.DatabaseInitializer
                             AnimeId = anime.Mal_id,
                             ProductionEntityId = studio.Mal_id,
                             Type = "S"
-                        });
-
-                        /*
-						animeProductionEntitySupabaseModels.Add(new AnimeProductionEntitySupabaseModel
-						{
-							AnimeId = anime.Mal_id,
-							ProductionEntityId = studio.Mal_id,
-							Type = "S"
-						});
-                        */
+                        });             
 
 					}
 
@@ -672,15 +569,6 @@ namespace BattAnimeZone.DatabaseInitializer
                             ProductionEntityId = licensor.Mal_id,
                             Type = "L"
                         });
-
-                        /*
-						animeProductionEntitySupabaseModels.Add(new AnimeProductionEntitySupabaseModel
-						{
-							AnimeId = anime.Mal_id,
-							ProductionEntityId = licensor.Mal_id,
-							Type = "L"
-						});
-                        */
 					}
 
 
@@ -704,14 +592,8 @@ namespace BattAnimeZone.DatabaseInitializer
                             Type = "P"
                         });
 
-                        /*
-						animeProductionEntitySupabaseModels.Add(new AnimeProductionEntitySupabaseModel
-						{
-							AnimeId = anime.Mal_id,
-							ProductionEntityId = producer.Mal_id,
-							Type = "P"
-						});
-                        */
+                 
+                      
 					}
                 }
 
@@ -728,8 +610,6 @@ namespace BattAnimeZone.DatabaseInitializer
                         _context.Entry(rmod).State = EntityState.Detached;
                     }
                 }
-
-				//var response = await _client.From<AnimeProductionEntitySupabaseModel>().Insert(animeProductionEntitySupabaseModels);
 			}
         }
 
@@ -829,15 +709,6 @@ namespace BattAnimeZone.DatabaseInitializer
                     Name = genre.Name
 
                 });
-                /*
-				genreSupabaseModels.Add(new GenreSupabaseModel
-				{
-					Mal_id = genre.Mal_id,
-					Url = genre.Url,
-					Name = genre.Name
-
-				});
-                */
 			}
 
             using (var _context = _dbContextFactory.CreateDbContext())
@@ -855,8 +726,6 @@ namespace BattAnimeZone.DatabaseInitializer
                     }
                 }
             }
-
-			//var response = await _client.From<GenreSupabaseModel>().Insert(genreSupabaseModels);
 
 		}
 
@@ -887,37 +756,6 @@ namespace BattAnimeZone.DatabaseInitializer
             }
 
 
-
-			/*
-		 var response = await _client.From<AnimeSupabaseModel>()
-									.Select("media_type").Get();
-
-		 var distinct_list = new List<string>();
-		 foreach(var res in response.Models)
-		 {
-			 if (distinct_list.Contains(res.MediaType))
-			 {
-				 continue;
-			 }
-			 distinct_list.Add(res.MediaType); 
-		 }
-
-
-		 List<DistinctMediaTypesSupabasaeModel> dmtsbm = new List<DistinctMediaTypesSupabasaeModel>();
-
-		 foreach(var entry in distinct_list)
-		 {
-			 dmtsbm.Add(new DistinctMediaTypesSupabasaeModel
-			 {
-				 mediaType = entry
-			 });
-		 }
-
-
-
-		 var response2 = await _client.From<DistinctMediaTypesSupabasaeModel>().Insert(dmtsbm);
-
-		 */
 		}
 
 		public async Task SaveDistinctYears()
@@ -944,39 +782,6 @@ namespace BattAnimeZone.DatabaseInitializer
                     _context.Entry(rmod).State = EntityState.Detached;
                 }
             }
-
-
-
-
-            /*
-            var response = await _client.From<AnimeSupabaseModel>()
-                                       .Select("year").Get();
-
-            var distinct_list = new List<int>();
-            foreach(var res in response.Models)
-            {
-                if (distinct_list.Contains(res.Year))
-                {
-                    continue;
-                }
-                distinct_list.Add(res.Year); 
-            }
-
-
-            List<DistinctYearSupabaseModel> dysbm = new List<DistinctYearSupabaseModel>();
-
-            foreach(var entry in distinct_list)
-            {
-				dysbm.Add(new DistinctYearSupabaseModel
-				{
-                    Year = entry
-                });
-            }
-
-
-
-            var response2 = await _client.From<DistinctYearSupabaseModel>().Insert(dysbm);
-            */
             
 
 		}
@@ -1010,15 +815,6 @@ namespace BattAnimeZone.DatabaseInitializer
                         });
 
 
-                        /*
-						genreSupabaseModels.Add(new AnimeGenreSupabaseModel
-						{
-							AnimeId = anime.Mal_id,
-							GenreId = ang.Mal_id,
-							IsTheme = false
-						});
-                        */
-
 					}
 
                     foreach (var ang in anime.Themes)
@@ -1033,14 +829,7 @@ namespace BattAnimeZone.DatabaseInitializer
                             IsTheme = true
                         });
 
-                        /*
-						genreSupabaseModels.Add(new AnimeGenreSupabaseModel
-						{
-							AnimeId = anime.Mal_id,
-							GenreId = ang.Mal_id,
-							IsTheme = true
-						});
-                        */
+             
 					}
                 }
 
@@ -1057,8 +846,6 @@ namespace BattAnimeZone.DatabaseInitializer
                     }
                 }
             }
-
-			//var response = await _client.From<AnimeGenreSupabaseModel>().Insert(genreSupabaseModels);
 
 		}
 

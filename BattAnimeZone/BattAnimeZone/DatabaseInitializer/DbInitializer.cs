@@ -12,6 +12,7 @@ using System.Globalization;
 using System.Linq.Dynamic.Core;
 using DotNetEnv;
 using System.Text;
+using BattAnimeZone.DatabaseModels.SuapaBaseDatabaseModels;
 
 namespace BattAnimeZone.DatabaseInitializer
 {
@@ -22,52 +23,59 @@ namespace BattAnimeZone.DatabaseInitializer
 		public void Initialize(IConfiguration configuration, IDbContextFactory<AnimeDbContext?>? _contextFactory, Supabase.Client? client)
 		{
 			_configuration = configuration;
-			
 
-			using (var _context = _contextFactory.CreateDbContext())
+            bool use_sqlite = Environment.GetEnvironmentVariable("USE_SQLITE3_DATABASE") == "true" ? true : false;
+            bool use_supabase = Environment.GetEnvironmentVariable("USE_SUPABASE_DATABASE") == "true" ? true : false;
+
+			//checking if the database exists, and if not, creating it.
+			if (use_sqlite)
 			{
-				bool db_exists = (File.Exists(_configuration.GetConnectionString("DatabasePath")));
-
-				if (!db_exists)
+				using (var _context = _contextFactory.CreateDbContext())
 				{
-					if (!File.Exists(_configuration.GetConnectionString("DatabaseInitFilePath")))
+					bool db_exists = (File.Exists(_configuration.GetConnectionString("DatabasePath")));
+
+					if (!db_exists)
 					{
-                        Console.WriteLine("DB Initializer file does not exists!");
-						return;
-                    }
-					string sqlCommands = File.ReadAllText(_configuration.GetConnectionString("DatabaseInitFilePath"));
-					Console.WriteLine("Reading SQL initialization script!");
-					_context.Database.ExecuteSqlRaw(sqlCommands);
-                    Console.WriteLine("Database has been created!");
+						if (!File.Exists(_configuration.GetConnectionString("DatabaseInitFilePath")))
+						{
+							Console.WriteLine("DB Initializer file does not exists!");
+							return;
+						}
+						string sqlCommands = File.ReadAllText(_configuration.GetConnectionString("DatabaseInitFilePath"));
+						Console.WriteLine("Reading SQL initialization script!");
+						_context.Database.ExecuteSqlRaw(sqlCommands);
+						Console.WriteLine("Database has been created!");
 
 
 
-				}
-
-				if (_context.Animes.Any()) {
-					Console.WriteLine("Database isn't empty! Writing some AnimeGenres for test.\n");
-					var query = (from ag in _context.AnimeGenres
-								 join a in _context.Animes on ag.AnimeId equals a.Mal_id
-								 join g in _context.Genres on ag.GenreId equals g.Mal_id
-                                 group new { ag, a, g } by new { ag.AnimeId, a.Title } into grp
-								 select new
-								 {
-									 AnimeId = grp.Key.AnimeId,
-									 AnimeTitle = grp.Key.Title,
-									 Genres = grp.Where(x => !x.ag.IsTheme).Select(x => x.g.Name).ToList(),
-									 Themes = grp.Where(x => x.ag.IsTheme).Select(x => x.g.Name).ToList()
-								 })
-								 .AsSplitQuery()
-								 .AsNoTracking()
-									.Take(3)
-									.ToList();
-
-					foreach(var item in query)
-					{
-						Console.WriteLine($"AnimeId: {item.AnimeId}, AnimeTitle: {item.AnimeTitle} \n" + "\tGenres: " + string.Join(", ", item.Genres) + "\n" + "\tThemes: " + string.Join(", ", item.Themes));
 					}
-                    Console.WriteLine("\n");
-                    return; 
+
+					if (_context.Animes.Any())
+					{
+						Console.WriteLine("Database isn't empty! Writing some AnimeGenres for test.\n");
+						var query = (from ag in _context.AnimeGenres
+									 join a in _context.Animes on ag.AnimeId equals a.Mal_id
+									 join g in _context.Genres on ag.GenreId equals g.Mal_id
+									 group new { ag, a, g } by new { ag.AnimeId, a.Title } into grp
+									 select new
+									 {
+										 AnimeId = grp.Key.AnimeId,
+										 AnimeTitle = grp.Key.Title,
+										 Genres = grp.Where(x => !x.ag.IsTheme).Select(x => x.g.Name).ToList(),
+										 Themes = grp.Where(x => x.ag.IsTheme).Select(x => x.g.Name).ToList()
+									 })
+									 .AsSplitQuery()
+									 .AsNoTracking()
+										.Take(3)
+										.ToList();
+
+						foreach (var item in query)
+						{
+							Console.WriteLine($"AnimeId: {item.AnimeId}, AnimeTitle: {item.AnimeTitle} \n" + "\tGenres: " + string.Join(", ", item.Genres) + "\n" + "\tThemes: " + string.Join(", ", item.Themes));
+						}
+						Console.WriteLine("\n");
+						return;
+					}
 				}
 			}
 			Console.WriteLine("Database was empty! Now filling the database. This might take a while!\n");
@@ -78,7 +86,21 @@ namespace BattAnimeZone.DatabaseInitializer
 			FillAnimes(animes);
 			FillProductionEntities(productionEntities);
 			FillGenres(genres);
-			FillDatabase(_contextFactory, animes, productionEntities, genres, client);
+
+        
+
+			if (use_sqlite)
+			{
+				FillDatabase(_contextFactory, animes, productionEntities, genres, client);
+			}else if (use_supabase)
+			{
+                Console.WriteLine("Now Filling SupaBase. Please ensure that you ran the postgres_data.sql script in your supabase SQL editor first!");
+                FillSupaBaseDatabase(_contextFactory, animes, productionEntities, genres, client);
+			}
+			else
+			{
+                Console.WriteLine("DBINITILAIZER: NO DATABASE SERVICES IS BEING USED! PLEASE ENABLE ONE IN THE .ENV VARIABLE!");
+            }
 			
 
 		}
@@ -324,9 +346,93 @@ namespace BattAnimeZone.DatabaseInitializer
 				Console.WriteLine("saved animeusers\n");
 			}
 
+            await Console.Out.WriteLineAsync("Database Filling is Done!");
+
 
 
         }
 
-	}
+
+        public async void FillSupaBaseDatabase(IDbContextFactory<AnimeDbContext?>? _contextFactory, Dictionary<int, Anime> animes, Dictionary<int,
+            ProductionEntity> productionEntities, Dictionary<int, AnimeGenre> genres, Supabase.Client? client)
+		{
+
+			await Console.Out.WriteLineAsync("\nQuerying a single anime instance to check if the database is initialized.\n" +
+				" If it is, the script returns and please turn off the DbInit in your .env variable! If not, the script continues!");
+
+			try
+			{
+				var response = await client.From<AnimeSupabaseModel>().Limit(1).Get();
+				if (response.ResponseMessage.IsSuccessStatusCode && response.Models.Count > 0)
+				{
+                    await Console.Out.WriteLineAsync("\nDB IS NOT EMPTY! Script terminating.");
+					return;
+                }
+			}catch (Exception ex)
+			{
+
+			}
+
+
+
+            Console.WriteLine("Filling database!\n");
+            var animesData = animes.Select(a => a.Value).ToList();
+            var prodentsData = productionEntities.Select(a => a.Value).ToList();
+            var genresData = genres.Select(a => a.Value).ToList();
+
+            CsvToDataBaseHandler _csvToDataBaseHandler = new CsvToDataBaseHandler(_contextFactory, client);
+
+            Console.WriteLine("querying animes");
+            await _csvToDataBaseHandler.SaveAnimesToDatabaseSupaBase(animesData);
+            Console.WriteLine("saved animes\n");
+
+
+            Console.WriteLine("querying relations");
+            await _csvToDataBaseHandler.SaveRelationsToDatabaseSupaBase(animes);
+            Console.WriteLine("saved relations\n");
+
+            Console.WriteLine("querying externals");
+            await _csvToDataBaseHandler.SaveExternalsToDatabaseSupaBase(animesData);
+            Console.WriteLine("saved externals\n");
+
+            Console.WriteLine("querying streamings");
+            await _csvToDataBaseHandler.SaveStreamingsToDatabaseSupaBase(animesData);
+            Console.WriteLine("saved streamings\n");
+
+            Console.WriteLine("querying animestreamings");
+            await _csvToDataBaseHandler.SaveAnimeStreamingsToDatabaseSupaBase(animesData);
+            Console.WriteLine("saved animestreamings\n");
+
+            Console.WriteLine("querying productionentities");
+            Console.WriteLine("Updating Counts for Production Entities based on the used data\n");
+            await _csvToDataBaseHandler.SaveProductionEntitiesToDatabaseSupaBase(prodentsData);
+            Console.WriteLine("Done updating Counts for Production Entities based on the used data\n");
+            Console.WriteLine("saved productionentities\n");
+
+            Console.WriteLine("querying productionentitytitles");
+            await _csvToDataBaseHandler.SaveProductionEntityTitlesToDatabaseSupaBase(prodentsData);
+            Console.WriteLine("saved productionentitytitles\n");
+
+            Console.WriteLine("querying animeproductionentities");
+            await _csvToDataBaseHandler.SaveAnimeProductionEntitiesToDatabaseSupaBase(animesData);
+            Console.WriteLine("saved animeproductionentities\n");
+
+
+            Console.WriteLine("querying genres");
+            await _csvToDataBaseHandler.SaveGenresToDatabaseSupaBase(genresData);
+            Console.WriteLine("saved genres\n");
+
+            Console.WriteLine("querying animegenres");
+            await _csvToDataBaseHandler.SaveAnimeGenresToDatabaseSupaBase(animesData);
+            Console.WriteLine("saved animegenres\n");
+			if (Environment.GetEnvironmentVariable("MakeMockUsersOnDbInit") == "true")
+			{
+                await Console.Out.WriteLineAsync("Mock User creation is not supported for supabase!");
+            }
+
+            await Console.Out.WriteLineAsync("Database Filling is Done!");
+
+        }
+
+    }
 }
