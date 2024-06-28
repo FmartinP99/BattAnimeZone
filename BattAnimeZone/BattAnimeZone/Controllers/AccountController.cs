@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using System.Text.Json;
+using BattAnimeZone.Services.SupaBase;
 
 namespace BattAnimeZone.Controllers
 {
@@ -17,18 +18,36 @@ namespace BattAnimeZone.Controllers
 	public class AccountController : ControllerBase
 	{
 		private UserAccountService _userAccountService;
+        private SupaBaseUserAccountService _supaBaseUserAccountService; 
 
-		public AccountController(UserAccountService userAccountService)
+		public AccountController(UserAccountService userAccountService, SupaBaseUserAccountService supaBaseUserAccountService)
 		{
 			_userAccountService = userAccountService;
+            _supaBaseUserAccountService = supaBaseUserAccountService;
 		}
 
-		[HttpPost]
+        [HttpPost]
+        [Route("Register")]
+        [AllowAnonymous]
+        public async Task<ActionResult<UserSession>> Register([FromBody] RegisterRequest registerRequest)
+        {
+
+            //bool response = await _userAccountService.RegisterUser(registerRequest);
+            bool response = await _supaBaseUserAccountService.RegisterUser(registerRequest);
+
+            if (response)
+                return Ok();
+            else
+                return BadRequest();
+        }
+
+        [HttpPost]
 		[Route("Login")]
 		[AllowAnonymous]
 		public async Task<ActionResult<UserSession>> Login([FromBody] LoginRequest loginRequest)
 		{
-            var userSession = await _userAccountService.Login(loginRequest);
+            //var userSession = await _userAccountService.Login(loginRequest);
+            var userSession = await _supaBaseUserAccountService.Login(loginRequest);
             if (userSession is null)
 				return Unauthorized();
 			else
@@ -57,20 +76,6 @@ namespace BattAnimeZone.Controllers
                 return Unauthorized();
             else
                 return userSession;
-        }
-
-        [HttpPost]
-        [Route("Register")]
-        [AllowAnonymous]
-        public async Task<ActionResult<UserSession>> Register([FromBody] RegisterRequest registerRequest)
-        {
-
-            bool response = await _userAccountService.RegisterUser(registerRequest);
-
-            if (response)
-                return Ok();
-            else
-                return BadRequest();
         }
 
         [HttpPost]
@@ -106,7 +111,8 @@ namespace BattAnimeZone.Controllers
         {
 			var authorizationHeader = HttpContext.Request.Headers["Authorization"].FirstOrDefault();
 			var token = authorizationHeader.Substring("Bearer ".Length).Trim();
-			var response = await _userAccountService.GetInteractedAnimes(username, token);
+			//var response = await _userAccountService.GetInteractedAnimes(username, token);
+			var response = await _supaBaseUserAccountService.GetInteractedAnimes(username, token);
             if (response != null)
             {
                 return Ok(response);

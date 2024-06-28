@@ -1,12 +1,6 @@
 ﻿using BattAnimeZone.DatabaseModels.SuapaBaseDatabaseModels;
 using BattAnimeZone.Services.Interfaces;
-using BattAnimeZone.Shared.Models.AnimeDTOs;
 using BattAnimeZone.Shared.Models.GenreDTOs;
-using DotNetEnv;
-using Microsoft.EntityFrameworkCore.Storage;
-using Microsoft.Extensions.Configuration;
-using System.Net.Http;
-using System.Text;
 using System.Text.Json;
 
 namespace BattAnimeZone.Services.SupaBase

@@ -1,4 +1,5 @@
-﻿using BattAnimeZone.DatabaseModels.SQliteDatabaseModels;
+﻿using BattAnimeZone.DatabaseModels._IDataBaseModels;
+using BattAnimeZone.DatabaseModels.SQliteDatabaseModels;
 using BattAnimeZone.Services;
 using BattAnimeZone.Shared.Models.User.BrowserStorageModels;
 using Microsoft.AspNetCore.Identity;
@@ -36,7 +37,7 @@ namespace BattAnimeZone.Authentication
         }
 
         
-		public UserSession? GenerateJwtToken(UserAccountModel? userAccount)
+		public UserSession? GenerateJwtToken(IUserAccountModel? userAccount)
 		{
             /* Generating JWT Token */
             var tokenExpiryTimeStamp = DateTime.Now.ToUniversalTime().AddMinutes(JWT_TOKEN_VALIDITY_MINS);
