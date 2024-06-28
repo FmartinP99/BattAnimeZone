@@ -452,3 +452,136 @@ BEGIN
         a.id = ANY(similar_anime_ids);
 END;
 $$ LANGUAGE plpgsql;
+
+
+
+
+
+
+CREATE OR REPLACE FUNCTION get_anime_page_details(_mal_id INT)
+RETURNS JSONB AS $$
+DECLARE
+    q1 RECORD;
+    q2 RECORD;
+    q3 RECORD;
+    result JSONB;
+BEGIN
+    -- Query 1
+    SELECT INTO q1
+        a.id,
+        a.title,
+        a.title_english,
+        a.title_japanese,
+        a.media_type,
+        a.episodes,
+        a.status,
+        a.duration,
+        a.score,
+        a.rank,
+        a.popularity,
+        a.synopsis,
+        a.background,
+        a.season,
+        a.year,
+        a.image_large_webp_url,
+        a.aired_string,
+        jsonb_agg(
+            CASE
+                WHEN ag.is_theme = FALSE THEN jsonb_build_object('Mal_id', ag.genre_id, 'Name', g.name)
+            END
+        ) FILTER (WHERE ag.is_theme = FALSE) AS Genres,
+        jsonb_agg(
+            CASE
+                WHEN ag.is_theme = TRUE THEN jsonb_build_object('Mal_id', ag.genre_id, 'Name', g.name)
+            END
+        ) FILTER (WHERE ag.is_theme = TRUE) AS Themes
+    FROM
+        animegenre ag
+    JOIN
+        anime a ON ag.anime_id = a.id
+    JOIN
+        genre g ON ag.genre_id = g.id
+    WHERE
+        a.id = _mal_id
+    GROUP BY
+        a.id, a.title, a.title_english, a.title_japanese, a.media_type, a.episodes, a.status,
+        a.duration, a.score, a.rank, a.popularity, a.synopsis, a.background, a.season, a.year,
+        a.image_large_webp_url, a.aired_string;
+    
+
+      -- Query 2
+    SELECT INTO q2
+        jsonb_agg(
+            CASE
+                WHEN ap.type = 'S' AND pt.type = 'Default' THEN jsonb_build_object('Mal_id', ap.productionentity_id, 'Name', pt.title)
+            END
+        ) FILTER (WHERE ap.type = 'S' AND pt.type = 'Default') AS Studios,
+        jsonb_agg(
+            CASE
+                WHEN ap.type = 'L' AND pt.type = 'Default' THEN jsonb_build_object('Mal_id', ap.productionentity_id, 'Name', pt.Title)
+            END
+        ) FILTER (WHERE ap.type = 'L' AND pt.type = 'Default') AS Licensors,
+        jsonb_agg(
+            CASE
+                WHEN ap.type = 'P' AND pt.type = 'Default' THEN jsonb_build_object('Mal_id', ap.productionentity_id, 'Name', pt.title)
+            END
+        ) FILTER (WHERE ap.type = 'P' AND pt.type = 'Default') AS Producers
+    FROM
+        animeproductionentity ap
+    JOIN
+        anime a ON ap.anime_id = a.id
+    JOIN
+        productionentity p ON ap.productionentity_id = p.id
+    JOIN
+        productionentitytitle pt ON p.id = pt.parent_id
+    WHERE
+        a.id = _mal_id
+    GROUP BY
+        a.id;
+
+    -- Query 3
+    SELECT INTO q3
+        jsonb_agg(
+            jsonb_build_object('Name', s.name, 'Url', s.url)
+        ) AS Streamings
+    FROM
+        animestreaming astr
+    JOIN
+        streaming s ON astr.streaming_id = s.id
+    WHERE
+        astr.anime_id = _mal_id
+    GROUP BY
+        astr.anime_id;
+    
+     -- Combine results
+    result := jsonb_build_object(
+        'Mal_id', q1.id,
+        'Title', q1.title,
+        'TitleEnglish', q1.title_english,
+        'TitleJapanese', q1.title_japanese,
+        'MediaType', q1.media_type,
+        'Episodes', q1.episodes,
+        'Status', q1.status,
+        'Duration', q1.duration,
+        'Score', q1.score,
+        'Rank', q1.rank,
+        'Popularity', q1.popularity,
+        'Synopsis', q1.synopsis,
+        'Background', q1.background,
+        'Season', q1.season,
+        'Year', q1.year,
+        'ImageLargeWebpUrl', q1.image_large_webp_url,
+        'AiredString', q1.aired_string,
+        'Genres', q1.Genres,
+        'Themes', q1.Themes,
+        'Studios', q2.Studios,
+        'Licensors', q2.Licensors,
+        'Producers', q2.Producers,
+        'Streamings', q3.Streamings
+    );
+
+    RETURN result;
+END;
+$$ LANGUAGE plpgsql;
+
+

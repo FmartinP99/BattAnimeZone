@@ -46,6 +46,7 @@ namespace BattAnimeZone.Controllers
 		public async Task<IActionResult> GetAnimePageDTOByID(int mal_id)
 		{
 			var result = await _dataBaseService.GetAnimePageDTOByID(mal_id);
+			//var result = await _supaBaseService.GetAnimePageDTOByID(mal_id);
 			if (result == null)
 			{
 				return NotFound();
