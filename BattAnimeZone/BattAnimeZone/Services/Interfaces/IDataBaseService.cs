@@ -16,5 +16,6 @@ namespace BattAnimeZone.Services.Interfaces
 		public Task<List<LiProductionEntityDTO>?> GetProductionEntitiesDTO();
 		public Task<ProductionEntityPageDTO?> GetAnimesForProdEnt(int mal_id);
 		public Task<List<AnimeSearchResultDTO>?> GetSimilarAnimesForSearchResult(int n, string name);
+		public Task<AnimePageDTO?> GetAnimePageDTOByID(int mal_id);
     }
 }
