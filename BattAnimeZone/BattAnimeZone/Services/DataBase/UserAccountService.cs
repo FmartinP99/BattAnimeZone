@@ -12,7 +12,7 @@ using System.Text.RegularExpressions;
 using LoginRequest = BattAnimeZone.Shared.Models.User.LoginRequest;
 using RegisterRequest = BattAnimeZone.Shared.Models.User.RegisterRequest;
 
-namespace BattAnimeZone.Services
+namespace BattAnimeZone.Services.DataBase
 {
     public partial class UserAccountService
 	{

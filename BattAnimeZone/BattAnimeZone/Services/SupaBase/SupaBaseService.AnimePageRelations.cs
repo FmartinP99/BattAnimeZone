@@ -3,7 +3,7 @@ using BattAnimeZone.Shared.Models.AnimeDTOs;
 using Microsoft.EntityFrameworkCore.Query;
 using System.Text.Json;
 
-namespace BattAnimeZone.Services
+namespace BattAnimeZone.Services.SupaBase
 {
 	public partial class SupaBaseService
 	{

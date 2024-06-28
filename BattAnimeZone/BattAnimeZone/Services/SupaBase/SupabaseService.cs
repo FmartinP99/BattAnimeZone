@@ -9,7 +9,7 @@ using System.Net.Http;
 using System.Text;
 using System.Text.Json;
 
-namespace BattAnimeZone.Services
+namespace BattAnimeZone.Services.SupaBase
 {
 	public partial class SupaBaseService : IDataBaseService
 	{

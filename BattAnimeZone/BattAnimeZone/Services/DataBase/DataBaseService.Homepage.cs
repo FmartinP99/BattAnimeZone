@@ -3,7 +3,7 @@ using BattAnimeZone.Shared.Models.AnimeDTOs;
 using DotNetEnv;
 using BattAnimeZone.DatabaseModels.SQliteDatabaseModels;
 
-namespace BattAnimeZone.Services
+namespace BattAnimeZone.Services.DataBase
 {
     public partial class DataBaseService
 	{

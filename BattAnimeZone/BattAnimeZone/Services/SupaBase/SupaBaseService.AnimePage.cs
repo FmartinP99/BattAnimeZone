@@ -2,7 +2,7 @@
 using BattAnimeZone.Shared.Models.AnimeDTOs;
 using System.Text.Json;
 
-namespace BattAnimeZone.Services
+namespace BattAnimeZone.Services.SupaBase
 {
     public partial class SupaBaseService
     {

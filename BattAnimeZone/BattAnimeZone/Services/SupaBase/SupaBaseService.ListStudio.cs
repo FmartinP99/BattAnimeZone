@@ -4,7 +4,7 @@ using BattAnimeZone.Shared.Models.ProductionEntityDTOs;
 using Microsoft.AspNetCore.Mvc.Formatters;
 using System.Text.Json;
 
-namespace BattAnimeZone.Services
+namespace BattAnimeZone.Services.SupaBase
 {
     public partial class SupaBaseService
     {
