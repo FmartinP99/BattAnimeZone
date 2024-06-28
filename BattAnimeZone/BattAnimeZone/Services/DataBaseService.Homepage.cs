@@ -8,7 +8,7 @@ namespace BattAnimeZone.Services
     public partial class DataBaseService
 	{
 
-		public async Task<IEnumerable<AnimeHomePageDTO>> GetAnimesForHomePageByYear(int year)
+		public async Task<IEnumerable<AnimeHomePageDTO>?> GetAnimesForHomePageByYear(int year)
 		{
 			
 			using (var _context = await _dbContextFactory.CreateDbContextAsync())

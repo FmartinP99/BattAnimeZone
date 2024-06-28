@@ -47,7 +47,11 @@ It is highly advised to use it via a desktop computer or laptop and not with mob
 - Open the .sln.
 - Create a `.env` file in the same folder where the `.env.example` file is located and put `JWT_SECURITY_KEY={your-string-whatever-you-want}` into the file. <br>
 - Also you can change the other enviroment variables however you want based on the `.env.example` file.
-- If you want to use a different database, or different paths, change the `appsettings.json`'s `ConnectionStrings` part.
+- If you want to use a different local database, or different paths, change the `appsettings.json`'s `ConnectionStrings` part.
 - Run.
 
 
+### Using Supabase instead of local database.
+
+- If you want to use the SupaBase implementation, inside the .env file, change the `USE_SQLITE3_DATABASE=` to `false`, the `USE_SUPABASE_DATABASE=` to `true`, and provide the necessary `SUPABASE_URL,SUPABASE_KEY` variables.
+- Copy all of the `postgres_data.sql` file's content into your Supabase SQL editor and run it.<br> These commands make the necessary tables, and the necessary database functions that the program need to call. 
