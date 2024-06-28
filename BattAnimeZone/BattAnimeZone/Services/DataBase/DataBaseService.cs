@@ -11,7 +11,7 @@ using System.Collections.ObjectModel;
 using BattAnimeZone.Services.Interfaces;
 
 
-namespace BattAnimeZone.Services
+namespace BattAnimeZone.Services.DataBase
 {
     public partial class DataBaseService : IDataBaseService
 	{

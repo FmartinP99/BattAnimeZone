@@ -1,7 +1,7 @@
 ﻿using BattAnimeZone.Shared.Models.Anime;
 using BattAnimeZone.Shared.Models.AnimeDTOs;
 
-namespace BattAnimeZone.Services
+namespace BattAnimeZone.Services.DataBase
 {
     public partial class DataBaseService
     {

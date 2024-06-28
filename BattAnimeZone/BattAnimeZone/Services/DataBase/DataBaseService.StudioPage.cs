@@ -3,7 +3,7 @@ using BattAnimeZone.Shared.Models.ProductionEntity;
 using BattAnimeZone.Shared.Models.ProductionEntityDTOs;
 using Microsoft.EntityFrameworkCore;
 
-namespace BattAnimeZone.Services
+namespace BattAnimeZone.Services.DataBase
 {
     public partial class DataBaseService
     {

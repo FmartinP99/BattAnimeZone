@@ -1,6 +1,7 @@
 ﻿using BattAnimeZone.DatabaseInitializer;
 using BattAnimeZone.DbContexts;
-using BattAnimeZone.Services;
+using BattAnimeZone.Services.DataBase;
+using BattAnimeZone.Services.SupaBase;
 using BattAnimeZone.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;

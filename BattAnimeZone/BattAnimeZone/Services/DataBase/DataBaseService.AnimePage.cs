@@ -11,7 +11,7 @@ using Newtonsoft.Json.Linq;
 using System.Xml.Linq;
 using static System.Formats.Asn1.AsnWriter;
 
-namespace BattAnimeZone.Services
+namespace BattAnimeZone.Services.DataBase
 {
     public partial class DataBaseService
     {

@@ -5,7 +5,7 @@ using BattAnimeZone.Shared.Models.User;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Dynamic.Core.Tokenizer;
 
-namespace BattAnimeZone.Services
+namespace BattAnimeZone.Services.DataBase
 {
     public partial class UserAccountService
     {

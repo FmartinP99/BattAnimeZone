@@ -3,6 +3,8 @@ using BattAnimeZone.Components;
 using BattAnimeZone.DatabaseInitializer;
 using BattAnimeZone.DbContexts;
 using BattAnimeZone.Services;
+using BattAnimeZone.Services.DataBase;
+using BattAnimeZone.Services.SupaBase;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
