@@ -641,3 +641,29 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+
+
+CREATE OR REPLACE FUNCTION get_interacted_anime_by_user(_username TEXT)
+RETURNS TABLE (
+    Mal_id INT,
+    Rating INT,
+    Status TEXT,
+    Favorite BOOLEAN
+) AS $$
+BEGIN
+    RETURN QUERY
+    SELECT
+        a.id,
+        au.rating,
+        au.status,
+        au.favorite
+    FROM
+        animeuser au
+    JOIN
+        useraccount u ON au.user_id = u.id
+    JOIN
+        anime a ON au.anime_id = a.id
+    WHERE
+        u.username = _username;
+END;
+$$ LANGUAGE plpgsql;

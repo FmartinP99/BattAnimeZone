@@ -28,8 +28,22 @@ namespace BattAnimeZone.Services.DataBase
 		}
 
 
+        public async Task<bool> RegisterUser(RegisterRequest user)
+        {
 
-		public async Task<UserSession?> Login(LoginRequest loginRequest)
+            using (var _context = await _dbContextFactory.CreateDbContextAsync())
+            {
+                bool db_UserExists = await _context.UserAccounts.AnyAsync(x => x.UserName == user.UserName || x.Email == user.Email);
+                if (db_UserExists) return false;
+                string? passwordHash = _passwordHasher.Hash(user.Password);
+                _context.UserAccounts.Add(new UserAccountModel { UserName = user.UserName, Password = passwordHash, Email = user.Email.ToLower(), Role = "User", RegisteredAt = DateTime.Now.ToUniversalTime().ToString() });
+                await _context.SaveChangesAsync();
+                return true;
+            }
+        }
+
+
+        public async Task<UserSession?> Login(LoginRequest loginRequest)
 		{
 			UserAccountModel? userAccount = null;
 			using (var _context = await _dbContextFactory.CreateDbContextAsync())
@@ -120,24 +134,6 @@ namespace BattAnimeZone.Services.DataBase
                 };
             }         
   
-        }
-        
-
-
-        public async Task<bool> RegisterUser(RegisterRequest user)
-        {
-
-            using (var _context = await _dbContextFactory.CreateDbContextAsync())
-            {
-                bool db_UserExists = await _context.UserAccounts.AnyAsync(x => x.UserName == user.UserName);
-                if (db_UserExists) return false;
-                bool db_EmailExists = await _context.UserAccounts.AnyAsync(x => x.Email == user.Email);
-                if (db_EmailExists) return false;
-                string? passwordHash = _passwordHasher.Hash(user.Password);
-				_context.UserAccounts.Add(new UserAccountModel { UserName = user.UserName, Password = passwordHash, Email = user.Email.ToLower(), Role = "User", RegisteredAt = DateTime.Now.ToUniversalTime().ToString() });
-                await _context.SaveChangesAsync();
-                return true;
-            }
         }
 
 

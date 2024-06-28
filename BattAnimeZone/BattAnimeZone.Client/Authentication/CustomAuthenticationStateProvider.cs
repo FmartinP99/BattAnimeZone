@@ -24,7 +24,6 @@ namespace BattAnimeZone.Client.Authentication
         [Inject]
         private IJSRuntime JSRuntime { get; set; }
 
-
         private readonly ILocalStorageService _localStorage;
         private ClaimsPrincipal _anonymous = new ClaimsPrincipal(new ClaimsIdentity());
 
@@ -35,11 +34,12 @@ namespace BattAnimeZone.Client.Authentication
 
         private AuthenticationState previousState = new AuthenticationState(new ClaimsPrincipal(new ClaimsIdentity()));
 
-        public CustomAuthenticationStateProvider( ILocalStorageService localStorage,HttpClient _httpClient, NavigationManager _navManager)
+        public CustomAuthenticationStateProvider( ILocalStorageService localStorage,HttpClient _httpClient, NavigationManager _navManager, IJSRuntime _JSRuntime)
         {
             _localStorage = localStorage;
             httpClient = _httpClient;
             navManager = _navManager;
+            _JSRuntime = JSRuntime;
 
             
             //timer hack to check if the authentication state changed, and if it did it'd force-refresh the current page to update the UI

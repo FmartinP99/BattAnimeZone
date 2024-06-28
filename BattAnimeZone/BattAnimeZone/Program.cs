@@ -90,6 +90,8 @@ bool use_supabase = Environment.GetEnvironmentVariable("USE_SUPABASE_DATABASE") 
 
 if (use_sqlite)
 {
+    Console.WriteLine("LOCAL SQLITE DATABASE IS BEING USED!");
+
     builder.Services.AddTransient<DataBaseService>();
 }
 else if (use_supabase)
@@ -123,6 +125,7 @@ else
 
 
 builder.Services.AddTransient<UserAccountService>();
+builder.Services.AddTransient<SupaBaseUserAccountService>();
 
 
 
