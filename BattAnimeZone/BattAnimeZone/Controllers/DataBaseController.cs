@@ -1,6 +1,7 @@
 ﻿using BattAnimeZone.DatabaseInitializer;
 using BattAnimeZone.DbContexts;
 using BattAnimeZone.Services;
+using BattAnimeZone.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -12,19 +13,26 @@ namespace BattAnimeZone.Controllers
 	public class DataBaseController : Controller
 	{
 
-		private DataBaseService? _dataBaseService = null;
-        private SupaBaseService? _supaBaseService = null;
+		private IDataBaseService? _idataBaseService = null;
 
 
 		public DataBaseController(IServiceScopeFactory serviceScopeFactory)
 		{
+            DataBaseService? _dataBaseService = null;
+            SupaBaseService? _supaBaseService = null;
 
-			
-		    using (var serviceScope = serviceScopeFactory.CreateScope())
+            using (var serviceScope = serviceScopeFactory.CreateScope())
 		    {
 			    _dataBaseService = serviceScope.ServiceProvider.GetService<DataBaseService>();
 			    _supaBaseService = serviceScope.ServiceProvider.GetService<SupaBaseService>();
 		    }
+            if(_dataBaseService != null)
+            {
+                _idataBaseService = _dataBaseService;
+            }else if(_supaBaseService != null)
+            {
+                _idataBaseService = _supaBaseService;
+            }
 			
 
 			
@@ -34,7 +42,8 @@ namespace BattAnimeZone.Controllers
 		[HttpGet("GetAnimesByYear/{year}")]
 		public async Task<IActionResult> GetAnimesByYear(int year)
 		{
-            var result = await _dataBaseService.GetAnimesForHomePageByYear(year);
+            var result = await _idataBaseService.GetAnimesForHomePageByYear(year);
+           
             if (result == null)
 			{
 				return NotFound();
@@ -45,8 +54,8 @@ namespace BattAnimeZone.Controllers
 		[HttpGet("GetAnime/{mal_id}")]
 		public async Task<IActionResult> GetAnimePageDTOByID(int mal_id)
 		{
-			var result = await _dataBaseService.GetAnimePageDTOByID(mal_id);
-			//var result = await _supaBaseService.GetAnimePageDTOByID(mal_id);
+			var result = await _idataBaseService.GetAnimePageDTOByID(mal_id);
+		
 			if (result == null)
 			{
 				return NotFound();
@@ -58,8 +67,8 @@ namespace BattAnimeZone.Controllers
         [HttpGet("GetRelations/{mal_id}")]
         public async Task<IActionResult> GetRelations(int mal_id)
         {
-			var result = await _dataBaseService.GetRelations(mal_id);
-			//var result = await _supaBaseService.GetRelations(mal_id);
+			var result = await _idataBaseService.GetRelations(mal_id);
+			
 			if (result == null)
             {
                 return NotFound();
@@ -71,7 +80,7 @@ namespace BattAnimeZone.Controllers
         [HttpGet("GetMediaTypes")]
         public async Task<IActionResult> GetMediaTypes()
         {
-            var result = await _dataBaseService.GetDistinctMediaTypes();
+            var result = await _idataBaseService.GetDistinctMediaTypes();
             if (result == null)
             {
                 return NotFound();
@@ -82,7 +91,7 @@ namespace BattAnimeZone.Controllers
 		[HttpGet("GetYears")]
 		public async Task<IActionResult> GetYears()
 		{
-			var result = await _dataBaseService.GetDistinctYears();
+			var result = await _idataBaseService.GetDistinctYears();
 			if (result == null)
 			{
 				return NotFound();
@@ -94,8 +103,8 @@ namespace BattAnimeZone.Controllers
 		[HttpGet("GetGenres")]
         public async Task<IActionResult> GetGenres()
         {
-			var result = await _dataBaseService.GetGenres();
-			//var result = await _supaBaseService.GetGenres();
+			var result = await _idataBaseService.GetGenres();
+		
 
 			if (result == null)
             {
@@ -109,8 +118,8 @@ namespace BattAnimeZone.Controllers
         [HttpGet("GetAnimesPerGenreIdCount")]
         public async Task<IActionResult> GetAnimesPerGenreIdCount()
         {
-            var result = await _dataBaseService.GetAnimesPerGenreIdCount();
-			//var result = await _supaBaseService.GetAnimesPerGenreIdCount();
+            var result = await _idataBaseService.GetAnimesPerGenreIdCount();
+			
 
 			if (result == null)
             {
@@ -123,8 +132,8 @@ namespace BattAnimeZone.Controllers
         [HttpGet("GetAnimesForListGenreAnimes/{mal_id}")]
         public async Task<IActionResult> GetAnimesForListGenreAnimes(int mal_id)
         {
-            var result = await _dataBaseService.GetAnimesForListGenreAnimes(mal_id);
-            //var result = await _supaBaseService.GetAnimesForListGenreAnimes(mal_id);
+            var result = await _idataBaseService.GetAnimesForListGenreAnimes(mal_id);
+           
 
             if (result == null)
             {
@@ -138,8 +147,9 @@ namespace BattAnimeZone.Controllers
         public async Task<IActionResult> GetFilteredAnimes([FromQuery] List<int>? genres, [FromQuery] List<string>? mediaTypes,
             [FromQuery] int? yearlower, [FromQuery] int? yearupper)
         {
-			var result = await _dataBaseService.GetFilteredAnimes(genres, mediaTypes, yearlower, yearupper);
-			//var result = await _supaBaseService.GetFilteredAnimes(genres, mediaTypes, yearlower, yearupper);
+
+			var result = await _idataBaseService.GetFilteredAnimes(genres, mediaTypes, yearlower, yearupper);
+	
 			if (!result.Any() || result == null)
             {
                 return NotFound();
@@ -153,8 +163,8 @@ namespace BattAnimeZone.Controllers
         public async Task<IActionResult> GetSimilarAnimesForSearchResult([FromQuery] int similar_number, [FromQuery] string searched_term)
         {
 
-            var result = await _dataBaseService.GetSimilarAnimesForSearchResult(similar_number, searched_term);
-            //var result = await _supaBaseService.GetSimilarAnimesForSearchResult(similar_number, searched_term);
+            var result = await _idataBaseService.GetSimilarAnimesForSearchResult(similar_number, searched_term);
+          
 
 			if (result == null)
             {
@@ -168,8 +178,7 @@ namespace BattAnimeZone.Controllers
         [HttpGet("GetProductionEntities")]
         public async Task<IActionResult> GetProductionEntities()
         {
-            var result = await _dataBaseService.GetProductionEntitiesDTO();
-            //var result = await _supaBaseService.GetProductionEntitiesDTO();
+            var result = await _idataBaseService.GetProductionEntitiesDTO();
 
             if (result == null)
             {
@@ -181,8 +190,7 @@ namespace BattAnimeZone.Controllers
         [HttpGet("GetAnimesForProdEnt/{mal_id}")]
         public async Task<IActionResult> GetAnimesForProdEnt(int mal_id)
         {
-            var result = await _dataBaseService.GetAnimesForProdEnt(mal_id);
-            //var result = await _supaBaseService.GetAnimesForProdEnt(mal_id);
+            var result = await _idataBaseService.GetAnimesForProdEnt(mal_id);
 
 
             if (result == null)

@@ -1,5 +1,6 @@
 ﻿using BattAnimeZone.DatabaseModels.SuapaBaseDatabaseModels;
 using BattAnimeZone.Services.Interfaces;
+using BattAnimeZone.Shared.Models.AnimeDTOs;
 using BattAnimeZone.Shared.Models.GenreDTOs;
 using DotNetEnv;
 using Microsoft.EntityFrameworkCore.Storage;
@@ -42,26 +43,36 @@ namespace BattAnimeZone.Services
 
 		public async Task<List<string?>?> GetDistinctMediaTypes()
 		{
-			var response = await _client.From<DistinctMediaTypesSupabasaeModel>()
-									.Select("media_type").Get();
-			if (response.ResponseMessage.IsSuccessStatusCode)
-			{
-				var media_types = response.Models.Select(x => x.mediaType).ToList();
-				return media_types;
-			}
-			return null;
-		}
+            var response = await _client.Rpc("get_distinct_mediatypes", null);
+
+            if (response != null)
+            {
+                var responseDto = JsonSerializer.Deserialize<List<DistinctMediaTypesSupabasaeModel>>(response.Content, jsonOptions);
+                var returnDto = responseDto.Where(x => string.IsNullOrEmpty(x.mediaType) == false).Select(x => x.mediaType).ToList();
+                return returnDto;
+            }
+            else
+            {
+                return new List<string?>();
+            }
+        }
 
 		public async Task<List<int?>> GetDistinctYears()
 		{
-			var response = await _client.From<DistinctYearSupabaseModel>()
-									.Select("year").Get();
+            var response = await _client.Rpc("get_distinct_years", null);
 
-			var years = response.Models.Select(x=> x.Year).ToList();
+            if (response != null)
+            {
+                var responseDto = JsonSerializer.Deserialize<List<DistinctYearSupabaseModel>>(response.Content, jsonOptions);
+				var returnDto = responseDto.Select(x => x.Year).ToList();
+				return returnDto;
+            }
+            else
+            {
+                return new List<int?>();
+            }
 
-			return years;
-
-		}
+        }
 
 
 

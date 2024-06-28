@@ -161,21 +161,31 @@ CREATE TABLE AnimeGenre (
 );
 
 
-CREATE TABLE DistinctMediaTypes AS
-SELECT DISTINCT media_type
-FROM Anime;
 
 
-CREATE TABLE DistinctYears AS
-SELECT DISTINCT anime.year
-FROM Anime
-WHERE anime.year IS NOT NULL;
+CREATE OR REPLACE FUNCTION get_distinct_mediatypes()
+RETURNS TABLE (MediaType TEXT)
+AS $$
+BEGIN
+    RETURN QUERY
+    SELECT DISTINCT anime.media_type
+    FROM anime
+    ORDER BY anime.media_type;
+END;
+$$ LANGUAGE plpgsql;
 
 
 
-
-
-
+CREATE OR REPLACE FUNCTION get_distinct_years()
+RETURNS TABLE (year INT)
+AS $$
+BEGIN
+    RETURN QUERY
+    SELECT DISTINCT anime.year
+    FROM anime
+    ORDER BY anime.year;
+END;
+$$ LANGUAGE plpgsql;
 
 
 
@@ -584,4 +594,50 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+
+
+CREATE
+OR REPLACE FUNCTION get_animes_by_year_with_genres (_year INT) RETURNS TABLE (
+  Mal_id INT,
+  Title TEXT,
+  TitleEnglish TEXT,
+  TitleJapanese TEXT,
+  MediaType TEXT,
+  Status TEXT,
+  Score REAL,
+  Synopsis TEXT,
+  Season TEXT,
+  ImageLargeWebpUrl TEXT,
+  Genres TEXT[]
+) AS $$
+BEGIN
+    RETURN QUERY
+    SELECT
+        a.id,
+        a.title,
+        a.title_english,
+        a.title_japanese,
+        a.media_type,
+        a.status,
+        a.score,
+        a.synopsis,
+        a.season,
+        a.image_large_webp_url,
+        array_agg(g.name) AS genres
+    FROM
+        anime a
+    LEFT JOIN
+        animegenre ag ON a.id = ag.anime_id
+    LEFT JOIN
+        genre g ON ag.genre_id = g.id
+    WHERE
+        a.year = _year AND ag.is_theme = false
+    GROUP BY
+        a.id, a.title, a.title_english, a.title_japanese, a.media_type, a.status, 
+        a.score, a.synopsis, a.season,
+        a.image_large_webp_url, a.aired_string
+    ORDER BY
+        a.popularity;
+END;
+$$ LANGUAGE plpgsql;
 

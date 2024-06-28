@@ -78,35 +78,21 @@ builder.Services.AddAuthorizationCore(config =>
 });
 
 
-//dont read/write from database, yet
-//builder.Services.AddSingleton<AnimeService>();
-builder.Services.AddTransient<UserAccountService>();
-
-builder.Services.AddTransient<DataBaseService>();
-
-//this one is responsible for the string similarity searching. It stores all the anime titles in memory so theres no need to query it for every search
-builder.Services.AddSingleton<SingletonSearchService>();
-
-
-
-
-
-
-
-
 //databasecontexts
 builder.Services.AddDbContextFactory<AnimeDbContext>((DbContextOptionsBuilder options) =>
 options.UseSqlite(builder.Configuration.GetConnectionString("Database")));
-builder.Services.AddTransient<DbInitializer>();
-builder.Services.AddScoped<Radzen.DialogService>();
-builder.Services.AddScoped<Radzen.TooltipService>();
-builder.Services.AddScoped<Radzen.ContextMenuService>();
-builder.Services.AddScoped<Radzen.NotificationService>();
 
 
+bool use_sqlite = Environment.GetEnvironmentVariable("USE_SQLITE3_DATABASE") == "true" ? true : false;
 bool use_supabase = Environment.GetEnvironmentVariable("USE_SUPABASE_DATABASE") == "true" ? true : false;
-if (use_supabase)
+
+if (use_sqlite)
 {
+    builder.Services.AddTransient<DataBaseService>();
+}
+else if (use_supabase)
+{
+    Console.WriteLine("SUPABASE DATABASE IS BEING USED!");
     var url = Environment.GetEnvironmentVariable("SUPABASE_URL");
     var key = Environment.GetEnvironmentVariable("SUPABASE_KEY");
 
@@ -124,6 +110,42 @@ if (use_supabase)
     );
     builder.Services.AddTransient<SupaBaseService>();
 }
+else
+{
+    Console.WriteLine("NO DATABASE SERVICES IS BEING USED! PLEASE ENABLE ONE IN THE .ENV VARIABLE!");
+    return;
+}
+
+
+
+
+
+builder.Services.AddTransient<UserAccountService>();
+
+
+
+//this one is responsible for the string similarity searching. It stores all the anime titles in memory so theres no need to query it for every search
+builder.Services.AddSingleton<SingletonSearchService>();
+
+
+
+
+
+
+
+
+
+
+
+builder.Services.AddTransient<DbInitializer>();
+builder.Services.AddScoped<Radzen.DialogService>();
+builder.Services.AddScoped<Radzen.TooltipService>();
+builder.Services.AddScoped<Radzen.ContextMenuService>();
+builder.Services.AddScoped<Radzen.NotificationService>();
+
+
+
+
 
 builder.Services.AddBlazorBootstrap();
 
