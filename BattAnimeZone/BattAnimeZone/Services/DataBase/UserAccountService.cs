@@ -229,8 +229,7 @@ namespace BattAnimeZone.Services.DataBase
                 }
 
 
-                result.result = true;
-                result.Message = "Credentials changed successfully!";
+              
                 _tokenBlacklistingService.BlacklistToken(userAccount.Token);
 
 
@@ -244,6 +243,8 @@ namespace BattAnimeZone.Services.DataBase
                 _context.UserAccounts.Update(userAccount);
                 await _context.SaveChangesAsync();
 
+                result.result = true;
+                result.Message = "Credentials changed successfully!";
                 result.UserSession = userSession;
 
                 return result;
@@ -265,8 +266,6 @@ namespace BattAnimeZone.Services.DataBase
 
                 AnimeUserModel? db_animeUser = await _context.AnimeUserModels.Where(x => x.AnimeId == aat.AnimeId && x.UserId == db_User.Id).FirstOrDefaultAsync();
 
-                AnimeUserModel updated_entry;
-
                 if (db_animeUser != null && aat.Status == null)
                 {
                     _context.AnimeUserModels.Remove(db_animeUser);
@@ -277,6 +276,8 @@ namespace BattAnimeZone.Services.DataBase
                 {
                     return true;
                 }
+
+                AnimeUserModel updated_entry;
 
                 if (db_animeUser == null)
                 {

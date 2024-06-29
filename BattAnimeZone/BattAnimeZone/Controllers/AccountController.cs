@@ -72,7 +72,6 @@ namespace BattAnimeZone.Controllers
         [AllowAnonymous]
         public async Task<ActionResult<RefreshTokenDTO>> Refresh([FromBody] RefreshTokenDTO refreshTokenDTO)
         {
-            await Console.Out.WriteLineAsync("belépett refreshbe!");
             //var userSession = await _userAccountService.Refresh(refreshTokenDTO);
             var userSession = await _supaBaseUserAccountService.Refresh(refreshTokenDTO);
             if (userSession is null)
@@ -102,7 +101,8 @@ namespace BattAnimeZone.Controllers
         {
             var authorizationHeader = HttpContext.Request.Headers["Authorization"].FirstOrDefault();
 			var token = authorizationHeader.Substring("Bearer ".Length).Trim();
-            bool response = await _userAccountService.RateAnime(aat, token);
+            //bool response = await _userAccountService.RateAnime(aat, token);
+            bool response = await _supaBaseUserAccountService.RateAnime(aat, token);
   
             if (response)
                 return Ok();

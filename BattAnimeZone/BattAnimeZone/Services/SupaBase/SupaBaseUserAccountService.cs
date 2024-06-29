@@ -244,6 +244,57 @@ namespace BattAnimeZone.Services.SupaBase
 
         }
 
+        public async Task<bool> RateAnime(AnimeActionTransfer aat, string? token)
+        {
+
+            UserAccountSupabaseModel? userAccount = null;
+            userAccount = await _client.From<UserAccountSupabaseModel>().Where(x => x.UserName == aat.UserName && x.Token == token).Single();
+            if (userAccount == null) return false;
+
+            AnimeUserSupabaseModel? db_animeUser = await _client.From<AnimeUserSupabaseModel>().Where(x => x.AnimeId == aat.AnimeId && x.UserId == userAccount.Id).Single();
+            
+            if (db_animeUser != null && aat.Status == null)
+            {
+                await _client.From<AnimeUserSupabaseModel>().Delete(db_animeUser);
+                return true;
+            }
+            else if (db_animeUser == null && aat.Status == null)
+            {
+                return true;
+            }
+
+            AnimeUserSupabaseModel updated_entry;
+
+            if (db_animeUser == null)
+            {
+                updated_entry = new AnimeUserSupabaseModel
+                {
+                    AnimeId = aat.AnimeId,
+                    UserId = userAccount.Id,
+                    favorite = aat.Favorite,
+                    Status = aat.Status,
+                    Rating = aat.Rating,
+                    Date = DateTime.Now.ToUniversalTime().ToString(),
+                };
+                await _client.From<AnimeUserSupabaseModel>().Insert(updated_entry);
+            }
+            else
+            {
+                if (aat.Status != db_animeUser.Status)
+                {
+                    db_animeUser.Date = DateTime.Now.ToUniversalTime().ToString();
+                }
+
+                db_animeUser.favorite = aat.Favorite;
+                db_animeUser.Status = aat.Status;
+                db_animeUser.Rating = aat.Rating;
+
+                await _client.From<AnimeUserSupabaseModel>().Update(db_animeUser);
+            }
+            return true;
+           
+        }
+
 
         public async Task<Dictionary<int, InteractedAnime>?> GetInteractedAnimes(string UserName, string token)
         {
