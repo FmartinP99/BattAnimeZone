@@ -129,6 +129,42 @@ CREATE TABLE UserAccount (
   refreshTokenExpiryTime TEXT DEFAULT NULL
 );
 
+CREATE UNIQUE INDEX unique_lowercase_username ON UserAccount (LOWER(username));
+CREATE UNIQUE INDEX unique_lowercase_email ON UserAccount (LOWER(email));
+
+
+
+CREATE OR REPLACE FUNCTION lowercase_email()
+RETURNS TRIGGER AS $$
+BEGIN
+  -- Convert the email to lowercase
+  NEW.email := LOWER(NEW.email);
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Create a BEFORE INSERT OR UPDATE trigger for email
+CREATE TRIGGER lowercase_email_trigger
+BEFORE INSERT OR UPDATE ON UserAccount
+FOR EACH ROW
+EXECUTE FUNCTION lowercase_email();
+
+
+CREATE OR REPLACE FUNCTION lowercase_username()
+RETURNS TRIGGER AS $$
+BEGIN
+  -- Convert the email to lowercase
+  NEW.username := LOWER(NEW.username);
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Create a BEFORE INSERT OR UPDATE trigger for username
+CREATE TRIGGER lowercase_username_trigger
+BEFORE INSERT OR UPDATE ON UserAccount
+FOR EACH ROW
+EXECUTE FUNCTION lowercase_username();
+
 CREATE TABLE AnimeUser (
   id SERIAL PRIMARY KEY,
   anime_id INTEGER NOT NULL,

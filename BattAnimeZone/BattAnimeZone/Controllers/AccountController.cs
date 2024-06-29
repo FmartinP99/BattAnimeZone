@@ -146,7 +146,8 @@ namespace BattAnimeZone.Controllers
         {
             var authorizationHeader = HttpContext.Request.Headers["Authorization"].FirstOrDefault();
             var token = authorizationHeader.Substring("Bearer ".Length).Trim();
-            var response = await _userAccountService.DeleteAccount(der, token);
+            //var response = await _userAccountService.DeleteAccount(der, token);
+            var response = await _supaBaseUserAccountService.DeleteAccount(der, token);
             if (response.result  == false)
                 return NotFound(response);
             else

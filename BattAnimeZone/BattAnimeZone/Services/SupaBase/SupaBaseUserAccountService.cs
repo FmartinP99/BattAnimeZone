@@ -48,7 +48,10 @@ namespace BattAnimeZone.Services.SupaBase
 
         public async Task<bool> RegisterUser(RegisterRequest user)
         {
-            var result = await _client.From<UserAccountSupabaseModel>().Where(x => x.UserName == user.UserName || x.Email == user.Email).Single();
+            string emaillowercalse = user.Email.ToLower();
+            string usernamelowercase = user.UserName.ToLower();
+
+            var result = await _client.From<UserAccountSupabaseModel>().Where(x => x.UserName == usernamelowercase || x.Email == emaillowercalse).Single();
             if (result != null) return false;
             string? passwordHash = _passwordHasher.Hash(user.Password);
             var response = await _client.From<UserAccountSupabaseModel>().Insert(new UserAccountSupabaseModel { UserName = user.UserName, Password = passwordHash, Email = user.Email.ToLower(), Role = "User", RegisteredAt = DateTime.Now.ToUniversalTime().ToString() });
@@ -58,8 +61,11 @@ namespace BattAnimeZone.Services.SupaBase
 
         public async Task<UserSession?> Login(LoginRequest loginRequest)
         {
+
+            string usernamelowercase = loginRequest.UserName.ToLower();
+
             UserAccountSupabaseModel? userAccount = null;
-            userAccount = await _client.From<UserAccountSupabaseModel>().Where(x => x.UserName == loginRequest.UserName).Single();
+            userAccount = await _client.From<UserAccountSupabaseModel>().Where(x => x.UserName == usernamelowercase).Single();
             if (userAccount == null) return null;
 
 
@@ -80,9 +86,10 @@ namespace BattAnimeZone.Services.SupaBase
 
         public async Task<bool> Logout(UserSession uSession)
         {
+            string usernamelowercase = uSession.UserName.ToLower();
 
             UserAccountSupabaseModel? userAccount = null;
-            userAccount = await _client.From<UserAccountSupabaseModel>().Where(x => x.UserName == uSession.UserName).Single();
+            userAccount = await _client.From<UserAccountSupabaseModel>().Where(x => x.UserName == usernamelowercase).Single();
             if (userAccount == null) return false;
             userAccount.RefreshToken = null;
             userAccount.Token = null;
@@ -136,9 +143,12 @@ namespace BattAnimeZone.Services.SupaBase
 
             ChangeDetailsResponse result = new ChangeDetailsResponse();
 
+          
+            string usernamelowercase = newUser.UserName.ToLower();
+
             /*CHECKING FOR EXISTING USERS*/
             UserAccountSupabaseModel? userAccount = null;
-            userAccount = await _client.From<UserAccountSupabaseModel>().Where(x => x.UserName == newUser.UserName && x.Token == token).Single();
+            userAccount = await _client.From<UserAccountSupabaseModel>().Where(x => x.UserName == usernamelowercase && x.Token == token).Single();
             if (userAccount == null)
                 {
                     result.result = false;
@@ -157,14 +167,17 @@ namespace BattAnimeZone.Services.SupaBase
 
                 if (newUser.ChangeUserName)
                 {
-                    if (userAccount?.UserName.ToLower() == newUser.NewUsername?.ToLower())
+
+                string newusernamelowercase = newUser.NewUsername.ToLower();
+
+                if (userAccount?.UserName == newusernamelowercase)
                     {
                         result.result = false;
                         result.Message = "The New username can't be the same as the old username!";
                         return result;
                     }
                 UserAccountSupabaseModel? newUserNameAccount = null;
-                newUserNameAccount =  await _client.From<UserAccountSupabaseModel>().Where(x => x.UserName == newUser.NewUsername).Single();
+                newUserNameAccount =  await _client.From<UserAccountSupabaseModel>().Where(x => x.UserName == newusernamelowercase).Single();
                 if (newUserNameAccount != null)
                     {
                         result.result = false;
@@ -176,15 +189,16 @@ namespace BattAnimeZone.Services.SupaBase
 
                 if (newUser.ChangeEmail)
                 {
+                string emaillowercase = newUser.NewEmail.ToLower();
 
-                    if (!Regex.IsMatch(newUser.NewEmail, @"^[^@\s]+@[^@\s]+\.[a-zA-Z]{2,}$"))
+                if (!Regex.IsMatch(newUser.NewEmail, @"^[^@\s]+@[^@\s]+\.[a-zA-Z]{2,}$"))
                     {
                         result.result = false;
                         result.Message = "The new email's format is invalid!";
                         return result;
                     }
 
-                    if (userAccount?.Email.ToLower() == newUser.NewEmail?.ToLower())
+                    if (userAccount?.Email == emaillowercase)
                     {
                         result.result = false;
                         result.Message = "The New email can't be the same as the old email!";
@@ -192,7 +206,7 @@ namespace BattAnimeZone.Services.SupaBase
                     }
 
                 UserAccountSupabaseModel? newUserNameAccount = null;
-                newUserNameAccount = await _client.From<UserAccountSupabaseModel>().Where(x => x.Email == newUser.NewEmail).Single();
+                newUserNameAccount = await _client.From<UserAccountSupabaseModel>().Where(x => x.Email == emaillowercase).Single();
                 if (newUserNameAccount != null)
                     {
                         result.result = false;
@@ -203,7 +217,7 @@ namespace BattAnimeZone.Services.SupaBase
                 }
 
 
-                /*IF EVERYTHING WENT WELL, CHANGING THE NEW ATTRIBUTES*/
+                /*IF EVERYTHING WENT WELL, CHANGING THE NEW ATTRIBUTES, THE DATABASE IS CONVERTING THE USERNAMES/EMAILS TO LOWERCASE WITH A BEFORE TRIGGER SO NO NEED TO CHECK*/
 
                 if (newUser.ChangePassword)
                 {
@@ -244,11 +258,54 @@ namespace BattAnimeZone.Services.SupaBase
 
         }
 
-        public async Task<bool> RateAnime(AnimeActionTransfer aat, string? token)
+
+        public async Task<DeleteAccountResponse> DeleteAccount(DeleteAccountRequest der, string token)
         {
 
+            DeleteAccountResponse deleteAccountResponse = new DeleteAccountResponse();
             UserAccountSupabaseModel? userAccount = null;
-            userAccount = await _client.From<UserAccountSupabaseModel>().Where(x => x.UserName == aat.UserName && x.Token == token).Single();
+            userAccount = await _client.From<UserAccountSupabaseModel>().Where(x => x.UserName == der.UserName && x.Token == token).Single();
+            if (userAccount == null)
+            {
+                deleteAccountResponse.Message = "Either the account was not found, or the token was expired! You will be logged out! Try again";
+                deleteAccountResponse.result = false;
+                return deleteAccountResponse;
+            }
+
+
+            bool isMatching = _passwordHasher.Verify(userAccount.Password, der.Password);
+            if (!isMatching)
+            {
+                deleteAccountResponse.Message = "The password is incorrect!";
+                deleteAccountResponse.result = false;
+                return deleteAccountResponse;
+            }
+
+            try
+            {
+                await _client.From<UserAccountSupabaseModel>().Delete(userAccount);
+
+
+                deleteAccountResponse.Message = "Account has been deleted :(. You will be logged out now. Goodbye!";
+                deleteAccountResponse.result = true;
+                return deleteAccountResponse;
+            }
+            catch (Exception ex)
+            {
+                deleteAccountResponse.Message = "Something went wrong with the account deletion. Try again later!";
+                deleteAccountResponse.result = false;
+                return deleteAccountResponse;
+            }
+        }
+
+
+
+        public async Task<bool> RateAnime(AnimeActionTransfer aat, string? token)
+        {
+            string usernamelowercase = aat.UserName.ToLower();
+
+            UserAccountSupabaseModel? userAccount = null;
+            userAccount = await _client.From<UserAccountSupabaseModel>().Where(x => x.UserName == usernamelowercase && x.Token == token).Single();
             if (userAccount == null) return false;
 
             AnimeUserSupabaseModel? db_animeUser = await _client.From<AnimeUserSupabaseModel>().Where(x => x.AnimeId == aat.AnimeId && x.UserId == userAccount.Id).Single();
@@ -298,8 +355,9 @@ namespace BattAnimeZone.Services.SupaBase
 
         public async Task<Dictionary<int, InteractedAnime>?> GetInteractedAnimes(string UserName, string token)
         {
+            string usernamelowercase = UserName.ToLower();
 
-            UserAccountSupabaseModel? db_UserExists = await _client.From<UserAccountSupabaseModel>().Where(x => x.UserName == UserName && x.Token == token).Single();
+            UserAccountSupabaseModel? db_UserExists = await _client.From<UserAccountSupabaseModel>().Where(x => x.UserName == usernamelowercase && x.Token == token).Single();
             if (db_UserExists == null) return null;
 
             var response = await _client.Rpc("get_interacted_anime_by_user", new { _username = UserName });

@@ -254,6 +254,49 @@ namespace BattAnimeZone.Services.DataBase
             }
         }
 
+        public async Task<DeleteAccountResponse> DeleteAccount(DeleteAccountRequest der, string token)
+        {
+            using (var _context = await _dbContextFactory.CreateDbContextAsync())
+            {
+                DeleteAccountResponse deleteAccountResponse = new DeleteAccountResponse();
+                UserAccountModel? db_User = await _context.UserAccounts.Where(x => x.UserName == der.UserName && x.Token == token).FirstOrDefaultAsync();
+                if (db_User == null)
+                {
+                    deleteAccountResponse.Message = "Either the account was not found, or the token was expired! You will be logged out! Try again";
+                    deleteAccountResponse.result = false;
+                    return deleteAccountResponse;
+                }
+
+
+                bool isMatching = _passwordHasher.Verify(db_User.Password, der.Password);
+                if (!isMatching)
+                {
+                    deleteAccountResponse.Message = "The password is incorrect!";
+                    deleteAccountResponse.result = false;
+                    return deleteAccountResponse;
+                }
+
+                try
+                {
+                    _context.UserAccounts.Remove(db_User);
+                    await _context.SaveChangesAsync();
+
+                    deleteAccountResponse.Message = "Account has been deleted :(. You will be logged out now. Goodbye!";
+                    deleteAccountResponse.result = true;
+                    return deleteAccountResponse;
+                }
+                catch (Exception ex)
+                {
+                    deleteAccountResponse.Message = "Something went wrong with the account deletion. Try again later!";
+                    deleteAccountResponse.result = false;
+                    return deleteAccountResponse;
+                }
+
+
+            }
+
+        }
+
 
 
         public async Task<bool> RateAnime(AnimeActionTransfer aat, string? token)
@@ -344,55 +387,6 @@ namespace BattAnimeZone.Services.DataBase
             }
 
         }
-
-
-
-
-        public async Task<DeleteAccountResponse> DeleteAccount(DeleteAccountRequest der, string token)
-        {
-            using (var _context = await _dbContextFactory.CreateDbContextAsync())
-            {
-                DeleteAccountResponse deleteAccountResponse = new DeleteAccountResponse();
-                UserAccountModel? db_User = await _context.UserAccounts.Where(x => x.UserName == der.UserName && x.Token == token).FirstOrDefaultAsync();
-                if (db_User == null)
-                {
-                    deleteAccountResponse.Message = "Either the account was not found, or the token was expired! You will be logged out! Try again";
-                    deleteAccountResponse.result = false;
-                    return deleteAccountResponse;
-                }
-
-
-                bool isMatching = _passwordHasher.Verify(db_User.Password, der.Password);
-                if(!isMatching)
-                {
-                    deleteAccountResponse.Message = "The password is incorrect!";
-                    deleteAccountResponse.result = false;
-                    return deleteAccountResponse;
-                }
-
-                try
-                {
-                    _context.UserAccounts.Remove(db_User);
-                    await _context.SaveChangesAsync();
-
-                    deleteAccountResponse.Message = "Account has been deleted :(. You will be logged out now. Goodbye!";
-                    deleteAccountResponse.result = true;
-                    return deleteAccountResponse;
-                } catch (Exception ex)
-                {
-                    deleteAccountResponse.Message = "Something went wrong with the account deletion. Try again later!";
-                    deleteAccountResponse.result = false;
-                    return deleteAccountResponse;
-                }
-
-                
-            }
-
-        }
-
-
-
-
 
     }
 }
