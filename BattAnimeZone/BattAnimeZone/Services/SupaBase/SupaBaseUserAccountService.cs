@@ -16,7 +16,7 @@ using RegisterRequest = BattAnimeZone.Shared.Models.User.RegisterRequest;
 
 namespace BattAnimeZone.Services.SupaBase
 {
-    public class SupaBaseUserAccountService
+    public partial class SupaBaseUserAccountService
     {
         private Supabase.Client? _client;
         private readonly ITokenBlacklistingService _tokenBlacklistingService;

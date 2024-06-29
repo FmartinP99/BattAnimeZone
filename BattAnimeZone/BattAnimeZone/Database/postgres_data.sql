@@ -703,3 +703,38 @@ BEGIN
         u.username = _username;
 END;
 $$ LANGUAGE plpgsql;
+
+
+
+CREATE or REPLACE FUNCTION get_user_profile_data(_username TEXT)
+RETURNS JSONB
+LANGUAGE SQL
+AS $$
+SELECT json_build_object(
+    'Name', u.username,
+    'RegisteredAt', u.registered_at,
+    'Animes', (
+        SELECT json_agg(json_build_object(
+            'Mal_id', a.id,
+            'Title', a.title,
+            'MediaType', a.media_type,
+            'Episodes', a.episodes,
+            'Status', a.status,
+            'Rating', a.rating,
+            'Score', a.score,
+            'Popularity', a.popularity,
+            'Year', a.year,
+            'ImageLargeWebpUrl', a.image_large_webp_url,
+            'UserStatus', au.status,
+            'UserRating', au.rating,
+            'UserFavorite', au.favorite,
+            'Date', au.date
+        ))
+        FROM animeuser au
+        JOIN anime a ON au.anime_id = a.id
+        WHERE au.user_id = u.id AND au.status IS NOT NULL
+    )
+)
+FROM useraccount u
+WHERE u.username = _username;
+$$;
