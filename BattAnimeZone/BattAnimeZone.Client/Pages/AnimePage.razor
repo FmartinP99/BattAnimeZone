@@ -205,16 +205,19 @@ else{
               CloseIconColor=IconColor.White>
         
         <BodyTemplate >
-            <div class=ratingDiv>
-            <RadzenLabel Text="Rate:" class="rateComponentText" Style="vertical-align: middle;" />
-                <RadzenDropDown @ref=statusDropDown class="rzdropdownRating" @bind-Value=@rating Data=possibleRatings Style="width: 100%; max-width: 160px;" Name="DropDownTextValueProperties" />
+
+            <div class=statusDiv>
+                <RadzenLabel Text="Status:" class="statusComponentText" Style="vertical-align: middle;" />
+                <RadzenDropDown @ref=statusDropDown class="rzdropdownStatus"  @bind-Value=@status Data=@GetPossibleStatuses() Style="width: 100%; max-width: 160px;" Name="DropDownTextValueProperties" />
             </div>
-             <div class=statusDiv>
-            <RadzenLabel Text="Status:" class="statusComponentText" Style="vertical-align: middle;" />
-                <RadzenDropDown class="rzdropdownStatus" @bind-Value=@status Data=@GetPossibleStatuses() Style="width: 100%; max-width: 160px;" Name="DropDownTextValueProperties" />
-                </div>
+
+            <div class=ratingDiv>
+                <RadzenLabel Text="Rate:" class="rateComponentText" Style="vertical-align: middle;" />
+                <RadzenDropDown @ref=rateDropDown class="rzdropdownRating" @bind-Value=@rating Data=possibleRatings Style="width: 100%; max-width: 160px;" Name="DropDownTextValueProperties" />
+            </div>
+           
             <div class=favoriteDiv>
-            <RadzenLabel Text="Favorite" Component="CheckBoxFavorite" Style="vertical-align: middle;" />
+                <RadzenLabel Text="Favorite" Component="CheckBoxFavorite" Style="vertical-align: middle;" />
                 <RadzenCheckBox @ref=favoriteCheckBox @bind-Value=@favorite Name="CheckBoxFavorite" Style="vertical-align:middle" />
             </div>
         </BodyTemplate>
@@ -240,6 +243,7 @@ else{
     private string[] possibleStatusesNotFinished = new string[5] { "Nothing", "Watching", "Planned", "On hold", "Dropped" };
     private string[] possibleStatusesNotYetAired = new string[2] { "Nothing",  "Planned"};
 
+    RadzenDropDown<string> rateDropDown = default!;
     RadzenDropDown<string> statusDropDown = default!;
     RadzenCheckBox<bool>  favoriteCheckBox = default!;
 
@@ -482,7 +486,7 @@ else{
     {
         if (currentAnime.Status == "Not yet aired") 
         {
-            statusDropDown.Disabled = true;
+            rateDropDown.Disabled = true;
             favoriteCheckBox.Disabled = true;
         }
     }
