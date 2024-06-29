@@ -132,7 +132,8 @@ namespace BattAnimeZone.Controllers
         [AllowAnonymous]
         public async Task<ActionResult<ProfilePageDTO>> GetProfile(string username)
         {
-            var userName = await _userAccountService.GetProfileByUserName(username);
+            var userName = await _supaBaseUserAccountService.GetProfileByUserName(username);
+
             if (userName is null)
                 return NotFound();
             else
