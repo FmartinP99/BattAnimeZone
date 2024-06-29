@@ -13,14 +13,28 @@ namespace BattAnimeZone.Authentication
 {
     public class JwtAuthenticationManager
 	{
-        internal readonly int JWT_TOKEN_VALIDITY_MINS = 10;
-		internal readonly  int JWT_REFRESH_TOKEN_VALIDITY_MINS = 60 * 24;
+        internal int JWT_TOKEN_VALIDITY_MINS;
+        internal int JWT_REFRESH_TOKEN_VALIDITY_MINS;
 		private string JWT_SECURITY_KEY;
 		private string VALID_ISSUER;
 		private string VALID_AUDIENCE;
 
-		public JwtAuthenticationManager()
+
+       
+        private int GetInt(string value)
+        {
+            if (int.TryParse(value, out int result))
+            {
+                return result;
+            }
+            throw new ArgumentException("JwtAuthenticationManager: Couldn't parse the string to an int!");
+        }
+       
+
+        public JwtAuthenticationManager()
 		{
+            JWT_TOKEN_VALIDITY_MINS = GetInt(Environment.GetEnvironmentVariable("JWT_TOKEN_VALIDITY_MINS"));
+            JWT_REFRESH_TOKEN_VALIDITY_MINS = GetInt(Environment.GetEnvironmentVariable("JWT_REFRESH_TOKEN_VALIDITY_MINS"));
             JWT_SECURITY_KEY = Environment.GetEnvironmentVariable("JWT_SECURITY_KEY");
             VALID_ISSUER = Environment.GetEnvironmentVariable("ValidIssuer");
             VALID_AUDIENCE = Environment.GetEnvironmentVariable("ValidAudience");
@@ -114,7 +128,7 @@ namespace BattAnimeZone.Authentication
             return new SigningCredentials(secret, SecurityAlgorithms.HmacSha256);
         }
 
-        public async Task<List<Claim>> GetClaims(UserAccountModel user)
+        public async Task<List<Claim>> GetClaims(IUserAccountModel user)
         {
             var claims = new List<Claim>
         {

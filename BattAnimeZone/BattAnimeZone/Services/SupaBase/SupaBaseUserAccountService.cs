@@ -5,8 +5,13 @@ using BattAnimeZone.DatabaseModels.SuapaBaseDatabaseModels;
 using BattAnimeZone.Shared.Models.AnimeDTOs;
 using BattAnimeZone.Shared.Models.User;
 using BattAnimeZone.Shared.Models.User.BrowserStorageModels;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity.Data;
 using Supabase.Gotrue;
+using System.IdentityModel.Tokens.Jwt;
 using System.Text.Json;
+using LoginRequest = BattAnimeZone.Shared.Models.User.LoginRequest;
+using RegisterRequest = BattAnimeZone.Shared.Models.User.RegisterRequest;
 
 namespace BattAnimeZone.Services.SupaBase
 {
@@ -70,6 +75,59 @@ namespace BattAnimeZone.Services.SupaBase
             await _client.From<UserAccountSupabaseModel>().Update(userAccount);
 
             return userSession;
+        }
+
+        public async Task<bool> Logout(UserSession uSession)
+        {
+
+            UserAccountSupabaseModel? userAccount = null;
+            userAccount = await _client.From<UserAccountSupabaseModel>().Where(x => x.UserName == uSession.UserName).Single();
+            if (userAccount == null) return false;
+            userAccount.RefreshToken = null;
+            userAccount.Token = null;
+            userAccount.RefreshTokenExpiryTime = null;
+            _tokenBlacklistingService.BlacklistToken(uSession.Token);
+            await _client.From<UserAccountSupabaseModel>().Update(userAccount);      
+            return true;
+
+        }
+
+
+        public async Task<RefreshTokenDTO?> Refresh(RefreshTokenDTO refreshTokenDTO)
+        {
+            var jwtAuthenticationManager = new JwtAuthenticationManager();
+            var principal = jwtAuthenticationManager.GetPrincipalFromExpiredToken(refreshTokenDTO.Token);
+            var username = principal.Identity.Name;
+            
+
+
+            UserAccountSupabaseModel? userAccount = null;
+            userAccount = await _client.From<UserAccountSupabaseModel>().Where(x => x.UserName == username).Single();
+            if (userAccount == null || userAccount.RefreshToken == null) return null;
+
+            DateTime refreshTokenExpiryDate = DateTime.Parse(userAccount.RefreshTokenExpiryTime, null, System.Globalization.DateTimeStyles.RoundtripKind);
+            if (userAccount.RefreshToken != refreshTokenDTO.RefreshToken || refreshTokenExpiryDate < DateTime.Now.ToUniversalTime()) return null;
+
+            var signingCredentials = jwtAuthenticationManager.GetSigningCredentials();
+            var claims = await jwtAuthenticationManager.GetClaims(userAccount);
+
+            var tokenOptions = jwtAuthenticationManager.GenerateTokenOptions(signingCredentials, claims);
+            var token = new JwtSecurityTokenHandler().WriteToken(tokenOptions);
+            var refreshToken = jwtAuthenticationManager.GenerateRefreshToken();
+            userAccount.RefreshToken = refreshToken;
+            userAccount.Token = token;
+
+            await _client.From<UserAccountSupabaseModel>().Update(userAccount);
+
+            return new RefreshTokenDTO
+            {
+                Token = token,
+                TokenExpiryTimeStamp = DateTime.Now.ToUniversalTime().AddMinutes(jwtAuthenticationManager.JWT_TOKEN_VALIDITY_MINS),
+                RefreshToken = refreshToken,
+                RefreshTokenExpiryTimeStamp = refreshTokenExpiryDate
+            };
+           
+
         }
 
 
