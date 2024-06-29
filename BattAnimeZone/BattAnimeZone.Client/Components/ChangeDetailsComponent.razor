@@ -223,12 +223,12 @@
             }
             else if (response.StatusCode == HttpStatusCode.BadRequest)
             {
-                await JSRuntime.InvokeVoidAsync("alert", $"{data.Message}");
+                await JSRuntime.InvokeVoidAsync("alert", $"{data.Message} Nothing was changed.");
                 return;
             }
         }catch(Exception ex)
         {
-            await JSRuntime.InvokeVoidAsync("console.error", $"{ex.Message}");
+            await JSRuntime.InvokeVoidAsync("console.error", $"{ex.Message} Nothing was changed.");
             return;
         }
     }

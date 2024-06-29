@@ -35,9 +35,9 @@ namespace BattAnimeZone.Shared.Models.User.Validation
                 string password = value as string;
 
            
-                if (password.Length < 12 || password.Length > 30)
+                if (password.Length < 10 || password.Length > 30)
                 {
-                    return new ValidationResult("Password must be between 12 and 30 characters.");
+                    return new ValidationResult("Password must be between 10 and 30 characters.");
                 }
 
                 if (!Regex.IsMatch(password, @"[0-9]"))
