@@ -11,9 +11,9 @@ namespace BattAnimeZone.Services.SupaBase
         {
             var response = await _client.Rpc("get_animes_for_prod_ent", new { _mal_id = mal_id });
 
-            await Console.Out.WriteLineAsync(response.Content);
+            if (response.Content == "null") return null;
 
-            if (response.ResponseMessage.IsSuccessStatusCode)
+            if (response != null && response.ResponseMessage.IsSuccessStatusCode)
             {
                 var result = JsonSerializer.Deserialize<ProductionEntityPageDTO>(response.Content);
 

@@ -93,6 +93,7 @@ if (use_sqlite)
     Console.WriteLine("LOCAL SQLITE DATABASE IS BEING USED!");
 
     builder.Services.AddTransient<DataBaseService>();
+    builder.Services.AddTransient<UserAccountService>();
 }
 else if (use_supabase)
 {
@@ -100,7 +101,7 @@ else if (use_supabase)
     var url = Environment.GetEnvironmentVariable("SUPABASE_URL");
     var key = Environment.GetEnvironmentVariable("SUPABASE_KEY");
 
-
+  
 
     builder.Services.AddScoped<Supabase.Client>(_ =>
      new Supabase.Client(
@@ -113,6 +114,7 @@ else if (use_supabase)
          )
     );
     builder.Services.AddTransient<SupaBaseService>();
+    builder.Services.AddTransient<SupaBaseUserAccountService>();
 }
 else
 {
@@ -121,25 +123,8 @@ else
 }
 
 
-
-
-
-builder.Services.AddTransient<UserAccountService>();
-builder.Services.AddTransient<SupaBaseUserAccountService>();
-
-
-
 //this one is responsible for the string similarity searching. It stores all the anime titles in memory so theres no need to query it for every search
 builder.Services.AddSingleton<SingletonSearchService>();
-
-
-
-
-
-
-
-
-
 
 
 builder.Services.AddTransient<DbInitializer>();
@@ -147,9 +132,6 @@ builder.Services.AddScoped<Radzen.DialogService>();
 builder.Services.AddScoped<Radzen.TooltipService>();
 builder.Services.AddScoped<Radzen.ContextMenuService>();
 builder.Services.AddScoped<Radzen.NotificationService>();
-
-
-
 
 
 builder.Services.AddBlazorBootstrap();

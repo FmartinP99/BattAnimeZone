@@ -13,7 +13,7 @@ namespace BattAnimeZone.Services.SupaBase
             Dictionary<int, LiProductionEntityDTO> return_dict = new Dictionary<int, LiProductionEntityDTO> ();
             var response = await _client.Rpc("get_production_entities", null);
 
-            if (response.ResponseMessage.IsSuccessStatusCode)
+            if (response != null && response.ResponseMessage.IsSuccessStatusCode)
             {
                 var response_list = JsonSerializer.Deserialize<List<LiProductionEntityDTO>?>(response.Content, jsonOptions);
                 return response_list;

@@ -74,7 +74,7 @@
     }
     else
     {
-        NavigateToIndex();
+        NavigateToError404();
     }
 }
 
@@ -138,11 +138,14 @@
                 }
                 else
                 {
+                    found = false;
                     await JSRuntime.InvokeVoidAsync("console.error", $"{response.StatusCode}\n {response.ReasonPhrase}");
+                    StateHasChanged();
                 }
             }catch(Exception e)
             {
-                await JSRuntime.InvokeVoidAsync("console.error", $"{e.Message}"); ;
+                await JSRuntime.InvokeVoidAsync("console.error", $"{e.Message}");
+                StateHasChanged();
             }
         }
     }
@@ -170,5 +173,10 @@
      protected void NavigateToIndex()
     {
         navManager.NavigateTo("./");
+    }
+
+    protected void NavigateToError404()
+    {
+        navManager.NavigateTo("./Error/404");
     }
 }

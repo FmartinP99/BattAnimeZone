@@ -21,7 +21,8 @@ else{
         @if(this.similar_animes.Count == 0)
         {
             <h1>There's no animes with the name: @name</h1>
-                }else{
+        
+        }else{
 
                 <div class="display-div">
                 @foreach (AnimeSearchResultDTO similar_anime in this.similar_animes)

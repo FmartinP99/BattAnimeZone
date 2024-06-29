@@ -2,6 +2,7 @@
 using BattAnimeZone.Authentication.PasswordHasher;
 using BattAnimeZone.DatabaseModels.SQliteDatabaseModels;
 using BattAnimeZone.DbContexts;
+using BattAnimeZone.Services._Interfaces;
 using BattAnimeZone.Shared.Models.User;
 using BattAnimeZone.Shared.Models.User.BrowserStorageModels;
 using Microsoft.AspNetCore.Identity.Data;
@@ -14,8 +15,8 @@ using RegisterRequest = BattAnimeZone.Shared.Models.User.RegisterRequest;
 
 namespace BattAnimeZone.Services.DataBase
 {
-    public partial class UserAccountService
-	{
+    public partial class UserAccountService : IUserAccountService
+    {
         private IDbContextFactory<AnimeDbContext> _dbContextFactory;
 		private readonly IPasswordHasher _passwordHasher;
         private readonly ITokenBlacklistingService _tokenBlacklistingService;

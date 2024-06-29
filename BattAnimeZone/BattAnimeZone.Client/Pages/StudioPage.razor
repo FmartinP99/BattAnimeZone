@@ -19,10 +19,14 @@
 
 @if (!loaded)
 {
-    <LoadingComponent></LoadingComponent>    
+    <LoadingComponent></LoadingComponent>
 }
 else{
-    @if (currentProductionEntity.Mal_id != -1 ){
+    @if (currentProductionEntity == null || currentProductionEntity.Mal_id == -1)
+    {
+        <h1>This studio does not exists!</h1>
+    }
+    else{
 
         <PageTitle>@(currentProductionEntity?.Titles?.FirstOrDefault()?.Title ?? "Studio View")</PageTitle>
 
@@ -101,7 +105,6 @@ else{
             </div>
             <hr />
         </div>
-
     }
 }
 
@@ -150,13 +153,15 @@ else{
 
 
                     if (currentProductionEntity.Mal_id == -1){
-                        await JSRuntime.InvokeVoidAsync("console.error", "Could not find any data!"); ;
+                        await JSRuntime.InvokeVoidAsync("console.error", "Could not find any data!");
+                        StateHasChanged();
                         return;
                     }
                 }
                 else
                 {
                     await JSRuntime.InvokeVoidAsync("console.error", $"{response.StatusCode}\n {response.ReasonPhrase}");
+                    StateHasChanged();
                     return;
                 }
             }catch (Exception e)
