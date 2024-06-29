@@ -59,7 +59,8 @@ namespace BattAnimeZone.Controllers
         [Route("Logout")]
         public async Task<ActionResult<UserSession>> Logout([FromBody] UserSession userSession)
         {
-            var response = await _userAccountService.Logout(userSession);
+            //var response = await _userAccountService.Logout(userSession);
+            var response = await _supaBaseUserAccountService.Logout(userSession);
             if (!response)
                 return BadRequest();
             else
@@ -71,7 +72,9 @@ namespace BattAnimeZone.Controllers
         [AllowAnonymous]
         public async Task<ActionResult<RefreshTokenDTO>> Refresh([FromBody] RefreshTokenDTO refreshTokenDTO)
         {
-            var userSession = await _userAccountService.Refresh(refreshTokenDTO);
+            await Console.Out.WriteLineAsync("belépett refreshbe!");
+            //var userSession = await _userAccountService.Refresh(refreshTokenDTO);
+            var userSession = await _supaBaseUserAccountService.Refresh(refreshTokenDTO);
             if (userSession is null)
                 return Unauthorized();
             else
