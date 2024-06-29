@@ -19,7 +19,7 @@ namespace BattAnimeZone.Services.SupaBase
 
 			var response = await _client.Rpc("get_filtered_animes", rpcParameters);
 
-            if (response.ResponseMessage.IsSuccessStatusCode)
+            if (response != null && response.ResponseMessage.IsSuccessStatusCode)
 			{
                 
                 var return_list = JsonSerializer.Deserialize<List<LiAnimeDTO>>(response.Content, jsonOptions);

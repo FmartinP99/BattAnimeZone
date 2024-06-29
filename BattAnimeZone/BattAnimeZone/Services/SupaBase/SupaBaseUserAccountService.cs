@@ -2,6 +2,7 @@
 using BattAnimeZone.Authentication.PasswordHasher;
 using BattAnimeZone.DatabaseModels.SQliteDatabaseModels;
 using BattAnimeZone.DatabaseModels.SuapaBaseDatabaseModels;
+using BattAnimeZone.Services._Interfaces;
 using BattAnimeZone.Shared.Models.AnimeDTOs;
 using BattAnimeZone.Shared.Models.User;
 using BattAnimeZone.Shared.Models.User.BrowserStorageModels;
@@ -16,7 +17,7 @@ using RegisterRequest = BattAnimeZone.Shared.Models.User.RegisterRequest;
 
 namespace BattAnimeZone.Services.SupaBase
 {
-    public partial class SupaBaseUserAccountService
+    public partial class SupaBaseUserAccountService : IUserAccountService
     {
         private Supabase.Client? _client;
         private readonly ITokenBlacklistingService _tokenBlacklistingService;

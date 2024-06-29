@@ -15,9 +15,8 @@ namespace BattAnimeZone.Services.SupaBase
             };
 
             var response = await _client.Rpc("get_genre_animes", rpcParameters);
-
-
-            if (response.ResponseMessage.IsSuccessStatusCode)
+   
+            if (response.ResponseMessage.IsSuccessStatusCode && response.Content.Trim() != "[]")
             {
                 var return_list = JsonSerializer.Deserialize<List<LiGenreAnimeDTOContainer>>(response.Content, jsonOptions).FirstOrDefault();
                 return return_list;

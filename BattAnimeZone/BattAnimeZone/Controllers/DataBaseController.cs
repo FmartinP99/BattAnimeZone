@@ -135,7 +135,6 @@ namespace BattAnimeZone.Controllers
         {
             var result = await _idataBaseService.GetAnimesForListGenreAnimes(mal_id);
            
-
             if (result == null)
             {
                 return NotFound();
