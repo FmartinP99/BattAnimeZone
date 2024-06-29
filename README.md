@@ -43,6 +43,7 @@ It is highly advised to use it via a desktop computer or laptop and not with mob
 ### Run
 
 - .NET8 Required.
+- SQlite3 or Supabase is required.
 - Download repository.
 - Open the .sln.
 - Create a `.env` file in the same folder where the `.env.example` file is located and put `JWT_SECURITY_KEY={your-string-whatever-you-want}` into the file. <br>
@@ -51,7 +52,29 @@ It is highly advised to use it via a desktop computer or laptop and not with mob
 - Run.
 
 
-### Using Supabase instead of local database.
+### Using Supabase instead of local (currently SQlite3) database.
 
 - If you want to use the SupaBase implementation, inside the .env file, change the `USE_SQLITE3_DATABASE=` to `false`, the `USE_SUPABASE_DATABASE=` to `true`, and provide the necessary `SUPABASE_URL,SUPABASE_KEY` variables.
-- Copy all of the `postgres_data.sql` file's content into your Supabase SQL editor and run it.<br> These commands make the necessary tables, and the necessary database functions that the program need to call. 
+- Copy all of the `postgres_data.sql` file's content into your Supabase SQL editor and run it.<br> These commands make the necessary tables, and the necessary database functions that the program needs to call. 
+
+
+### About the ConnectionStrings inside the appsettings.json
+
+- `Database` Data source of the local database.
+- `DatabasePath` Path of the local database.
+- `DatabaseInitFilePath` The sql script that will run when the local database is being initialized.
+- `CsvFileToInitDataForDbAnimes` .csv file path where the Animes will be read from on DbInit.
+- `CsvFileToInitDataForProductionEntities` .csv file path where the ProductionEntities (Studios on the UI) will be read from on DbInit.
+- `CsvFileToInitDataForDbGenres` .csv file path where the Genres will be read from on DbInit.
+
+### About the .env variables
+- `JWT_TOKEN_VALIDITY_MINS=` validity of the jwt token in minutes.
+- `JWT_REFRESH_TOKEN_VALIDITY_MINS=` validity of the refresh token in minutes.
+- `ValidIssuer=` for authorized controllers/function where the request can come from.
+- `ValidAudience=` for authorized controllers/function where the recieving controller is.
+- `DbInit=` should the program pre-create and prefill the database. (for SupaBase you need to pre-create it by hand, using the steps mentioned above).
+- `MakeMockUsersOnDbInit=` should the program make mock users for testing purposes. (not supported for supabase, it will be ignored).
+- `USE_SQLITE3_DATABASE=` program will use SQLite3 database if set to `true`.
+- `USE_SUPABASE_DATABASE=` program will use SupaBase if set to `true` and `USE_SQLITE3_DATABASE=` is set to `false`.
+- `SUPABASE_URL=` the url of your supabase database. Will be ignored if SupaBase is not in use.
+- `SUPABASE_KEY=` the key of your supabase database. Will be ignored if SupaBase is not in use.

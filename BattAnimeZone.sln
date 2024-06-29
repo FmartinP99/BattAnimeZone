@@ -3,17 +3,17 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.9.34728.123
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BattAnimeZone", "BattAnimeZone\BattAnimeZone.csproj", "{C2A790EF-AE17-4163-BEAF-FAC9BF74A3A5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BattAnimeZone", "BattAnimeZone\BattAnimeZone\BattAnimeZone.csproj", "{C2A790EF-AE17-4163-BEAF-FAC9BF74A3A5}"
 	ProjectSection(ProjectDependencies) = postProject
 		{86A70CC7-56C5-44B2-B4CB-5B6371F07BF2} = {86A70CC7-56C5-44B2-B4CB-5B6371F07BF2}
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BattAnimeZone.Client", "BattAnimeZone.Client\BattAnimeZone.Client.csproj", "{BD4C7EC1-B5EE-4B20-8D00-D1204778A2F0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BattAnimeZone.Client", "BattAnimeZone\BattAnimeZone.Client\BattAnimeZone.Client.csproj", "{BD4C7EC1-B5EE-4B20-8D00-D1204778A2F0}"
 	ProjectSection(ProjectDependencies) = postProject
 		{86A70CC7-56C5-44B2-B4CB-5B6371F07BF2} = {86A70CC7-56C5-44B2-B4CB-5B6371F07BF2}
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BattAnimeZone.Shared", "..\BattAnimeZone.Shared\BattAnimeZone.Shared.csproj", "{86A70CC7-56C5-44B2-B4CB-5B6371F07BF2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BattAnimeZone.Shared", "BattAnimeZone.Shared\BattAnimeZone.Shared.csproj", "{86A70CC7-56C5-44B2-B4CB-5B6371F07BF2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
