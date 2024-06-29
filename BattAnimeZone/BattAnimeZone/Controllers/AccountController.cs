@@ -87,7 +87,9 @@ namespace BattAnimeZone.Controllers
         {
             var authorizationHeader = HttpContext.Request.Headers["Authorization"].FirstOrDefault();
             var token = authorizationHeader.Substring("Bearer ".Length).Trim();
-            var response = await _userAccountService.ChangeDetails(changeDetails, token);
+            //var response = await _userAccountService.ChangeDetails(changeDetails, token);
+            var response = await _supaBaseUserAccountService.ChangeDetails(changeDetails, token);
+
             if (response.result == true)
                 return Ok(response);
             else
