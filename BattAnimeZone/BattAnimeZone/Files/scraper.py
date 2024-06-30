@@ -155,8 +155,8 @@ def make_smaller_animes_csv(csvfile):
 
 """this function is for updating the csv"""
 def merge_or_replace_csv():
-    df1 = pd.read_csv("mal_data_filtered_filled.csv")
-    df2 = pd.read_csv("2024_refreshed_sfw_animes_filtered_filled.csv")
+    df1 = pd.read_csv("mal_data_filtered_filled.csv") #csv with ALL the anime old datas
+    df2 = pd.read_csv("20240630_refreshed_sfw_animes_filtered_filled.csv") #csv with the new anime datas
 
     # Ensure 'mal_id' is of float type
     df1['mal_id'] = df1['mal_id'].astype(float)
@@ -174,10 +174,10 @@ def merge_or_replace_csv():
     merged_df = merged_df[df2.columns]
 
     # Save the updated dataframe
-    merged_df.to_csv('mal_data_full_sfw_updated_20240615.csv', index=False)
+    merged_df.to_csv('mal_data_full_sfw_updated_20240630.csv', index=False)
 
     # Call the function
-    make_smaller_animes_csv("mal_data_full_sfw_updated_20240615")
+    make_smaller_animes_csv("mal_data_full_sfw_updated_20240630")
 
 
 def check_duplicates(csvfile):
@@ -185,6 +185,15 @@ def check_duplicates(csvfile):
     df = pd.read_csv(f"{csvfile}.csv")
     duplicates = df[df.duplicated('mal_id', keep=False)]
     print(duplicates)
+
+def check_years(csvfile):
+
+    df = pd.read_csv(f"{csvfile}.csv")
+    distinct_years = df['year'].dropna().unique()
+    print("Distinct Years:", distinct_years)
+
+    null_years = df[df['year'].isna()]
+    print("Rows with null Year values:\n", null_years)
 
 if __name__ == "__main__":
 
@@ -204,21 +213,19 @@ if __name__ == "__main__":
 
     ids_to_request = list(filter(lambda x: x not in anime2023ids, sfw_ids))
     ids_to_request = list(set(ids_to_request))
-    outfile = "2024_refreshed_sfw_animes"
+    outfile = "20240630_refreshed_sfw_animes"
     main(BASE_URL, ids_to_request, outfile)
+"""
 
-    """
-    #df = pd.read_csv("mal_data.csv")
-    """accidently I wrote the header at every append, so had to delete them."""
-    #df_filtered = df.drop(df.index[1::2])
-    #df_filtered.to_csv("mal_data_filtered.csv", encoding="utf-8")
-
-    #check_and_fill_empty_cols()
-    #get_anime_genres()
-
-    #get_producers()
-    #make_smaller_animes_csv("mal_data_full_sfw_updated_20240615")
-
+    check_and_fill_empty_cols("20240630_refreshed_sfw_animes")
+    # check_duplicates("mal_data_full_sfw_updated_20240615")
+    # check_years("mal_data_full_sfw_updated_20240615")
     merge_or_replace_csv()
 
-    #check_duplicates("mal_data_full_sfw_updated_20240615")
+
+    #get_anime_genres()
+    #get_producers()
+
+
+
+

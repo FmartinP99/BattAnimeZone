@@ -232,8 +232,12 @@ h1 {
     margin-top:13px;
 }
 
+.centerWrapper{
+    height: 900px;
+}
+
 .ownWrapper {
-    max-height: 750px;
+    height: 95%;
 }
 
 

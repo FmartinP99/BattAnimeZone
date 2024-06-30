@@ -181,6 +181,7 @@
 			{
 				IEnumerable<AnimeHomePageDTO>? animes = await response.Content.ReadFromJsonAsync<IEnumerable<AnimeHomePageDTO>>();
 				if (animes == null) throw new ArgumentNullException($"ERROR: Queried anime year={year} was null");
+
 				info_str = year + info_str.Substring(4);
 				var seasonsDictionary = new Dictionary<string, IEnumerable<AnimeHomePageDTO>>
 					{

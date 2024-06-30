@@ -103,7 +103,6 @@ namespace BattAnimeZone.Client.Authentication
             
         }
 
-
         public override async Task<AuthenticationState> GetAuthenticationStateAsync()
         {
             try
