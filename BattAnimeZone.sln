@@ -13,7 +13,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BattAnimeZone.Client", "Bat
 		{86A70CC7-56C5-44B2-B4CB-5B6371F07BF2} = {86A70CC7-56C5-44B2-B4CB-5B6371F07BF2}
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BattAnimeZone.Shared", "BattAnimeZone.Shared\BattAnimeZone.Shared.csproj", "{86A70CC7-56C5-44B2-B4CB-5B6371F07BF2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BattAnimeZone.Shared", "BattAnimeZone\BattAnimeZone.Shared\BattAnimeZone.Shared.csproj", "{86A70CC7-56C5-44B2-B4CB-5B6371F07BF2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -10,7 +10,7 @@ FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 COPY ["BattAnimeZone/BattAnimeZone/BattAnimeZone.csproj", "BattAnimeZone/BattAnimeZone/"]
-COPY ["BattAnimeZone.Shared/BattAnimeZone.Shared.csproj", "BattAnimeZone.Shared/"]
+COPY ["BattAnimeZone/BattAnimeZone.Shared/BattAnimeZone.Shared.csproj", "BattAnimeZone.Shared/"]
 COPY ["BattAnimeZone/BattAnimeZone.Client/BattAnimeZone.Client.csproj", "BattAnimeZone/BattAnimeZone.Client/"]
 RUN dotnet restore "./BattAnimeZone/BattAnimeZone/BattAnimeZone.csproj"
 COPY . .
