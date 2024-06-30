@@ -61,6 +61,8 @@
     [Parameter]
     public string? userName { get; set; } = "";
 
+    public string? previous_username = "";
+
 
 
     protected override async Task OnInitializedAsync()
@@ -69,8 +71,9 @@
         await base.OnInitializedAsync();
     }
 
-    protected override void OnParametersSet()
+    protected override async void OnParametersSet()
     {
+        await GetUserName();
         StateHasChanged();
     }
 

@@ -114,7 +114,7 @@ namespace BattAnimeZone.Client.Authentication
                 {
                     return await Task.FromResult(new AuthenticationState(_anonymous));
                 }
-                if (DateTime.Now.ToUniversalTime() > userSession.TokenExpiryTimeStamp.AddSeconds(-55))
+                if (DateTime.Now.ToUniversalTime() > userSession.TokenExpiryTimeStamp)
                 {
                     if (DateTime.Now.ToUniversalTime() > userSession.RefreshTokenExpiryTimestamp)
                     {

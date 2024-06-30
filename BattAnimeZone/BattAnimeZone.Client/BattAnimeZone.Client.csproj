@@ -21,7 +21,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\BattAnimeZone.Shared\BattAnimeZone.Shared.csproj" />
+    <ProjectReference Include="..\BattAnimeZone.Shared\BattAnimeZone.Shared.csproj" />
   </ItemGroup>
 
 </Project>
