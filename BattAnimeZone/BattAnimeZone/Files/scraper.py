@@ -155,14 +155,14 @@ def make_smaller_animes_csv(csvfile):
 
 """this function is for updating the csv"""
 def merge_or_replace_csv():
-    df1 = pd.read_csv("mal_data_filtered_filled.csv") #csv with ALL the anime old datas
-    df2 = pd.read_csv("20240630_refreshed_sfw_animes_filtered_filled.csv") #csv with the new anime datas
+    df1 = pd.read_csv("mal_data_full_sfw_updated_20240615_filtered_filled.csv") #csv with ALL the anime old datas
+    df2 = pd.read_csv("20240630_refreshed_sfw_animes.csv") #csv with the new anime datas
 
-    # Ensure 'mal_id' is of float type
+
     df1['mal_id'] = df1['mal_id'].astype(float)
     df2['mal_id'] = df2['mal_id'].astype(float)
 
-    # Merge the dataframes
+
     merged_df = pd.merge(df1, df2, on='mal_id', how='outer', suffixes=('_old', ''))
 
     # Replace old columns with new ones where available
@@ -175,10 +175,6 @@ def merge_or_replace_csv():
 
     # Save the updated dataframe
     merged_df.to_csv('mal_data_full_sfw_updated_20240630.csv', index=False)
-
-    # Call the function
-    make_smaller_animes_csv("mal_data_full_sfw_updated_20240630")
-
 
 def check_duplicates(csvfile):
 
@@ -197,7 +193,7 @@ def check_years(csvfile):
 
 if __name__ == "__main__":
 
-    """
+
     anime_cache_ids_url = "https://raw.githubusercontent.com/seanbreckenridge/mal-id-cache/master/cache/anime_cache.json"
     anime_ids = requests.get(anime_cache_ids_url).text
     data = json.loads(anime_ids)
@@ -215,13 +211,18 @@ if __name__ == "__main__":
     ids_to_request = list(set(ids_to_request))
     outfile = "20240630_refreshed_sfw_animes"
     main(BASE_URL, ids_to_request, outfile)
-"""
 
-    check_and_fill_empty_cols("20240630_refreshed_sfw_animes")
-    # check_duplicates("mal_data_full_sfw_updated_20240615")
-    # check_years("mal_data_full_sfw_updated_20240615")
-    merge_or_replace_csv()
 
+
+
+    #check_and_fill_empty_cols("mal_data_full_sfw_updated_20240615")
+    #merge_or_replace_csv()
+
+    #check_and_fill_empty_cols("mal_data_full_sfw_updated_20240630")
+    #check_duplicates("mal_data_full_sfw_updated_20240630")
+    #check_years("mal_data_full_sfw_updated_20240630")
+
+    #make_smaller_animes_csv("mal_data_full_sfw_updated_20240630_filtered_filled")
 
     #get_anime_genres()
     #get_producers()
