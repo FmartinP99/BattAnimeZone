@@ -15,7 +15,7 @@ It is highly advised to use it via a desktop computer or laptop and not with mob
 
 ### Features from a technical perspective
 - MVC pattern with Service & EF layer  (View <-> Controller <-> Service <-> DbContext/EF <-> Model/Database).
-- Database queries are written with EntityFramework.
+- Local database queries are written with EntityFramework, SupaBase queries are written with rpc functions.
 - Database layout is in 3NF.
 - Code first approach.
 - JWT based Authentication & Authorization system.
