@@ -70,7 +70,7 @@ It is highly advised to use it via a desktop computer or laptop and not with mob
 ### About the .env variables
 - `JWT_TOKEN_VALIDITY_MINS=` validity of the jwt token in minutes.
 - `JWT_REFRESH_TOKEN_VALIDITY_MINS=` validity of the refresh token in minutes.
-- `ValidIssuer=` for authorized controllers/function where the request can come from.
+- `ValidIssuer=` for authorized controllers/function the entity that issued the token.
 - `ValidAudience=` for authorized controllers/function where the recieving controller is.
 - `DbInit=` should the program pre-create and prefill the database. (for SupaBase you need to pre-create it by hand, using the steps mentioned above).
 - `MakeMockUsersOnDbInit=` should the program make mock users for testing purposes. (not supported for supabase, it will be ignored).
