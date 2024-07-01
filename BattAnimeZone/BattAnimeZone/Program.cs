@@ -16,7 +16,6 @@ using System.Security.Claims;
 using Supabase;
 
 var builder = WebApplication.CreateBuilder(args);
-
 Env.Load();
 var jwtSecurityKey = Environment.GetEnvironmentVariable("JWT_SECURITY_KEY");
 var validIssuer = Environment.GetEnvironmentVariable("ValidIssuer");
