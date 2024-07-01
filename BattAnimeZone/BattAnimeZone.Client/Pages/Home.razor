@@ -26,16 +26,16 @@
 			<p class="subtitle">@info_str @type_str</p>
 			<div class="d-flex align-items-center headerInnerDiv">
 				<div class="filterDiv">
-				<RadzenLabel Text="YEAR:" class="orderComponentText rz-text-align-end" Component="DropDownTextValueProperties" />
-				<RadzenDropDown Change="onChangedYear" class="rzdropdown" @bind-Value=@selected_year Data=@available_years  Name="DropDownTextValueProperties" />
+				<RadzenLabel Text="YEAR:" class="orderComponentText rz-text-align-end" Component="DropDownTextValueProperties1" />
+				<RadzenDropDown Change="onChangedYear" class="rzdropdown" @bind-Value=@selected_year Data=@available_years  Name="DropDownTextValueProperties1" />
 				</div>
 				<div class="filterDiv">
-				<RadzenLabel Text="SEASON:" class="orderComponentText rz-text-align-end" Component="DropDownTextValueProperties" />
-				<RadzenDropDown Change="onChangedSeason" class="rzdropdown" @bind-Value=@filter_str Data=@filter_by_season Name="DropDownTextValueProperties" />
+				<RadzenLabel Text="SEASON:" class="orderComponentText rz-text-align-end" Component="DropDownTextValueProperties2" />
+				<RadzenDropDown Change="onChangedSeason" class="rzdropdown" @bind-Value=@filter_str Data=@filter_by_season Name="DropDownTextValueProperties2" />
 				</div>
 				<div class="filterDiv">
-					<RadzenLabel Text="TYPE:" class="orderComponentText rz-text-align-end" Component="DropDownTextValueProperties" />
-					<RadzenDropDown Change="onChangedType" class="rzdropdown" @bind-Value=@filter_type_str Data=@media_types Name="DropDownTextValueProperties" />
+					<RadzenLabel Text="TYPE:" class="orderComponentText rz-text-align-end" Component="DropDownTextValueProperties3" />
+					<RadzenDropDown Change="onChangedType" class="rzdropdown" @bind-Value=@filter_type_str Data=@media_types Name="DropDownTextValueProperties3" />
 				</div>
 			</div>
 		</div>
