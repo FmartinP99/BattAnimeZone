@@ -3,7 +3,7 @@
 ### Blazor (Full Stack, web server & web assembly) Web App written in C# with .NET8
 
 This webapp is essentially a digital-library built on the [MyAnimeList](https://myanimelist.net)'s data. 
-It is highly advised to use it via a desktop computer or laptop and not with mobile devices, as the UI is currently not supported on them.
+It is highly advised to use it via a desktop computer or a laptop and not with mobile devices, as the UI is currently not supported on them.
 <hr>
 
 ## Demo
