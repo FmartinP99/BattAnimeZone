@@ -15,6 +15,7 @@ namespace BattAnimeZone.DatabaseInitializer
         Dictionary<int, AnimeSupabaseModel> supaBaseAnimes = new Dictionary<int, AnimeSupabaseModel>();
         Dictionary<int, StreamingSupabaseModel> supaBaseStreamings = new Dictionary<int, StreamingSupabaseModel>();
         Dictionary<int, ProductionEntitySupabaseModel> supaBaseProdEnts = new Dictionary<int, ProductionEntitySupabaseModel>();
+        List<AnimeProductionEntitySupabaseModel> supaBaseAnimeProdEnts = new List<AnimeProductionEntitySupabaseModel>();
         Dictionary<int, GenreSupabaseModel> supaBaseGenres = new Dictionary<int, GenreSupabaseModel>();
 
 
@@ -217,34 +218,6 @@ namespace BattAnimeZone.DatabaseInitializer
         }
 
 
-
-        public void SaveUpdatedProductionEntityCountsToDatabaseSupaBase()
-        {
-
-            List<ProductionEntitySupabaseModel> updated_models = new List<ProductionEntitySupabaseModel>();
-
-            var prodentvalues = supaBaseProdEnts.Values.ToList();
-            var result = prodentvalues.GroupBy(ape => ape.Id)
-            .Select(g => new
-            {
-                ProductionEntityId = g.Key,
-                AnimeCount = g.Count()
-            })
-            .ToList();
-
-            foreach (var res in result)
-            {
-                var prodent = prodentvalues.Where(x => x.Id == res.ProductionEntityId).FirstOrDefault();
-                if (prodent != null)
-                {
-                    prodent.Count = res.AnimeCount;
-                    supaBaseProdEnts[res.ProductionEntityId] = prodent;
-                }
-            }
-        }
-
-
-
         public async Task SaveProductionEntitiesToDatabaseSupaBase(List<ProductionEntity> prodents)
         {
 
@@ -267,7 +240,6 @@ namespace BattAnimeZone.DatabaseInitializer
 
                 this.supaBaseProdEnts[prod.Mal_id] = curr_prodent;
             }
-            SaveUpdatedProductionEntityCountsToDatabaseSupaBase();
 
             var response = await _client.From<ProductionEntitySupabaseModel>().Insert(this.supaBaseProdEnts.Values);
 
@@ -303,6 +275,30 @@ namespace BattAnimeZone.DatabaseInitializer
 
             var response = await _client.From<ProductionEntityTitleSupabaseModel>().Insert(productionEntityTitleSupabaseModels);
 
+
+        }
+
+        public async Task SaveUpdatedProductionEntityCountsToDatabaseSupaBase(List<AnimeProductionEntitySupabaseModel> animeProductionEntitySupabaseModels)
+        {
+            var result = animeProductionEntitySupabaseModels.GroupBy(ape => ape.ProductionEntityId)
+                .Select(g => new
+                {
+                    ProductionEntityId = g.Key,
+                    AnimeCount = g.Count()
+                })
+                .ToList();
+
+            foreach (var res in result)
+            {
+                var prodent = supaBaseProdEnts.Where(x => x.Key == res.ProductionEntityId).FirstOrDefault().Value;
+                if (prodent != null)
+                {
+                    prodent.Count = res.AnimeCount;
+                    supaBaseProdEnts[prodent.Id] = prodent;
+                }
+            }
+
+            List<ProductionEntitySupabaseModel> asd = this.supaBaseProdEnts.Values.ToList();
 
         }
 
@@ -394,6 +390,7 @@ namespace BattAnimeZone.DatabaseInitializer
             
 
                 var response = await _client.From<AnimeProductionEntitySupabaseModel>().Insert(animeProductionEntitySupabaseModels);
+                //await SaveUpdatedProductionEntityCountsToDatabaseSupaBase(animeProductionEntitySupabaseModels);
             }
         }
 
