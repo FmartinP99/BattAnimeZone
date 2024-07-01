@@ -30,7 +30,7 @@ The demo version of the web app is available [here](http://battanimezone.com).
 - Policy based authorization.
 - Encrypted Session / Local storage.
 - Custom HttpContext.
-- Uses an in-memory cache for the past N search to speed up the popular database queries. See: `SingletonSearachService`.
+- Uses an in-memory cache for the past N search to speed up the popular database queries. See: `SingletonSearchService`.
 - Custom Form validator.
 
 
