@@ -4,6 +4,11 @@
 
 This webapp is essentially a digital-library built on the [MyAnimeList](https://myanimelist.net)'s data. 
 It is highly advised to use it via a desktop computer or laptop and not with mobile devices, as the UI is currently not supported on them.
+
+## Demo
+
+Demo version of the web app is available [here](http://battanimezone.com).
+
 ### Features from the User's perspective
 
 - It's capable of searching and displaying animes and studios with/based on their various attributes,<br>
