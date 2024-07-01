@@ -94,6 +94,7 @@
     private async Task Authenticate()
     {
         var loginResponse = await httpClient.PostAsJsonAsync<LoginRequest>($"{navManager.BaseUri}api/AccountController/Login", loginRequest);
+        Console.WriteLine($"SENDING REQUEST TO: {navManager.BaseUri}/api/AccountController/Login");
 
         if (loginResponse.IsSuccessStatusCode)
         {

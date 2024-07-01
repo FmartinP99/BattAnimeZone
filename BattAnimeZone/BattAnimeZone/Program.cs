@@ -21,6 +21,8 @@ Env.Load();
 var jwtSecurityKey = Environment.GetEnvironmentVariable("JWT_SECURITY_KEY");
 var validIssuer = Environment.GetEnvironmentVariable("ValidIssuer");
 var validAudience = Environment.GetEnvironmentVariable("ValidAudience");
+var validateIssuer = Environment.GetEnvironmentVariable("ValidateIssuer") == "true" ? true : false;
+var validateAudience = Environment.GetEnvironmentVariable("ValidateAudience") == "true" ? true : false;
 
 // Add services to the container.
 builder.Services.AddRazorComponents()
@@ -43,15 +45,14 @@ builder.Services.AddAuthentication(o =>
     {
         ValidateIssuerSigningKey = true,
         IssuerSigningKey = new SymmetricSecurityKey(System.Text.Encoding.ASCII.GetBytes(jwtSecurityKey)),
-        ValidateIssuer = true,
+        ValidateIssuer = validateIssuer,
         ValidIssuer = validIssuer,
-        ValidateAudience = true,
-        ValidAudience = validAudience,
+        ValidateAudience = validateAudience,
+		ValidAudience = validAudience,
         NameClaimType = ClaimTypes.Name,
         RoleClaimType = ClaimTypes.Role
 
     };
-
     o.Events = new JwtBearerEvents
     {
         OnMessageReceived = context =>
@@ -165,7 +166,7 @@ else
     app.UseHsts();
 }
 
-app.UseHttpsRedirection();
+//app.UseHttpsRedirection();
 
 app.UseAuthentication();
 app.UseAuthorization();
