@@ -9,6 +9,7 @@ It is highly advised to use it via a desktop computer or a laptop and not with m
 ## Demo
 
 The demo version of the web app is available [here](http://battanimezone.com).
+(The page might be down sometimes)
 <hr>
 
 ### Features from the User's perspective
