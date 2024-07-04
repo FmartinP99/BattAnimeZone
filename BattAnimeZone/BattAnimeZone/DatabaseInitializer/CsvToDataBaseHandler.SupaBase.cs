@@ -62,7 +62,7 @@ namespace BattAnimeZone.DatabaseInitializer
                         Anime entity;
                         if (!animes.TryGetValue(entry.Mal_id, out entity)) continue;
 
-                        var dictionary = new Dictionary<Dictionary<int, int>, string> { { new Dictionary<int, int> { { 1, anime.Mal_id }, { 2, entry.Mal_id } }, relations.Relation }, };
+                        var dictionary = new Dictionary<Dictionary<int, int>, string> { { new Dictionary<int, int> { {  anime.Mal_id , entry.Mal_id } }, relations.Relation }, };
                         bool alreadyVisited = visited.Any(d => AreDictionariesEqual(d, dictionary));
                         if (alreadyVisited)
                         {
